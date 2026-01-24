@@ -45,7 +45,7 @@ public partial class GodModeSettingsWindow
 
     private void InitializeFanControlContainer(MachineInformation mi)
     {
-        if (AppFlags.Instance.EnableCustomFanCurve)
+        if (_fanCurveManager.IsEnabled)
         {
             return;
         }
@@ -130,7 +130,7 @@ public partial class GodModeSettingsWindow
             var preset = _state.Value.Presets[activePresetId];
 
             FanTableInfo? fanInfo;
-            if (AppFlags.Instance.EnableCustomFanCurve)
+            if (_fanCurveManager.IsEnabled)
             {
                 fanInfo = preset.FanTableInfo is not null ? (_fanCurveControls.Count > 0 ? _fanCurveControls[0].GetFanTableInfo() : null) : null;
             }
@@ -235,7 +235,7 @@ public partial class GodModeSettingsWindow
             {
                 FanTable minimum = await _godModeController.GetMinimumFanTableAsync();
 
-                if (AppFlags.Instance.EnableCustomFanCurve)
+                if (_fanCurveManager.IsEnabled)
                 {
                     foreach (var ctrl in _fanCurveControls)
                     {
@@ -432,7 +432,7 @@ public partial class GodModeSettingsWindow
                 FanTableInfo defaultTableInfo = new FanTableInfo(data, fanTable);
                 FanTable minimum = await _godModeController.GetMinimumFanTableAsync();
 
-                if (AppFlags.Instance.EnableCustomFanCurve)
+                if (_fanCurveManager.IsEnabled)
                 {
                     foreach (var ctrl in _fanCurveControls)
                     {
@@ -566,7 +566,7 @@ public partial class GodModeSettingsWindow
         var defaultInfo = new FanTableInfo(data, await _godModeController.GetDefaultFanTableAsync());
         var minimum = await _godModeController.GetMinimumFanTableAsync();
 
-        if (AppFlags.Instance.EnableCustomFanCurve)
+        if (_fanCurveManager.IsEnabled)
         {
             foreach (var ctrl in _fanCurveControls)
             {

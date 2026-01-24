@@ -203,7 +203,7 @@ public class FanCurveEntry : INotifyPropertyChanged
         return entry;
     }
 
-    internal FanCurveConfig ToConfig()
+    public FanCurveConfig ToConfig()
     {
         return new FanCurveConfig
         {

@@ -46,26 +46,26 @@ public partial class SensorsControlV2
         _cpuNameTask = GetProcessedCpuName();
         _sensorItemToControlMap = new Dictionary<SensorItem, FrameworkElement>
         {
-            { SensorItem.CpuUtilization, _cpuUtilizationGrid },
-            { SensorItem.CpuFrequency, _cpuCoreClockGrid },
-            { SensorItem.CpuFanSpeed, _cpuFanSpeedGrid },
-            { SensorItem.CpuTemperature, _cpuTemperatureGrid },
-            { SensorItem.CpuPower, _cpuPowerGrid },
+            { SensorItem.CpuUtilization, _cpuUtilizationGrid! },
+            { SensorItem.CpuFrequency, _cpuCoreClockGrid! },
+            { SensorItem.CpuFanSpeed, _cpuFanSpeedGrid! },
+            { SensorItem.CpuTemperature, _cpuTemperatureGrid! },
+            { SensorItem.CpuPower, _cpuPowerGrid! },
 
-            { SensorItem.GpuUtilization, _gpuUtilizationGrid },
-            { SensorItem.GpuFrequency, _gpuCoreClockGrid },
-            { SensorItem.GpuFanSpeed, _gpuFanSpeedGrid },
-            { SensorItem.GpuTemperatures, _gpuTemperaturesGrid },
-            { SensorItem.GpuPower, _gpuPowerGrid },
+            { SensorItem.GpuUtilization, _gpuUtilizationGrid! },
+            { SensorItem.GpuFrequency, _gpuCoreClockGrid! },
+            { SensorItem.GpuFanSpeed, _gpuFanSpeedGrid! },
+            { SensorItem.GpuTemperatures, _gpuTemperaturesGrid! },
+            { SensorItem.GpuPower, _gpuPowerGrid! },
 
-            { SensorItem.PchFanSpeed, _pchFanSpeedGrid },
-            { SensorItem.PchTemperature, _pchTemperatureGrid },
-            { SensorItem.BatteryState, _batteryStateGrid },
-            { SensorItem.BatteryLevel, _batteryLevelGrid },
-            { SensorItem.MemoryUtilization, _memoryUtilizationGrid },
-            { SensorItem.MemoryTemperature, _memoryTemperatureGrid },
-            { SensorItem.Disk1Temperature, _disk1TemperatureGrid },
-            { SensorItem.Disk2Temperature, _disk2TemperatureGrid }
+            { SensorItem.PchFanSpeed, _pchFanSpeedGrid! },
+            { SensorItem.PchTemperature, _pchTemperatureGrid! },
+            { SensorItem.BatteryState, _batteryStateGrid! },
+            { SensorItem.BatteryLevel, _batteryLevelGrid! },
+            { SensorItem.MemoryUtilization, _memoryUtilizationGrid! },
+            { SensorItem.MemoryTemperature, _memoryTemperatureGrid! },
+            { SensorItem.Disk1Temperature, _disk1TemperatureGrid! },
+            { SensorItem.Disk2Temperature, _disk2TemperatureGrid! }
         };
 
         var mi = Compatibility.GetMachineInformationAsync().Result;

@@ -453,7 +453,7 @@ public partial class FanCurveControlV3 : UserControl, INotifyPropertyChanged, IF
         }
     }
 
-    private static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
+    private static IEnumerable<T> FindVisualChildren<T>(DependencyObject? depObj) where T : DependencyObject
     {
         if (depObj != null)
         {
@@ -473,8 +473,10 @@ public partial class FanCurveControlV3 : UserControl, INotifyPropertyChanged, IF
         }
     }
 
-    private static T? FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
+    private static T? FindVisualChild<T>(DependencyObject? parent) where T : DependencyObject
     {
+        if (parent == null) return null;
+
         T? child = default;
         int numVisuals = VisualTreeHelper.GetChildrenCount(parent);
         for (int i = 0; i < numVisuals; i++)

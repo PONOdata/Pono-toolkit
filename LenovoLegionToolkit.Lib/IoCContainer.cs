@@ -25,7 +25,7 @@ public static class IoCContainer
         }
     }
 
-    public static T Resolve<T>(params Autofac.Core.Parameter[] parameters)
+    public static T Resolve<T>(params Autofac.Core.Parameter[] parameters) where T : notnull
     {
         lock (Lock)
         {

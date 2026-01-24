@@ -456,7 +456,7 @@ public partial class MainWindow
         }
     }
 
-    private IEnumerable<T> FindVisualChildren<T>(DependencyObject parent) where T : DependencyObject
+    private IEnumerable<T> FindVisualChildren<T>(DependencyObject? parent) where T : DependencyObject
     {
         if (parent == null) yield break;
 

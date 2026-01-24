@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Management;
@@ -127,7 +128,7 @@ public partial class App
             ConfigureFeatureFlags();
 
             if (AppFlags.Instance.Debug) Console.WriteLine(@"[Startup] Initializing Features...");
-            var initTasks = new[]
+            var initTasks = new List<Task>
             {
                 InitSensorsGroupControllerFeatureAsync(),
                 LogSoftwareStatusAsync(),
@@ -139,10 +140,13 @@ public partial class App
                 InitGpuOverclockControllerAsync(),
                 InitHybridModeAsync(),
                 InitAutomationProcessorAsync(),
-                InitFanCurveManagerAsync(),
             };
 
             await Task.WhenAll(initTasks);
+
+            Log.Instance.Trace($"Resolving and initializing FanCurveManager...");
+            var fanManager = IoCContainer.Resolve<FanCurveManager>();
+            fanManager.Initialize();
 
             if (AppFlags.Instance.Debug) Console.WriteLine(@"[Startup] Starting MacroController...");
             IoCContainer.Resolve<MacroController>().Start();
@@ -645,21 +649,6 @@ public partial class App
         }
     }
 
-    private static async Task InitFanCurveManagerAsync()
-    {
-        try
-        {
-            if (AppFlags.Instance.EnableCustomFanCurve)
-            {
-                IoCContainer.Resolve<FanCurveManager>().Initialize(true);
-                await Task.CompletedTask;
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Instance.Trace($"Couldn't initialize FanCurveManager.", ex);
-        }
-    }
 
     private static async Task InitSetPowerMode()
     {

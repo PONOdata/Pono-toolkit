@@ -24,7 +24,7 @@ public partial class StandaloneFanCurveWindow : BaseWindow
     {
         try
         {
-            _fanCurveManager.Initialize(true);
+            _fanCurveManager.Initialize();
             InitializeFanControls();
         }
         catch (Exception ex)
@@ -33,7 +33,7 @@ public partial class StandaloneFanCurveWindow : BaseWindow
         }
     }
 
-    private void TestWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+    private void TestWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
         foreach (var ctrl in _fanCurveControls)
         {
@@ -63,7 +63,7 @@ public partial class StandaloneFanCurveWindow : BaseWindow
             
             if (entry != null)
             {
-                 data = new FanTableData(type, (byte)(type == FanTableType.CPU ? 1 : 2), (byte)(type == FanTableType.CPU ? 0 : 1), null, null);
+                 data = new FanTableData(type, (byte)(type == FanTableType.CPU ? 1 : 2), (byte)(type == FanTableType.CPU ? 0 : 1), Array.Empty<ushort>(), Array.Empty<ushort>());
             }
             else
             {

@@ -580,5 +580,6 @@ obj/
 build_installer
 /TemporarySolution/LibreHardwareMonitorLib.dll
 
-# FanCustomCurve Isolation
-LenovoLegionToolkit.Lib/Utils/FanCurveManager.Custom.cs
+# LenovoLegionToolkit Module Isolation (Option B)
+/LenovoLegionToolkit.Plugin/
+FanCurveExtension
