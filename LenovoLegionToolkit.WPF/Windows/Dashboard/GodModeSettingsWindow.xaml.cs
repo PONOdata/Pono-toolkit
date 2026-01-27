@@ -16,6 +16,7 @@ using LenovoLegionToolkit.Lib.Utils;
 using LenovoLegionToolkit.WPF.Extensions;
 using LenovoLegionToolkit.WPF.Resources;
 using LenovoLegionToolkit.WPF.Utils;
+using LenovoLegionToolkit.Lib.Settings;
 
 namespace LenovoLegionToolkit.WPF.Windows.Dashboard;
 
@@ -133,9 +134,39 @@ public partial class GodModeSettingsWindow
             if (_fanCurveManager.IsEnabled)
             {
                 fanInfo = preset.FanTableInfo is not null ? (_fanCurveControls.Count > 0 ? _fanCurveControls[0].GetFanTableInfo() : null) : null;
+                
+                var fanSettings = IoCContainer.Resolve<FanCurveSettings>();
+                fanSettings.Store.Entries.Clear();
+                foreach (var ctrl in _fanCurveControls)
+                {
+                    if (ctrl.GetCurveEntry() is { } entry)
+                    {
+                        fanSettings.Store.Entries.Add(entry);
+                    }
+                }
+                fanSettings.Save();
             }
             else
             {
+                var fanSettings = IoCContainer.Resolve<FanCurveSettings>();
+                Log.Instance.Trace($"About to save fan curves. Controls count: {_fanCurveControls.Count}");
+                fanSettings.Store.Entries.Clear();
+                foreach (var ctrl in _fanCurveControls)
+                {
+                    var entry = ctrl.GetCurveEntry();
+                    if (entry != null)
+                    {
+                        Log.Instance.Trace($"Adding entry: {entry.Type}");
+                        fanSettings.Store.Entries.Add(entry);
+                    }
+                    else
+                    {
+                        Log.Instance.Trace($"Entry for {ctrl.Tag} is null!");
+                    }
+                }
+                fanSettings.Save();
+                Log.Instance.Trace($"Fan settings saved. Path: {System.IO.Path.Combine(Folders.AppData, "fan_curves.json")}");
+
                 var fanControl = _fanCurveControlStackPanel.Children.OfType<Control>().FirstOrDefault(c => c is Controls.FanCurveControl or Controls.FanCurveControlV2);
                 fanInfo = fanControl switch
                 {
@@ -247,9 +278,9 @@ public partial class GodModeSettingsWindow
                     int insertIndex = _fanCurveControlStackPanel.Children.IndexOf(_fanSelector) + 1;
                     foreach (var data in preset.FanTableInfo.Value.Data)
                     {
-                        if (data.Type == FanTableType.PCH && (data.FanSpeeds == null || data.FanSpeeds.All(s => s == 0)))
+                        if (data.Type == FanTableType.PCH)
                         {
-                            continue;
+                            // Always show PCH/System fan
                         }
 
                         var ctrl = CreateFanControl(data, preset.FanTableInfo.Value);

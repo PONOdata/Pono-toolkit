@@ -133,7 +133,7 @@ public partial class FanCurveControlV3 : UserControl, INotifyPropertyChanged, IF
     {
         InitializeComponent();
 
-        AddPointCommand = new RelayCommand(() => AddPoint());
+        AddPointCommand = new RelayCommand(AddPoint);
         RemovePointCommand = new RelayCommand<object>(RemovePoint, _ => _curveEntry?.CurveNodes?.Count > 2);
 
         SizeChanged += (s, e) => RequestDraw();
