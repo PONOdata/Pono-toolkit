@@ -813,39 +813,57 @@ public partial class App
     public void InitFloatingGadget()
     {
         MessagingCenter.Subscribe<FloatingGadgetChangedMessage>(this,
-            message => { Dispatcher.Invoke(() => HandleFloatingGadgetCommand(message.State)); });
+            message => { Dispatcher.Invoke(() => HandleFloatingGadgetCommand(message.State)); }
 
         var settings = IoCContainer.Resolve<ApplicationSettings>();
-        if (settings.Store.ShowFloatingGadgets) HandleFloatingGadgetCommand(FloatingGadgetState.Show);
+
+        if (settings.Store.ShowFloatingGadgets)
+        {
+            HandleFloatingGadgetCommand(FloatingGadgetState.Show);
+        }
     }
 
-    private void HandleFloatingGadgetCommand(FloatingGadgetState state)
+    private void HandleFloatingGadgetCommand(FloatingGadgetState command)
     {
-        switch (state)
+        var settings = IoCContainer.Resolve<ApplicationSettings>();
+        bool shouldBeUpper = settings.Store.SelectedStyleIndex == 1;
+
+        switch (command)
         {
             case FloatingGadgetState.Hidden:
                 FloatingGadget?.Hide();
-                return;
+                break;
+
             case FloatingGadgetState.Show:
-            case FloatingGadgetState.Toggle when FloatingGadget is not { IsVisible: true }:
-            {
-                var settings = IoCContainer.Resolve<ApplicationSettings>();
-                var shouldBeUpper = settings.Store.SelectedStyleIndex == 1;
-
-                if (FloatingGadget != null && FloatingGadget is FloatingGadgetUpper != shouldBeUpper)
-                {
-                    FloatingGadget.Close();
-                    FloatingGadget = null;
-                }
-
-                EnsureGadgetCreated(shouldBeUpper);
+                EnsureCorrectGadgetType(shouldBeUpper);
                 FloatingGadget?.Show();
                 break;
-            }
-            case FloatingGadgetState.Toggle when FloatingGadget is { IsVisible: true }:
-                FloatingGadget.Hide();
+
+            case FloatingGadgetState.Toggle:
+                if (FloatingGadget is { IsVisible: true })
+                {
+                    FloatingGadget.Hide();
+                }
+                else
+                {
+                    EnsureCorrectGadgetType(shouldBeUpper);
+                    FloatingGadget?.Show();
+                }
                 break;
         }
+
+        settings.Store.ShowFloatingGadgets = FloatingGadget?.IsVisible ?? false;
+    }
+
+    private void EnsureCorrectGadgetType(bool shouldBeUpper)
+    {
+        if (FloatingGadget != null && (FloatingGadget is FloatingGadgetUpper) != shouldBeUpper)
+        {
+            FloatingGadget.Close();
+            FloatingGadget = null;
+        }
+
+        EnsureGadgetCreated(shouldBeUpper);
     }
 
     private void EnsureGadgetCreated(bool isUpper)

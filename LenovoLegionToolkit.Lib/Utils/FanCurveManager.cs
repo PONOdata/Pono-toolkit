@@ -1,4 +1,6 @@
 ﻿using LenovoLegionToolkit.Lib.Controllers.Sensors;
+using LenovoLegionToolkit.Lib.Features;
+using LenovoLegionToolkit.Lib.Listeners;
 using LenovoLegionToolkit.Lib.View;
 using System;
 using System.Collections.Generic;
@@ -12,6 +14,8 @@ namespace LenovoLegionToolkit.Lib.Utils;
 public class FanCurveManager : IDisposable
 {
     public SensorsGroupController Sensors { get; }
+    private readonly PowerModeListener _powerModeListener;
+    private readonly PowerModeFeature _powerModeFeature;
 
     private IExtensionProvider? _extension;
     private bool _pluginLoaded;
@@ -22,13 +26,18 @@ public class FanCurveManager : IDisposable
 
     public bool IsEnabled { get; private set; }
 
-    public FanCurveManager(SensorsGroupController sensors)
+    public FanCurveManager(
+        SensorsGroupController sensors,
+        PowerModeListener powerModeListener,
+        PowerModeFeature powerModeFeature)
     {
         Log.Instance.Trace($"FanCurveManager instance created.");
         Sensors = sensors;
+        _powerModeListener = powerModeListener;
+        _powerModeFeature = powerModeFeature;
     }
 
-    public void Initialize()
+    public async void Initialize()
     {
         Log.Instance.Trace($"FanCurveManager.Initialize called.");
 
@@ -44,10 +53,39 @@ public class FanCurveManager : IDisposable
             IsEnabled = true;
             _extension.Initialize(this);
             Log.Instance.Trace($"FanCurveManager initialized with extension.");
+
+            var mi = await Compatibility.GetMachineInformationAsync().ConfigureAwait(false);
+            if (mi.LegionSeries != LegionSeries.ThinkBook)
+            {
+                _powerModeListener.Changed += OnPowerModeChanged;
+                var currentState = await _powerModeFeature.GetStateAsync().ConfigureAwait(false);
+                if (currentState != PowerModeState.GodMode)
+                {
+                    Log.Instance.Trace($"Initial state is {currentState}, disabling fan control register.");
+                    await SetRegister(false).ConfigureAwait(false);
+                }
+            }
         }
         else
         {
             Log.Instance.Trace($"No extension found during Initialize.");
+        }
+    }
+
+    private async void OnPowerModeChanged(object? sender, PowerModeListener.ChangedEventArgs e)
+    {
+        var mi = await Compatibility.GetMachineInformationAsync().ConfigureAwait(false);
+        if (mi.LegionSeries == LegionSeries.ThinkBook) return;
+
+        if (e.State == PowerModeState.GodMode)
+        {
+            Log.Instance.Trace($"PowerMode changed to GodMode. Enabling custom fan control.");
+            await SetRegister(true).ConfigureAwait(false);
+        }
+        else
+        {
+            Log.Instance.Trace($"PowerMode changed to {e.State}. Disabling custom fan control.");
+            await SetRegister(false).ConfigureAwait(false);
         }
     }
 
@@ -155,13 +193,31 @@ public class FanCurveManager : IDisposable
 
     public async Task LoadAndApply(List<FanCurveEntry> entries)
     {
-        if (!IsEnabled || _extension == null) return;
+        if (_extension == null) return;
         foreach (var entry in entries)
         {
             AddEntry(entry);
             UpdateConfig(entry.Type, entry);
         }
-        await SetRegister(true).ConfigureAwait(false);
+
+        var mi = await Compatibility.GetMachineInformationAsync().ConfigureAwait(false);
+        if (mi.LegionSeries == LegionSeries.ThinkBook)
+        {
+             await SetRegister(true).ConfigureAwait(false);
+        }
+        else
+        {
+            var currentState = await _powerModeFeature.GetStateAsync().ConfigureAwait(false);
+            if (currentState == PowerModeState.GodMode)
+            {
+                await SetRegister(true).ConfigureAwait(false);
+            }
+            else
+            {
+                 Log.Instance.Trace($"Not in GodMode, applying config but keeping register disabled.");
+                 await SetRegister(false).ConfigureAwait(false);
+            }
+        }
     }
 
     public async Task SetRegister(bool flag = false)
@@ -184,5 +240,6 @@ public class FanCurveManager : IDisposable
     public void Dispose()
     {
         _extension?.Dispose();
+        _powerModeListener.Changed -= OnPowerModeChanged;
     }
 }
