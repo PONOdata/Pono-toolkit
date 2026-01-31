@@ -127,4 +127,22 @@
   <data name="FloatingGadgetState_Toggle" type="System.Resources.ResXNullRef, System.Windows.Forms">
     <value />
   </data>
+  <data name="AutomationPipeline_Warning_Power_Mode_Visual" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="AutomationPipeline_Warning_Power_Mode_Fan" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="AutomationPipeline_Warning_Hybrid_Mode" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="AutomationPipeline_Warning_GPU_OC" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="AutomationPipeline_Warning_HDR" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="AutomationPipeline_Warning_Resolution" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
 </root>

@@ -79,6 +79,60 @@ namespace LenovoLegionToolkit.Lib.Automation.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Warning: Cannot overclock a deactivated GPU. The Overclock step will fail. 的本地化字符串。
+        /// </summary>
+        public static string AutomationPipeline_Warning_GPU_OC {
+            get {
+                return ResourceManager.GetString("AutomationPipeline_Warning_GPU_OC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Warning: Windows HDR locks screen brightness. Brightness settings applied after HDR are ignored. 的本地化字符串。
+        /// </summary>
+        public static string AutomationPipeline_Warning_HDR {
+            get {
+                return ResourceManager.GetString("AutomationPipeline_Warning_HDR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Warning: Changing Hybrid Mode to dGPU Mode forces a system reboot. This must be the last step. 的本地化字符串。
+        /// </summary>
+        public static string AutomationPipeline_Warning_Hybrid_Mode {
+            get {
+                return ResourceManager.GetString("AutomationPipeline_Warning_Hybrid_Mode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Warning: Power Mode resets Fan Speed. Run the Power Mode step first. 的本地化字符串。
+        /// </summary>
+        public static string AutomationPipeline_Warning_Power_Mode_Fan {
+            get {
+                return ResourceManager.GetString("AutomationPipeline_Warning_Power_Mode_Fan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Warning: Power Mode resets Brightness and Refresh Rate. Run the Power Mode step first. 的本地化字符串。
+        /// </summary>
+        public static string AutomationPipeline_Warning_Power_Mode_Visual {
+            get {
+                return ResourceManager.GetString("AutomationPipeline_Warning_Power_Mode_Visual", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Warning: Changing Resolution resets Refresh Rate. Run the Resolution step first. 的本地化字符串。
+        /// </summary>
+        public static string AutomationPipeline_Warning_Resolution {
+            get {
+                return ResourceManager.GetString("AutomationPipeline_Warning_Resolution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Kill apps 的本地化字符串。
         /// </summary>
         public static string DeactivateGPUAutomationStepState_KillApps {

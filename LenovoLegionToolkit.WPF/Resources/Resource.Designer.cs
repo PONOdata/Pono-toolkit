@@ -2398,6 +2398,33 @@ namespace LenovoLegionToolkit.WPF.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Processes in this list will be ignored by Game Detection. Enter the process name without path (e.g., &apos;chrome&apos; or &apos;spotify&apos;). 的本地化字符串。
+        /// </summary>
+        public static string ExcludeProcessesWindow_Description {
+            get {
+                return ResourceManager.GetString("ExcludeProcessesWindow_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Process Name (e.g. chrome) 的本地化字符串。
+        /// </summary>
+        public static string ExcludeProcessesWindow_ProcessNamePlaceholder {
+            get {
+                return ResourceManager.GetString("ExcludeProcessesWindow_ProcessNamePlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Excluded Processes 的本地化字符串。
+        /// </summary>
+        public static string ExcludeProcessesWindow_Title {
+            get {
+                return ResourceManager.GetString("ExcludeProcessesWindow_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Uncheck refresh rates that you do not want to use when Fn+R shortcut is used. 的本地化字符串。
         /// </summary>
         public static string ExcludeRefreshRatesWindow_Description {
@@ -6665,6 +6692,24 @@ namespace LenovoLegionToolkit.WPF.Resources {
         public static string SettingsPage_EnableVantage_Error_Title {
             get {
                 return ResourceManager.GetString("SettingsPage_EnableVantage_Error_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Manage processes that are ignored by Game Detection. 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_ExcludeProcesses_Message {
+            get {
+                return ResourceManager.GetString("SettingsPage_ExcludeProcesses_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Excluded Processes 的本地化字符串。
+        /// </summary>
+        public static string SettingsPage_ExcludeProcesses_Title {
+            get {
+                return ResourceManager.GetString("SettingsPage_ExcludeProcesses_Title", resourceCulture);
             }
         }
         

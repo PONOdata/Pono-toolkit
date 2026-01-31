@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LenovoLegionToolkit.Lib.Automation.Pipeline.Triggers;
+using LenovoLegionToolkit.Lib.Automation.Resources;
 using LenovoLegionToolkit.Lib.Automation.Steps;
 using LenovoLegionToolkit.Lib.Extensions;
 using LenovoLegionToolkit.Lib.Utils;
@@ -117,12 +118,6 @@ public class AutomationPipeline
 
     public IEnumerable<string> GetValidationWarnings(IEnumerable<AutomationPipeline>? pipelines = null)
     {
-        if (Trigger is not GamesAreRunningAutomationPipelineTrigger && 
-            Trigger is not GamesStopAutomationPipelineTrigger)
-        {
-            yield break;
-        }
-
         var steps = GetAllSteps(pipelines?.ToList() ?? []).ToList();
         var powerModeStepIndex = steps.FindLastIndex(s => s is PowerModeAutomationStep);
 
@@ -131,45 +126,47 @@ public class AutomationPipeline
 
         for (int i = 0; i < powerModeStepIndex; i++)
         {
-             var step = steps[i];
-             if (step is DisplayBrightnessAutomationStep || 
-                 step is RefreshRateAutomationStep)
-             {
-                yield return "Warning: Power Mode resets Brightness and Refresh Rate. Run the Power Mode step first.";
-                break;
-            }
-            if (step is FanMaxSpeedAutomationStep)
+            var step = steps[i];
+            if (step is DisplayBrightnessAutomationStep or RefreshRateAutomationStep)
             {
-                yield return "Warning: Power Mode resets Fan Speed. Run the Power Mode step first.";
+                yield return Resource.AutomationPipeline_Warning_Power_Mode_Visual;
                 break;
             }
+
+            if (step is not FanMaxSpeedAutomationStep)
+            {
+                continue;
+            }
+
+            yield return Resource.AutomationPipeline_Warning_Power_Mode_Fan;
+            break;
         }
 
         var hybridModeStepIndex = steps.FindIndex(s => s is HybridModeAutomationStep);
         if (hybridModeStepIndex != -1 && hybridModeStepIndex != steps.Count - 1)
         {
-             yield return "Warning: Changing Hybrid Mode forces a system reboot. This must be the last step.";
+             yield return Resource.AutomationPipeline_Warning_Hybrid_Mode;
         }
 
         var deactivateGPUIndex = steps.FindIndex(s => s is DeactivateGPUAutomationStep);
         var overclockIndex = steps.FindIndex(s => s is OverclockDiscreteGPUAutomationStep);
         if (deactivateGPUIndex != -1 && overclockIndex != -1 && overclockIndex > deactivateGPUIndex)
         {
-            yield return "Warning: Cannot overclock a deactivated GPU. The Overclock step will fail.";
+            yield return Resource.AutomationPipeline_Warning_GPU_OC;
         }
 
         var hdrStepIndex = steps.FindIndex(s => s is HDRAutomationStep);
         var brightnessStepIndex = steps.FindLastIndex(s => s is DisplayBrightnessAutomationStep);
         if (hdrStepIndex != -1 && brightnessStepIndex != -1 && brightnessStepIndex > hdrStepIndex)
         {
-             yield return "Warning: Windows HDR locks screen brightness. Brightness settings applied after HDR are ignored.";
+             yield return Resource.AutomationPipeline_Warning_HDR;
         }
 
         var resolutionIndex = steps.FindLastIndex(s => s is ResolutionAutomationStep);
         var refreshRateIndex = steps.FindIndex(s => s is RefreshRateAutomationStep);
         if (resolutionIndex != -1 && refreshRateIndex != -1 && refreshRateIndex < resolutionIndex)
         {
-             yield return "Warning: Changing Resolution resets Refresh Rate. Run the Resolution step first.";
+             yield return Resource.AutomationPipeline_Warning_Resolution;
         }
     }
 }
