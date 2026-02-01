@@ -421,6 +421,7 @@ public class AutomationPipelineControl : UserControl
             FanMaxSpeedAutomationStep s => new FanMaxSpeedAutomationStepControl(s),
             _ => throw new InvalidOperationException("Unknown step type"),
         };
+
         control.MouseRightButtonUp += (_, e) =>
         {
             ShowContextMenu(control);
@@ -454,8 +455,7 @@ public class AutomationPipelineControl : UserControl
             var position = e.GetPosition(this);
             if (_adorner == null)
             {
-                var source = e.Data.GetData("AutomationStep") as UIElement;
-                if (source != null)
+                if (e.Data.GetData("AutomationStep") is UIElement source)
                 {
                     var adornerLayer = AdornerLayer.GetAdornerLayer(this);
                     if (adornerLayer != null)

@@ -46,6 +46,7 @@ public class CardHeaderControl : UserControl
             new RowDefinition { Height = GridLength.Auto },
             new RowDefinition { Height = GridLength.Auto },
         },
+        VerticalAlignment = VerticalAlignment.Center,
     };
 
     private UIElement? _accessory;

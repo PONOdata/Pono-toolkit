@@ -31,6 +31,7 @@ public abstract class AbstractAutomationStepControl : UserControl
     private readonly StackPanel _stackPanel = new()
     {
         Orientation = Orientation.Horizontal,
+        VerticalAlignment = VerticalAlignment.Center,
     };
 
     private readonly SymbolIcon _dragHandle = new()
@@ -48,6 +49,7 @@ public abstract class AbstractAutomationStepControl : UserControl
         MinWidth = 34,
         Height = 34,
         Margin = new(8, 0, 0, 0),
+        VerticalAlignment = VerticalAlignment.Center,
     };
 
     public SymbolRegular Icon
@@ -104,13 +106,25 @@ public abstract class AbstractAutomationStepControl : UserControl
 
         var control = GetCustomControl();
         if (control is not null)
+        {
+            if (control is FrameworkElement fe)
+                fe.VerticalAlignment = VerticalAlignment.Center;
             _stackPanel.Children.Add(control);
+        }
         _stackPanel.Children.Add(_deleteButton);
 
         _cardHeaderControl.Accessory = _stackPanel;
         
-        var headerPanel = new StackPanel { Orientation = Orientation.Horizontal };
+        var headerPanel = new Grid();
+        headerPanel.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        headerPanel.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+        _dragHandle.VerticalAlignment = VerticalAlignment.Center;
+        Grid.SetColumn(_dragHandle, 0);
         headerPanel.Children.Add(_dragHandle);
+
+        _cardHeaderControl.VerticalAlignment = VerticalAlignment.Center;
+        Grid.SetColumn(_cardHeaderControl, 1);
         headerPanel.Children.Add(_cardHeaderControl);
 
         _cardControl.Header = headerPanel;
