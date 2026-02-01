@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -84,6 +84,7 @@ public abstract class AbstractAutomationStepControl : UserControl
 
     public event EventHandler? Changed;
     public event EventHandler? Delete;
+    public event EventHandler? DragEnded;
 
     protected AbstractAutomationStepControl(IAutomationStep automationStep)
     {
@@ -99,7 +100,14 @@ public abstract class AbstractAutomationStepControl : UserControl
         _dragHandle.MouseLeftButtonDown += (_, e) =>
         {
             if (e.ClickCount > 1) return;
-            DragDrop.DoDragDrop(this, new DataObject("AutomationStep", this), DragDropEffects.Move);
+            try
+            {
+                DragDrop.DoDragDrop(this, new DataObject("AutomationStep", this), DragDropEffects.Move);
+            }
+            finally
+            {
+                DragEnded?.Invoke(this, EventArgs.Empty);
+            }
         };
 
         _deleteButton.Click += (_, _) => Delete?.Invoke(this, EventArgs.Empty);
