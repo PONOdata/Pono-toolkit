@@ -96,7 +96,6 @@ public class AutomationPipelineControl : UserControl
     public event EventHandler? OnDelete;
 
     private readonly DispatcherTimer _longPressTimer;
-    private bool _isDragActive;
 
     public Task InitializedTask => _initializedTaskCompletionSource.Task;
 
@@ -107,7 +106,7 @@ public class AutomationPipelineControl : UserControl
 
         _longPressTimer = new DispatcherTimer
         {
-            Interval = TimeSpan.FromMilliseconds(300)
+            Interval = TimeSpan.FromMilliseconds(100)
         };
 
         _longPressTimer.Tick += LongPressTimer_Tick;
@@ -234,7 +233,6 @@ public class AutomationPipelineControl : UserControl
 
         _cardHeaderControl.PreviewMouseLeftButtonDown += (s, e) =>
         {
-            _isDragActive = false;
             _longPressTimer.Start();
         };
 
@@ -243,10 +241,7 @@ public class AutomationPipelineControl : UserControl
             if (_longPressTimer.IsEnabled)
             {
                 _longPressTimer.Stop();
-                if (!_cardExpander.IsExpanded)
-                    _cardExpander.IsExpanded = true;
-                else
-                    _cardExpander.IsExpanded = false;
+                _cardExpander.IsExpanded = !_cardExpander.IsExpanded;
             }
         };
 
@@ -261,7 +256,6 @@ public class AutomationPipelineControl : UserControl
     private void LongPressTimer_Tick(object? sender, EventArgs e)
     {
         _longPressTimer.Stop();
-        _isDragActive = true;
 
         try
         {
@@ -270,7 +264,6 @@ public class AutomationPipelineControl : UserControl
         finally
         {
             CleanupAdorner();
-            _isDragActive = false;
         }
     }
 
