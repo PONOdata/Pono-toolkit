@@ -6,6 +6,8 @@ namespace LenovoLegionToolkit.Lib.Automation.Steps;
 
 public class CloseAutomationStep : IAutomationStep
 {
+    public bool IsDangerousOnStartup => true;
+
     public Task<bool> IsSupportedAsync() => Task.FromResult(true);
 
     public IAutomationStep DeepCopy() => new CloseAutomationStep();

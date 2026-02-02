@@ -30,7 +30,6 @@ public class RunAutomationStep(string? scriptPath, string? scriptArguments, bool
 
         if (CheckInstance)
         {
-            // Check if process already started, do not start another instance
             var processList = Process.GetProcesses();
             if (processList.Any(process => ScriptPath.Contains(process.ProcessName)))
             {

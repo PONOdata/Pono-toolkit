@@ -8,6 +8,8 @@ public class TurnOffMonitorsAutomationStep : IAutomationStep
 {
     private readonly NativeWindowsMessageListener _nativeWindowsMessageListener = IoCContainer.Resolve<NativeWindowsMessageListener>();
 
+    public bool IsDangerousOnStartup => true;
+
     public Task<bool> IsSupportedAsync() => Task.FromResult(true);
 
     public Task RunAsync(AutomationContext context, AutomationEnvironment environment, CancellationToken token) => _nativeWindowsMessageListener.TurnOffMonitorAsync();

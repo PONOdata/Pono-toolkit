@@ -12,6 +12,8 @@ public class DeactivateGPUAutomationStep(DeactivateGPUAutomationStepState state)
 
     public DeactivateGPUAutomationStepState State { get; } = state;
 
+    public bool IsDangerousOnStartup => true;
+
     public Task<DeactivateGPUAutomationStepState[]> GetAllStatesAsync() => Task.FromResult(Enum.GetValues<DeactivateGPUAutomationStepState>());
 
     public Task<bool> IsSupportedAsync() => Task.FromResult(_controller.IsSupported());

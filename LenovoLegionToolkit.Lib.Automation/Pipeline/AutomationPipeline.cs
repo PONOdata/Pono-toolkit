@@ -70,7 +70,7 @@ public class AutomationPipeline
                 break;
             }
 
-            if (environment.Startup && IsDangerousOnStartup(step))
+            if (environment.Startup && step.IsDangerousOnStartup)
             {
                 Log.Instance.Trace($"Skipping dangerous step on startup. [type={step.GetType().Name}]");
                 continue;
@@ -94,12 +94,6 @@ public class AutomationPipeline
 
         if (stepExceptions.Count != 0)
             throw new AggregateException(stepExceptions);
-    }
-
-    private static bool IsDangerousOnStartup(IAutomationStep step)
-    {
-        var stepType = step.GetType().Name;
-        return stepType is "CloseAutomationStep" or "TurnOffMonitorsAutomationStep" or "TurnOffWiFiAutomationStep";
     }
 
     private IEnumerable<IAutomationStep> GetAllSteps(List<AutomationPipeline> pipelines)
@@ -134,6 +128,18 @@ public class AutomationPipeline
     public IEnumerable<string> GetValidationWarnings(IEnumerable<AutomationPipeline>? pipelines = null)
     {
         var steps = GetAllSteps(pipelines?.ToList() ?? []).ToList();
+        
+        if (RunOnStartup)
+        {
+            var dangerousSteps = steps.Where(s => s.IsDangerousOnStartup).ToList();
+            if (dangerousSteps.Count > 0)
+            {
+                var stepNames = dangerousSteps.Select(s => s.GetType().Name.Replace("AutomationStep", "")).ToList();
+                var stepList = string.Join(", ", stepNames);
+                yield return $"Warning: For safety, these steps will be skipped on startup: {stepList}. All other steps will execute normally.";
+            }
+        }
+        
         var powerModeStepIndex = steps.FindLastIndex(s => s is PowerModeAutomationStep);
 
         if (powerModeStepIndex == -1)

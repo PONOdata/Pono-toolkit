@@ -5,6 +5,8 @@ namespace LenovoLegionToolkit.Lib.Automation.Steps;
 
 public interface IAutomationStep
 {
+    bool IsDangerousOnStartup => false;
+
     Task<bool> IsSupportedAsync();
 
     Task RunAsync(AutomationContext context, AutomationEnvironment environment, CancellationToken token);

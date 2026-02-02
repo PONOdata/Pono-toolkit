@@ -6,5 +6,7 @@ namespace LenovoLegionToolkit.Lib.Automation.Steps;
 public class HybridModeAutomationStep(HybridModeState state)
     : AbstractFeatureAutomationStep<HybridModeState>(state)
 {
+    public bool IsDangerousOnStartup => true;
+
     public override IAutomationStep DeepCopy() => new HybridModeAutomationStep(State);
 }

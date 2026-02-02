@@ -6,6 +6,8 @@ namespace LenovoLegionToolkit.Lib.Automation.Steps;
 
 public class TurnOffWiFiAutomationStep : IAutomationStep
 {
+    public bool IsDangerousOnStartup => true;
+
     public Task<bool> IsSupportedAsync() => Task.FromResult(true);
 
     public Task RunAsync(AutomationContext context, AutomationEnvironment environment, CancellationToken token)
