@@ -73,8 +73,8 @@ public class AutomationPipelineControl : UserControl
     private readonly CheckBox _runOnStartupCheckBox = new()
     {
         HorizontalAlignment = HorizontalAlignment.Left,
-        Content = "Run on startup",
-        ToolTip = "When enabled, this automation will check and apply when the app starts",
+        Content = Resource.AutomationPipelineControl_RunOnStartup,
+        ToolTip = Resource.AutomationPipelineControl_RunOnStartup_Tooltip,
         MinWidth = 100,
         Margin = new(0, 0, 8, 0),
     };

@@ -2873,4 +2873,10 @@ Ga niet verder tenzij u over de nodige technische expertise beschikt.</value>
   <data name="AutomationPage_Game_Detection_Method_Game_Mode" type="System.Resources.ResXNullRef, System.Windows.Forms">
     <value />
   </data>
+  <data name="AutomationPipelineControl_RunOnStartup" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="AutomationPipelineControl_RunOnStartup_Tooltip" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
 </root>

@@ -128,18 +128,21 @@ public class AutomationPipeline
     public IEnumerable<string> GetValidationWarnings(IEnumerable<AutomationPipeline>? pipelines = null)
     {
         var steps = GetAllSteps(pipelines?.ToList() ?? []).ToList();
-        
+
         if (RunOnStartup)
         {
             var dangerousSteps = steps.Where(s => s.IsDangerousOnStartup).ToList();
             if (dangerousSteps.Count > 0)
             {
-                var stepNames = dangerousSteps.Select(s => s.GetType().Name.Replace("AutomationStep", "")).ToList();
+                var stepNames = dangerousSteps
+                    .Select(s => AutomationTranslator.Translate(s.GetType().Name))
+                    .ToList();
+
                 var stepList = string.Join(", ", stepNames);
-                yield return $"Warning: For safety, these steps will be skipped on startup: {stepList}. All other steps will execute normally.";
+                yield return string.Format(Lib.Resources.Resource.Automation_Warning_Startup, stepList);
             }
         }
-        
+
         var powerModeStepIndex = steps.FindLastIndex(s => s is PowerModeAutomationStep);
 
         if (powerModeStepIndex == -1)

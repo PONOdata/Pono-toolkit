@@ -926,6 +926,24 @@ namespace LenovoLegionToolkit.WPF.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Run on startup 的本地化字符串。
+        /// </summary>
+        public static string AutomationPipelineControl_RunOnStartup {
+            get {
+                return ResourceManager.GetString("AutomationPipelineControl_RunOnStartup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 When enabled, this automation will check and apply when the app starts 的本地化字符串。
+        /// </summary>
+        public static string AutomationPipelineControl_RunOnStartup_Tooltip {
+            get {
+                return ResourceManager.GetString("AutomationPipelineControl_RunOnStartup_Tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 {0} step 的本地化字符串。
         /// </summary>
         public static string AutomationPipelineControl_Step {

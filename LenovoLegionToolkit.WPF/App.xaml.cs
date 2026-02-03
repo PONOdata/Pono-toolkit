@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Management;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Interop;
-using System.Windows.Media;
-using LenovoLegionToolkit.Lib;
+﻿using LenovoLegionToolkit.Lib;
 using LenovoLegionToolkit.Lib.Automation;
 using LenovoLegionToolkit.Lib.Controllers;
 using LenovoLegionToolkit.Lib.Controllers.Sensors;
@@ -38,6 +26,19 @@ using LenovoLegionToolkit.WPF.Utils;
 using LenovoLegionToolkit.WPF.Windows;
 using LenovoLegionToolkit.WPF.Windows.FloatingGadgets;
 using LenovoLegionToolkit.WPF.Windows.Utils;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Management;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Interop;
+using System.Windows.Media;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using WinFormsApp = System.Windows.Forms.Application;
@@ -66,6 +67,8 @@ public partial class App
     private const string EVENT_NAME = "LenovoLegionToolkit_Event_6efcc882-924c-4cbc-8fec-f45c25696f98";
 
     public Window? FloatingGadget;
+
+    private static readonly ConcurrentDictionary<string, string> TitleCache = new();
 
     private Mutex? _singleInstanceMutex;
     private EventWaitHandle? _singleInstanceWaitHandle;
@@ -130,7 +133,6 @@ public partial class App
 
             if (AppFlags.Instance.Debug) Console.WriteLine(@"[Startup] Initializing Features...");
 
-
             Log.Instance.Trace(
                 $"Starting... [version={Assembly.GetEntryAssembly()?.GetName().Version}, build={Assembly.GetEntryAssembly()?.GetBuildDateTimeString()}, os={Environment.OSVersion}, dotnet={Environment.Version}]");
 
@@ -147,7 +149,8 @@ public partial class App
                 SafeInitAsync(InitSpectrumKeyboardControllerAsync, "Spectrum Keyboard"),
                 SafeInitAsync(InitGpuOverclockControllerAsync, "GPU Overclock"),
                 SafeInitAsync(InitHybridModeAsync, "Hybrid Mode"),
-                SafeInitAsync(InitFanManagerExtension, "Fan Manager")
+                SafeInitAsync(InitFanManagerExtension, "Fan Manager"),
+                SafeInitAsync(InitAutomationLocalization, "Automation Localization")
             };
 
             await Task.WhenAll(initTasks);
@@ -660,6 +663,14 @@ public partial class App
         }
     }
 
+    private static async Task InitAutomationLocalization()
+    {
+        AutomationTranslator.GetTitleFunc = typeName =>
+        {
+            return TitleCache.GetOrAdd(typeName, name =>
+                Resource.ResourceManager.GetString($"{name}Control_Title") ?? name.Replace("AutomationStep", string.Empty));
+        };
+    }
 
     private static async Task InitSetPowerMode()
     {

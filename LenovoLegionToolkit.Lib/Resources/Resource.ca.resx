@@ -217,4 +217,7 @@
   <data name="FanMaxSpeedState_Toggle" type="System.Resources.ResXNullRef, System.Windows.Forms">
     <value />
   </data>
+  <data name="Automation_Warning_Startup" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
 </root>

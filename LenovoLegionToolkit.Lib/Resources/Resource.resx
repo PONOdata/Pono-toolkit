@@ -604,4 +604,7 @@
   <data name="FanMaxSpeedState_Toggle" xml:space="preserve">
     <value>Toggle</value>
   </data>
+  <data name="Automation_Warning_Startup" xml:space="preserve">
+    <value>Warning: For safety, these steps will be skipped on startup: {0}. All other steps will execute normally.</value>
+  </data>
 </root>

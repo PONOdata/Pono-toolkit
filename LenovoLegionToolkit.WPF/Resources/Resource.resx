@@ -2871,4 +2871,10 @@ Do not proceed unless you possess the necessary technical expertise.</value>
   <data name="AutomationPage_Game_Detection_Method_Game_Mode" xml:space="preserve">
     <value>Windows Game Mode</value>
   </data>
+  <data name="AutomationPipelineControl_RunOnStartup" xml:space="preserve">
+    <value>Run on startup</value>
+  </data>
+  <data name="AutomationPipelineControl_RunOnStartup_Tooltip" xml:space="preserve">
+    <value>When enabled, this automation will check and apply when the app starts</value>
+  </data>
 </root>

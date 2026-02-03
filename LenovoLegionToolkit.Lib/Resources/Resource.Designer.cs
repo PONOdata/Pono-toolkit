@@ -133,6 +133,15 @@ namespace LenovoLegionToolkit.Lib.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Warning: For safety, these steps will be skipped on startup: {0}. All other steps will execute normally. 的本地化字符串。
+        /// </summary>
+        public static string Automation_Warning_Startup {
+            get {
+                return ResourceManager.GetString("Automation_Warning_Startup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Disabled 的本地化字符串。
         /// </summary>
         public static string AutorunState_Disabled {
