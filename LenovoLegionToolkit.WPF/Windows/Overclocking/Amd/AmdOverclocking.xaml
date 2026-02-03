@@ -13,7 +13,6 @@
     WindowCornerPreference="Round"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
-
     <Window.Resources>
         <Style
             x:Key="ModernNumberBox"
@@ -406,19 +405,12 @@
                                                         VerticalAlignment="Center"
                                                         FontWeight="Medium"
                                                         Text="{Binding DisplayName}" />
-
-                                                    <ui:ToggleSwitch
-                                                        Margin="12,0,0,0"
-                                                        VerticalAlignment="Center"
-                                                        IsChecked="{Binding IsUserEnabled}"
-                                                        ToolTip="Enable/Disable Overclocking for this core" />
                                                 </StackPanel>
 
                                                 <ui:NumberBox
                                                     Grid.Column="1"
                                                     Margin="0,0,15,0"
                                                     HorizontalAlignment="Right"
-                                                    IsEnabled="{Binding IsUserEnabled}"
                                                     Style="{StaticResource ModernNumberBox}"
                                                     Value="{Binding OffsetValue, Mode=TwoWay}" />
                                             </Grid>

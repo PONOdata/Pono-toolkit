@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -117,7 +115,6 @@ public partial class AmdOverclocking : UiWindow
                 {
                     Index = i,
                     DisplayName = string.Format(Resource.AmdOverclocking_Core_Title, i),
-                    IsUserEnabled = true,
                     OffsetValue = 0
                 });
             }
@@ -182,22 +179,18 @@ public partial class AmdOverclocking : UiWindow
 
             foreach (var ccd in CcdList)
             {
-                bool anyCoreEnabled = false;
                 foreach (var core in ccd.Cores)
                 {
                     if (result.Readings.TryGetValue(core.Index, out var reading))
                     {
                         core.OffsetValue = reading;
-                        core.IsUserEnabled = true;
-                        anyCoreEnabled = true;
                     }
                     else
                     {
                         core.OffsetValue = 0;
-                        core.IsUserEnabled = false;
                     }
                 }
-                ccd.IsExpanded = anyCoreEnabled;
+                ccd.IsExpanded = true;
             }
         }
         catch (Exception ex)
@@ -221,23 +214,19 @@ public partial class AmdOverclocking : UiWindow
         for (int i = 0; i < allCores.Count; i++)
         {
             var coreItem = allCores[i];
-
-            if (coreItem.IsUserEnabled)
+            if (i < profile.Value.CoreValues.Count)
             {
-                if (i < profile.Value.CoreValues.Count)
+                var savedVal = profile.Value.CoreValues[i];
+                if (savedVal.HasValue)
                 {
-                    var savedVal = profile.Value.CoreValues[i];
-                    if (savedVal.HasValue)
-                    {
-                        coreItem.OffsetValue = savedVal.Value;
-                    }
+                    coreItem.OffsetValue = savedVal.Value;
                 }
             }
         }
 
         foreach (var ccd in CcdList)
         {
-            ccd.IsExpanded = ccd.Cores.Any(c => c.IsUserEnabled);
+            ccd.IsExpanded = true;
         }
     }
 
@@ -250,7 +239,7 @@ public partial class AmdOverclocking : UiWindow
     {
         var allCores = CcdList.SelectMany(ccd => ccd.Cores).ToList();
 
-        var coreValues = allCores.Select(c => c.IsUserEnabled ? (double?)c.OffsetValue : null).ToList();
+        var coreValues = allCores.Select(c => (double?)c.OffsetValue).ToList();
 
         uint? fmaxVal = _fMaxToggle.IsChecked == true ? (uint?)(_fMaxNumberBox.Value) : null;
 
@@ -303,10 +292,7 @@ public partial class AmdOverclocking : UiWindow
         {
             foreach (var core in ccd.Cores)
             {
-                if (core.IsUserEnabled)
-                {
-                    core.OffsetValue = 0;
-                }
+                core.OffsetValue = 0;
             }
         }
         _fMaxNumberBox.Value = 0;
@@ -319,7 +305,7 @@ public partial class AmdOverclocking : UiWindow
         {
             foreach (var core in ccd.Cores)
             {
-                if (core.IsUserEnabled) core.OffsetValue -= 1;
+                core.OffsetValue -= 1;
             }
         }
     }
@@ -330,7 +316,7 @@ public partial class AmdOverclocking : UiWindow
         {
             foreach (var core in ccd.Cores)
             {
-                if (core.IsUserEnabled) core.OffsetValue += 1;
+                core.OffsetValue += 1;
             }
         }
     }
