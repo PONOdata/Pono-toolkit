@@ -256,19 +256,30 @@ public static partial class Compatibility
 
     private static bool GetIsAmdDevice(string model)
     {
-        if (string.IsNullOrEmpty(model)) return false;
+        if (string.IsNullOrEmpty(model))
+        {
+            return false;
+        }
 
-        var regex = new Regex(@"(?<platform>[AI])[A-Z]{2}\d+", RegexOptions.RightToLeft);
+        var normalizedModel = model.ToUpperInvariant();
 
-        var match = regex.Match(model.ToUpperInvariant());
+        var regex = new Regex(@"([AI][A-Z]{2}\d+|\bR\d{4})", RegexOptions.RightToLeft);
+
+        var match = regex.Match(normalizedModel);
 
         if (!match.Success)
         {
             return false;
         }
 
-        string platform = match.Groups["platform"].Value;
-        return platform == "A";
+        var val = match.Value;
+
+        if (val.StartsWith("A") || val.StartsWith("R"))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private static async Task<MachineInformation.FeatureData> GetFeaturesAsync()
