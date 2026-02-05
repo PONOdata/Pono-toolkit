@@ -28,7 +28,7 @@ public class ApplicationSettings : AbstractSettings<ApplicationSettings.Applicat
         public Theme Theme { get; set; }
         public RGBColor? AccentColor { get; set; }
         public AccentColorSource AccentColorSource { get; set; }
-        public PowerModeMappingMode PowerModeMappingMode { get; set; } = PowerModeMappingMode.WindowsPowerMode;
+        public PowerModeMappingMode PowerModeMappingMode { get; set; } = PowerModeMappingMode.Disabled;
         public Dictionary<PowerModeState, Guid> PowerPlans { get; set; } = [];
         public Dictionary<PowerModeState, WindowsPowerMode> PowerModes { get; set; } = [];
         public bool MinimizeToTray { get; set; } = true;
