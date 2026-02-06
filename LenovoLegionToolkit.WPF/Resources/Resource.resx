@@ -765,6 +765,9 @@ WARNING: This action will not run correctly if the internal display is off.</val
   <data name="Keyboard_VantageEnabledWarning_Title" xml:space="preserve">
     <value>Lenovo Vantage or its services are running</value>
   </data>
+  <data name="LivePreview" xml:space="preserve">
+    <value>Live Preview</value>
+  </data>
   <data name="MainWindow_NavigationItem_About" xml:space="preserve">
     <value>About</value>
   </data>

@@ -19,6 +19,16 @@
             Message="{x:Static resources:Resource.Keyboard_VantageEnabledWarning_Message}"
             Severity="Error" />
 
+        <TextBlock
+            x:Name="_previewIndicator"
+            Margin="0,0,0,16"
+            HorizontalAlignment="Right"
+            Visibility="Collapsed"
+            Foreground="{DynamicResource TextFillColorTertiaryBrush}">
+            <Run Text="🔴" />
+            <Run Text="{x:Static resources:Resource.LivePreview}" />
+        </TextBlock>
+
         <StackPanel x:Name="_content">
 
             <custom:CardControl Margin="0,0,0,24" Icon="BrightnessHigh24">

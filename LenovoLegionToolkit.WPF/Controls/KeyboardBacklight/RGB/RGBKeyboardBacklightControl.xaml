@@ -28,6 +28,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <custom:InfoBar
@@ -41,6 +42,19 @@
             IsOpen="False"
             Message="{x:Static resources:Resource.Keyboard_VantageEnabledWarning_Message}"
             Severity="Error" />
+
+        <TextBlock
+            x:Name="_previewIndicator"
+            Grid.Row="0"
+            Grid.Column="3"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            Margin="0,0,16,24"
+            Visibility="Collapsed"
+            Foreground="{DynamicResource TextFillColorTertiaryBrush}">
+            <Run Text="🔴" />
+            <Run Text="{x:Static resources:Resource.LivePreview}" />
+        </TextBlock>
 
         <Grid
             Grid.Row="1"
@@ -136,7 +150,6 @@
             </custom:CardControl.Header>
             <custom:CardControl.ContextMenu>
                 <ContextMenu>
-                    <!--  ReSharper disable once Xaml.RedundantResource  -->
                     <wpfui:MenuItem
                         Click="SynchroniseZonesMenuItem_Click"
                         Header="Synchronise zones"
@@ -158,7 +171,6 @@
             </custom:CardControl.Header>
             <custom:CardControl.ContextMenu>
                 <ContextMenu>
-                    <!--  ReSharper disable once Xaml.RedundantResource  -->
                     <wpfui:MenuItem
                         Click="SynchroniseZonesMenuItem_Click"
                         Header="Synchronise zones"
@@ -180,7 +192,6 @@
             </custom:CardControl.Header>
             <custom:CardControl.ContextMenu>
                 <ContextMenu>
-                    <!--  ReSharper disable once Xaml.RedundantResource  -->
                     <wpfui:MenuItem
                         Click="SynchroniseZonesMenuItem_Click"
                         Header="Synchronise zones"
@@ -202,7 +213,6 @@
             </custom:CardControl.Header>
             <custom:CardControl.ContextMenu>
                 <ContextMenu>
-                    <!--  ReSharper disable once Xaml.RedundantResource  -->
                     <wpfui:MenuItem
                         Click="SynchroniseZonesMenuItem_Click"
                         Header="Synchronise zones"
@@ -211,6 +221,19 @@
             </custom:CardControl.ContextMenu>
             <controls:ColorPickerControl x:Name="_zone4ColorPicker" ColorChangedDelayed="CardControl_Changed" />
         </custom:CardControl>
+
+        <wpfui:Button
+            x:Name="_applyButton"
+            Grid.Row="9"
+            Grid.Column="0"
+            Grid.ColumnSpan="4"
+            Height="40"
+            Margin="0,16,8,0"
+            HorizontalAlignment="Stretch"
+            Appearance="Primary"
+            Click="ApplyButton_Click"
+            Content="{x:Static resources:Resource.Apply}"
+            IsEnabled="False" />
 
     </Grid>
 

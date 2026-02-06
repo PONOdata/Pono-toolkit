@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -6,6 +7,7 @@ using System.Windows.Media;
 using LenovoLegionToolkit.Lib;
 using LenovoLegionToolkit.Lib.Extensions;
 using LenovoLegionToolkit.Lib.Settings;
+using LenovoLegionToolkit.Lib.Controllers;
 using LenovoLegionToolkit.WPF.Extensions;
 using LenovoLegionToolkit.WPF.Resources;
 
@@ -14,6 +16,7 @@ namespace LenovoLegionToolkit.WPF.Windows.KeyboardBacklight.Spectrum;
 public partial class SpectrumKeyboardBacklightEditEffectWindow
 {
     private readonly SpectrumKeyboardSettings _settings = IoCContainer.Resolve<SpectrumKeyboardSettings>();
+    private readonly LampArrayPreviewController _previewController = IoCContainer.Resolve<LampArrayPreviewController>();
     
     private readonly ushort[] _keyCodes;
     private readonly ushort[] _allKeyboardKeyCodes;
@@ -31,6 +34,8 @@ public partial class SpectrumKeyboardBacklightEditEffectWindow
 
         SetInitialValues();
         RefreshVisibility();
+
+        _singleColorPicker.ColorChangedContinuous += (s, e) => UpdatePreview();
     }
 
     public SpectrumKeyboardBacklightEditEffectWindow(SpectrumKeyboardBacklightEffect effect, ushort[] keyCodes, ushort[] allKeyboardKeyCodes)
@@ -50,9 +55,35 @@ public partial class SpectrumKeyboardBacklightEditEffectWindow
         SetInitialValues();
         Update(effect);
         RefreshVisibility();
+
+        _singleColorPicker.ColorChangedContinuous += (s, e) => UpdatePreview();
     }
 
-    private void EffectsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) => RefreshVisibility();
+    private void UpdatePreview()
+    {
+        if (!_previewController.IsAvailable)
+            return;
+            
+        if (_singleColor.Visibility != Visibility.Visible)
+            return;
+
+        var color = _singleColorPicker.SelectedColor.ToRGBColor();
+        
+        IEnumerable<ushort> keys = _keyCodes;
+        if (_effectTypeComboBox.TryGetSelectedItem(out SpectrumKeyboardBacklightEffectType effectType))
+        {
+            if (effectType.IsAllLightsEffect() || effectType.IsWholeKeyboardEffect())
+                keys = _allKeyboardKeyCodes;
+        }
+
+        _previewController.SetPreviewColorsForScanCodes(keys, color);
+    }
+
+    private void EffectsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        RefreshVisibility();
+        UpdatePreview();
+    }
 
     private void VantageColorBoost_Changed(object sender, RoutedEventArgs e) => RefreshVisibility();
     

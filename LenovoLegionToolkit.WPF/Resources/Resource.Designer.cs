@@ -3848,6 +3848,15 @@ namespace LenovoLegionToolkit.WPF.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Live Preview.
+        /// </summary>
+        public static string LivePreview {
+            get {
+                return ResourceManager.GetString("LivePreview", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Custom Mode grants access to critical system parameters such as power limits and fan curves. 
         ///
         ///Misconfiguration can lead to severe system instability, thermal throttling, or permanent hardware damage. Modifications made here may void your manufacturer warranty. 
