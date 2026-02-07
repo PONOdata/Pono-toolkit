@@ -1,12 +1,12 @@
 name: Bug Report
 description: Something isn't working correctly
-labels: ["bug"]
+labels: ["bug", "triage-needed"]
 body:
   - type: markdown
     attributes:
       value: |
         > [!IMPORTANT]
-        > Before you start, read [the rules](https://github.com/BartoszCichecki/LenovoLegionToolkit/blob/master/CONTRIBUTING.md) for contributing.
+        > Before you start, read [the rules](https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit?tab=contributing-ov-file) for contributing.
   
   - type: input
     id: version
@@ -21,15 +21,31 @@ body:
     attributes:
       label: OS
       description: Which operating system do you use?
-      placeholder: e.g. Windows 11 21H2 build 22000
+      placeholder: e.g. Windows 11 23H2 build 22631
+    validations:
+      required: true
+  - type: dropdown
+    id: device_series
+    attributes:
+      label: Device Series
+      description: Which Legion/Lenovo series are you using?
+      options:
+        - Legion 5 Series
+        - Legion 5 Pro Series
+        - Legion 7 Series
+        - Legion 7i/Slim Series
+        - Legion 9i Series
+        - LOQ Series
+        - IdeaPad Gaming Series
+        - Other (Specify in "Exact Model" below)
     validations:
       required: true
   - type: input
-    id: device
+    id: device_exact
     attributes:
-      label: Device
-      description: Which laptop do you use?
-      placeholder: e.g. Legion 5 Pro 16ACH6
+      label: Exact Model
+      description: Please provide your specific model number.
+      placeholder: e.g. 16ACH6
     validations:
       required: true
   - type: input
@@ -41,51 +57,36 @@ body:
     validations:
       required: true
   - type: textarea
-    id: troubleshoot
-    attributes:
-      label: What is wrong?
-      description: Provide detailed description of what is wrong or does not work as expected.
-      placeholder: Provide detailed description of what is wrong or does not work as expected.
-    validations:
-      required: true
-  - type: textarea
-    id: description
-    attributes:
-      label: What did you try already?
-      description: Provide detailed description of how did you troubleshoot the issue and what have you tried already.
-      placeholder: Provide detailed description of how did you troubleshoot the issue and what have you tried already.
-    validations:
-      required: true
-  - type: textarea
     id: reproduce
     attributes:
       label: How to reproduce the bug?
-      description: Describe how to reproduce the behavior. Be as specific as possible and provide as many details as possible.
+      description: |
+        Describe how to reproduce the behavior. 
+        **Note:** If the issue is reproducible, providing a video/screen recording is highly preferred as it helps the team understand the context much faster.
       placeholder: |
         1. Go to '...'
         2. Click on '....'
-        3. Scroll down to '....'
-        4. See error
     validations:
       required: true
   - type: textarea
-    id: expected-behaviour
+    id: expected
     attributes:
-      label: What is the behavior that you expected?
-      description: Describe what did you expect would happen.
-      placeholder: Describe what did you expect would happen.
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: e.g. The battery charge limit should stay at 60%.
     validations:
       required: true
   - type: textarea
     id: logs
     attributes:
       label: Logs
-      placeholder: Please drag and drop log files here. You can check README for instructions on how to collect logs.
-      description: Please drag and drop log files here. You can check README for instructions on how to collect logs.
+      description: |
+        Please drag and drop log files here. 
+        **How to collect logs:** Go to the **Settings** section within the app and toggle **Enable logging**. This is critical for troubleshooting hardware-specific errors.
     validations:
       required: true
   - type: textarea
     id: additional
     attributes:
-      label: Additional information
-      description: If applicable, add screenshots or other relevant information to help explain your problem.
+      label: Additional information / Video
+      description: Drag and drop your screen recording or screenshots here.

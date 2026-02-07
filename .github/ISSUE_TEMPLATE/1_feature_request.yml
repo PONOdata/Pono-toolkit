@@ -6,7 +6,7 @@ body:
     attributes:
       value: |
         > [!IMPORTANT]
-        > Before you start, read [the rules](https://github.com/BartoszCichecki/LenovoLegionToolkit/blob/master/CONTRIBUTING.md) for contributing.
+        > Before you start, read [the rules](https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit?tab=contributing-ov-file) for contributing.
   
   - type: input
     id: version
@@ -21,15 +21,31 @@ body:
     attributes:
       label: OS
       description: Which operating system do you use?
-      placeholder: e.g. Windows 11 21H2 build 22000
+      placeholder: e.g. Windows 11 23H2 build 22631
+    validations:
+      required: true
+  - type: dropdown
+    id: device_series
+    attributes:
+      label: Device Series
+      description: Which Legion/Lenovo series are you using?
+      options:
+        - Legion 5 Series
+        - Legion 5 Pro Series
+        - Legion 7 Series
+        - Legion 7i/Slim Series
+        - Legion 9i Series
+        - LOQ Series
+        - IdeaPad Gaming Series
+        - Other (Specify in "Exact Model" below)
     validations:
       required: true
   - type: input
-    id: device
+    id: device_exact
     attributes:
-      label: Device
-      description: Which laptop do you use?
-      placeholder: e.g. Legion 5 Pro 16ACH6
+      label: Exact Model
+      description: Please provide your specific model number.
+      placeholder: e.g. 16ACH6
     validations:
       required: true
   - type: textarea
@@ -37,27 +53,19 @@ body:
     attributes:
       label: Is your feature request related to a problem?
       description: A clear and concise description of what the problem is.
-      placeholder: A clear and concise description of what the problem is.
     validations:
       required: true
   - type: textarea
     id: solution
     attributes:
       label: How would you like the problem to be solved?
-      description: A clear and concise description of what you would like to happen.
-      placeholder: A clear and concise description of what you would like to happen.
-    validations:
-      required: true
-  - type: textarea
-    id: alternatives
-    attributes:
-      label: What alternatives have you considered?
-      description: A clear and concise description of any alternative solutions or features you have considered.
-      placeholder: A clear and concise description of any alternative solutions or features you have considered.
+      description: |
+        A clear and concise description of what you would like to happen.
+        **Note:** If suggesting a UI change, a mockup or a video of the current behavior is highly appreciated.
     validations:
       required: true
   - type: textarea
     id: additional
     attributes:
       label: Additional information
-      description: If applicable, add screenshots or other relevant information to help explain your problem.
+      description: Attach screenshots, mockups, or videos here.
