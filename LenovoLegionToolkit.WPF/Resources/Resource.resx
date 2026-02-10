@@ -2889,4 +2889,28 @@ Do not proceed unless you possess the necessary technical expertise.</value>
   <data name="AmdOverclocking_Global_Dim" xml:space="preserve">
     <value>-1 All</value>
   </data>
+  <data name="SettingsPage_Category_Appearance" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="SettingsPage_Category_AppBehavior" xml:space="preserve">
+    <value>App Behavior</value>
+  </data>
+  <data name="SettingsPage_Category_SoftwareControl" xml:space="preserve">
+    <value>Software Control</value>
+  </data>
+  <data name="SettingsPage_Category_SmartKeys" xml:space="preserve">
+    <value>Smart Keys</value>
+  </data>
+  <data name="SettingsPage_Category_Display" xml:space="preserve">
+    <value>Display</value>
+  </data>
+  <data name="SettingsPage_Category_Updates" xml:space="preserve">
+    <value>Updates</value>
+  </data>
+  <data name="SettingsPage_Category_Power" xml:space="preserve">
+    <value>Power</value>
+  </data>
+  <data name="SettingsPage_Category_Integrations" xml:space="preserve">
+    <value>Integrations</value>
+  </data>
 </root>

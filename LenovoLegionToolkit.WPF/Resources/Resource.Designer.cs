@@ -8267,5 +8267,77 @@ namespace LenovoLegionToolkit.WPF.Resources {
                 return ResourceManager.GetString("Yes", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Appearance.
+        /// </summary>
+        public static string SettingsPage_Category_Appearance {
+            get {
+                return ResourceManager.GetString("SettingsPage_Category_Appearance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to App Behavior.
+        /// </summary>
+        public static string SettingsPage_Category_AppBehavior {
+            get {
+                return ResourceManager.GetString("SettingsPage_Category_AppBehavior", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Software Control.
+        /// </summary>
+        public static string SettingsPage_Category_SoftwareControl {
+            get {
+                return ResourceManager.GetString("SettingsPage_Category_SoftwareControl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Smart Keys.
+        /// </summary>
+        public static string SettingsPage_Category_SmartKeys {
+            get {
+                return ResourceManager.GetString("SettingsPage_Category_SmartKeys", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Display.
+        /// </summary>
+        public static string SettingsPage_Category_Display {
+            get {
+                return ResourceManager.GetString("SettingsPage_Category_Display", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updates.
+        /// </summary>
+        public static string SettingsPage_Category_Updates {
+            get {
+                return ResourceManager.GetString("SettingsPage_Category_Updates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Power.
+        /// </summary>
+        public static string SettingsPage_Category_Power {
+            get {
+                return ResourceManager.GetString("SettingsPage_Category_Power", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Integrations.
+        /// </summary>
+        public static string SettingsPage_Category_Integrations {
+            get {
+                return ResourceManager.GetString("SettingsPage_Category_Integrations", resourceCulture);
+            }
+        }
     }
 }
