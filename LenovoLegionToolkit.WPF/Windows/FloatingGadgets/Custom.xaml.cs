@@ -21,6 +21,8 @@ public class GadgetItemGroup
 
 public partial class Custom
 {
+    private static Custom? _instance;
+
     private readonly ApplicationSettings _settings = IoCContainer.Resolve<ApplicationSettings>();
     private readonly SensorsGroupController _controller = IoCContainer.Resolve<SensorsGroupController>();
     private bool _isInitializing = true;
@@ -29,6 +31,22 @@ public partial class Custom
     {
         InitializeComponent();
         this.Loaded += Custom_Loaded;
+    }
+
+    public static void ShowInstance()
+    {
+        if (_instance == null)
+        {
+            _instance = new Custom();
+            _instance.Closed += (s, e) => _instance = null;
+            _instance.Show();
+        }
+        else
+        {
+            if (_instance.WindowState == WindowState.Minimized)
+                _instance.WindowState = WindowState.Normal;
+            _instance.Activate();
+        }
     }
 
     private void Custom_Loaded(object sender, RoutedEventArgs e)
