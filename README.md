@@ -104,6 +104,7 @@ The exact version number can be different, but as long as it is `8.x.x` it shoul
 #### Want to help with testing?
 
 Join the [Legion Series Discord](https://discord.com/invite/legionseries) and head to `#legion-toolkit` channel. Beta versions of future releases are posted there frequently!
+Join the [LOQ Series Discord](https://discord.gg/3GKzQtwdNf) and head to `#legion-toolkit` channel. Beta versions of future releases are posted there frequently!
 
 ## Compatibility
 
