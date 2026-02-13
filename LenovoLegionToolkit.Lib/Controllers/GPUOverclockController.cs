@@ -43,6 +43,11 @@ public class GPUOverclockController
 
         try
         {
+            if (AppFlags.Instance.Debug)
+            {
+                return true;
+            }
+
             NVAPI.Initialize();
             isSupported = NVAPI.GetGPU() is not null;
         }

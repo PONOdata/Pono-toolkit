@@ -15,6 +15,11 @@ public class InstantBootFeatureFlagsFeature : IFeature<InstantBootState>
     {
         try
         {
+            if (AppFlags.Instance.Debug)
+            {
+                return true;
+            }
+
             var mi = await Compatibility.GetMachineInformationAsync().ConfigureAwait(false);
             return mi.Features.Source == MachineInformation.FeatureData.SourceType.Flags && mi.Features[CapabilityID.InstantBootAc] && mi.Features[CapabilityID.InstantBootUsbPowerDelivery];
         }

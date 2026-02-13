@@ -1,6 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using LenovoLegionToolkit.Lib.Utils;
 using NeoSmart.AsyncLock;
+using System;
+using System.Threading.Tasks;
 
 namespace LenovoLegionToolkit.Lib.Features;
 
@@ -13,6 +14,11 @@ public abstract class AbstractCompositeFeature<T>(params IFeature<T>[] features)
 
     public async Task<bool> IsSupportedAsync()
     {
+        if (AppFlags.Instance.Debug)
+        {
+            return true;
+        }
+
         var feature = await ResolveInternalAsync().ConfigureAwait(false);
         if (feature is null)
             return false;

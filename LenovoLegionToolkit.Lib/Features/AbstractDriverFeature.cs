@@ -33,6 +33,11 @@ public abstract class AbstractDriverFeature<T>(
     {
         try
         {
+            if (AppFlags.Instance.Debug)
+            {
+                return true;
+            }
+
             _ = await GetStateInternalAsync(bypassQueue: true).ConfigureAwait(false);
             return true;
         }

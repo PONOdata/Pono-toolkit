@@ -12,6 +12,11 @@ public abstract class AbstractCapabilityFeature<T>(CapabilityID capabilityID)
     {
         try
         {
+            if (AppFlags.Instance.Debug)
+            {
+                return true;
+            }
+
             var mi = await Compatibility.GetMachineInformationAsync().ConfigureAwait(false);
             var capabilityExists = mi.Features.Source == MachineInformation.FeatureData.SourceType.CapabilityData && mi.Features[capabilityID];
 

@@ -35,6 +35,11 @@ public class GPUController
     {
         try
         {
+            if (AppFlags.Instance.Debug)
+            {
+                return true;
+            }
+
             NVAPI.Initialize();
             PhysicalGPU? gpu = NVAPI.GetGPU();
             return gpu is not null;

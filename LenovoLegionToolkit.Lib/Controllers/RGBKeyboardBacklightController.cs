@@ -25,6 +25,11 @@ public class RGBKeyboardBacklightController(RGBKeyboardSettings settings, Vantag
 
     public async Task<bool> IsSupportedAsync()
     {
+        if (AppFlags.Instance.Debug)
+        {
+            return true;
+        }
+
 #if MOCK_RGB
         return await Task.FromResult(true);
 #else

@@ -11,6 +11,11 @@ public class IGPUModeCapabilityFeature : IFeature<IGPUModeState>
     {
         try
         {
+            if (AppFlags.Instance.Debug)
+            {
+                return true;
+            }
+
             var mi = await Compatibility.GetMachineInformationAsync().ConfigureAwait(false);
             return mi is { Features.Source: MachineInformation.FeatureData.SourceType.CapabilityData, Properties.SupportsIGPUMode: true };
         }

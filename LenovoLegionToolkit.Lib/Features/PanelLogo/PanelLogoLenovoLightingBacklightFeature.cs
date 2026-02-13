@@ -7,6 +7,11 @@ public class PanelLogoLenovoLightingBacklightFeature() : AbstractLenovoLightingF
 {
     public override async Task<bool> IsSupportedAsync()
     {
+        if (AppFlags.Instance.Debug)
+        {
+            return true;
+        }
+
         var mi = await Compatibility.GetMachineInformationAsync().ConfigureAwait(false);
         if (mi.Properties.IsExcludedFromPanelLogoLenovoLighting)
             return false;

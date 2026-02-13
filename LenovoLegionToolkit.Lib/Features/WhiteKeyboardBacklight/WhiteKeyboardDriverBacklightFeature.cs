@@ -1,6 +1,7 @@
-﻿using System;
+﻿using LenovoLegionToolkit.Lib.System;
+using LenovoLegionToolkit.Lib.Utils;
+using System;
 using System.Threading.Tasks;
-using LenovoLegionToolkit.Lib.System;
 
 namespace LenovoLegionToolkit.Lib.Features.WhiteKeyboardBacklight;
 
@@ -11,6 +12,11 @@ public class WhiteKeyboardDriverBacklightFeature()
     {
         try
         {
+            if (AppFlags.Instance.Debug)
+            {
+                return true;
+            }
+
             var outBuffer = await SendCodeAsync(DriverHandle(), ControlCode, 0x1).ConfigureAwait(false);
             outBuffer >>= 1;
             return outBuffer == 0x2;

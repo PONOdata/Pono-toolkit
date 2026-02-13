@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using LenovoLegionToolkit.Lib.Utils;
+﻿using LenovoLegionToolkit.Lib.Utils;
 using NvAPIWrapper;
 using NvAPIWrapper.Display;
 using NvAPIWrapper.GPU;
 using NvAPIWrapper.Native.Exceptions;
 using NvAPIWrapper.Native.GPU;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace LenovoLegionToolkit.Lib.System;
 
@@ -25,9 +27,16 @@ internal static class NVAPI
             NVIDIA.Initialize();
             IsInitialized = true;
         }
+        catch (NVIDIAApiException ex)
+        {
+            if (!ex.Message.Contains("NVAPI_NVIDIA_DEVICE_NOT_FOUND") && !ex.Message.Contains("NVAPI_API_NOT_INITIALIZED"))
+            {
+                Log.Instance.Trace($"Exception in Initialize", ex);
+            }
+        }
         catch (Exception ex)
         {
-            Log.Instance.Trace($"Exception occured when calling Initialize() in NVAPI.", ex);
+            Log.Instance.Trace($"Exception in Initialize", ex);
         }
     }
 
@@ -48,8 +57,6 @@ internal static class NVAPI
         }
         catch (NVIDIAApiException ex)
         {
-            Log.Instance.Trace($"NVIDIAApiException in GetGPU. Attempting to recover.", ex);
-
             IsInitialized = false;
 
             return null;
