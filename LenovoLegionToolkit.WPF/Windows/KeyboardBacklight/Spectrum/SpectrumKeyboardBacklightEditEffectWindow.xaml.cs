@@ -16,7 +16,7 @@ namespace LenovoLegionToolkit.WPF.Windows.KeyboardBacklight.Spectrum;
 public partial class SpectrumKeyboardBacklightEditEffectWindow
 {
     private readonly SpectrumKeyboardSettings _settings = IoCContainer.Resolve<SpectrumKeyboardSettings>();
-    private readonly LampArrayPreviewController _previewController = IoCContainer.Resolve<LampArrayPreviewController>();
+    private readonly LampArrayController _previewController = IoCContainer.Resolve<LampArrayController>();
     
     private readonly ushort[] _keyCodes;
     private readonly ushort[] _allKeyboardKeyCodes;

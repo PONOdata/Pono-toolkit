@@ -824,10 +824,6 @@ public partial class App
                 await fanManager.LoadAndApply(fanSettings.Store.Entries).ConfigureAwait(false);
             }
         }
-        catch (InvalidOperationException)
-        {
-            Log.Instance.Trace($"Profile apply has been canceled due to AC issue.");
-        }
         catch (Exception ex)
         {
             Log.Instance.Trace($"Failed to apply profile on startup: {ex.Message}", ex);

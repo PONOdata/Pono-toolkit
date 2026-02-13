@@ -123,7 +123,7 @@ public class IoCModule : Module
         builder.Register<GPUController>();
         builder.Register<GPUOverclockController>();
         builder.Register<RGBKeyboardBacklightController>();
-        builder.Register<LampArrayPreviewController>();
+        builder.Register<LampArrayController>();
         builder.Register<SensorsController>();
         builder.Register<SensorsControllerV1>(true);
         builder.Register<SensorsControllerV2>(true);

@@ -9,8 +9,7 @@ public class MeteorEffect : BaseLampEffect
 {
     public override string Name => "Meteor";
     private readonly Random _random = new();
-
-    public MeteorEffect(Color color, int meteorCount = 3, double speed = 1.0)
+    public MeteorEffect(Color color, int meteorCount = 5, double speed = 0.5)
     {
         Parameters["Color"] = color;
         Parameters["MeteorCount"] = meteorCount;
@@ -34,9 +33,9 @@ public class MeteorEffect : BaseLampEffect
         {
             meteors.Add(new Meteor
             {
-                StartTime = time + _random.NextDouble() * 3,
-                StartY = _random.NextDouble() * 800,
-                Speed = speed * (0.7 + _random.NextDouble() * 0.6)
+                StartTime = time + _random.NextDouble() * 2.0,
+                StartY = _random.NextDouble() * 0.2,
+                Speed = speed * (0.8 + _random.NextDouble() * 0.4)
             });
         }
 
@@ -46,36 +45,35 @@ public class MeteorEffect : BaseLampEffect
             if (time < meteor.StartTime) continue;
 
             var elapsed = time - meteor.StartTime;
-            var meteorX = elapsed * meteor.Speed * 300;
+            var meteorX = elapsed * meteor.Speed;
 
-            if (meteorX > 2500)
+            if (meteorX > 0.6)
             {
-                meteor.StartTime = time + _random.NextDouble() * 0.5;
-                meteor.StartY = _random.NextDouble() * 800;
+                meteor.StartTime = time + _random.NextDouble() * 1.0;
+                meteor.StartY = _random.NextDouble() * 0.2;
                 continue;
             }
 
             var dx = lampInfo.Position.X - meteorX;
             var dy = lampInfo.Position.Y - meteor.StartY;
-            var distance = Math.Sqrt(dx * dx + dy * dy);
 
-            if (dx > -200 && dx < 150 && Math.Abs(dy) < 80)
+            if (dx is > -0.15 and < 0.05 && Math.Abs(dy) < 0.05)
             {
                 var intensity = 0.0;
                 
                 if (dx < 0)
                 {
-                    intensity = 1.0 - Math.Abs(dx) / 150.0;
-                    intensity *= 1.0 - Math.Abs(dy) / 80.0;
+                    intensity = 1.0 - Math.Abs(dx) / 0.15;
+                    intensity *= 1.0 - Math.Abs(dy) / 0.05;
                 }
                 else
                 {
-                    intensity = 1.0 - dx / 200.0;
-                    intensity *= 1.0 - Math.Abs(dy) / 80.0;
-                    intensity *= 0.7;
+                    intensity = 1.0 - dx / 0.05;
+                    intensity *= 1.0 - Math.Abs(dy) / 0.05;
                 }
                 
-                intensity = Math.Pow(intensity, 0.8);
+                intensity = Math.Clamp(intensity, 0, 1);
+                intensity = Math.Pow(intensity, 2.0);
                 maxIntensity = Math.Max(maxIntensity, intensity);
             }
         }
@@ -99,7 +97,7 @@ public class RippleEffect : BaseLampEffect
     public override string Name => "Ripple";
     private readonly Random _random = new();
 
-    public RippleEffect(Color color, double period = 2.0, int rippleCount = 2)
+    public RippleEffect(Color color, double period = 1.5, int rippleCount = 3)
     {
         Parameters["Color"] = color;
         Parameters["Period"] = period;
@@ -127,8 +125,8 @@ public class RippleEffect : BaseLampEffect
             ripples.Add(new Ripple
             {
                 StartTime = time,
-                CenterX = _random.NextDouble() * 2000,
-                CenterY = _random.NextDouble() * 800
+                CenterX = _random.NextDouble() * 0.45,
+                CenterY = _random.NextDouble() * 0.15
             });
         }
 
@@ -136,17 +134,17 @@ public class RippleEffect : BaseLampEffect
         foreach (var ripple in ripples)
         {
             var elapsed = time - ripple.StartTime;
-            var radius = elapsed * 300;
+            var radius = elapsed * 0.2;
 
             var dx = lampInfo.Position.X - ripple.CenterX;
             var dy = lampInfo.Position.Y - ripple.CenterY;
             var distance = Math.Sqrt(dx * dx + dy * dy);
 
             var diff = Math.Abs(distance - radius);
-            if (diff < 50)
+            if (diff < 0.03)
             {
-                var intensity = 1.0 - diff / 50.0;
-                intensity *= 1.0 - Math.Min(elapsed / 3.0, 1.0);
+                var intensity = 1.0 - diff / 0.03;
+                intensity *= Math.Max(0, 1.0 - elapsed / 2.0);
                 maxIntensity = Math.Max(maxIntensity, intensity);
             }
         }
@@ -266,4 +264,68 @@ public enum GradientDirection
     RightToLeft,
     TopToBottom,
     BottomToTop
+}
+
+public class RainbowWaveEffect : BaseLampEffect
+{
+    public override string Name => "Rainbow Wave";
+
+    public RainbowWaveEffect(double speed = 1.0, double scale = 2.0, GradientDirection direction = GradientDirection.LeftToRight)
+    {
+        Parameters["Speed"] = speed;
+        Parameters["Scale"] = scale;
+        Parameters["Direction"] = direction;
+    }
+
+    public override Color GetColorForLamp(int lampIndex, double time, LampInfo lampInfo, int totalLamps)
+    {
+        var speed = (double)Parameters["Speed"];
+        var scale = (double)Parameters["Scale"];
+        var direction = (GradientDirection)Parameters["Direction"];
+
+        double pos = direction switch
+        {
+            GradientDirection.LeftToRight => lampInfo.Position.X,
+            GradientDirection.RightToLeft => -lampInfo.Position.X,
+            GradientDirection.TopToBottom => lampInfo.Position.Y,
+            GradientDirection.BottomToTop => -lampInfo.Position.Y,
+            _ => lampInfo.Position.X
+        };
+        
+        var hueVal = (-time * speed * 0.2 + pos * scale);
+        var hue = (hueVal % 1.0 + 1.0) % 1.0 * 360.0;
+
+        return HsvToRgb(hue, 1.0, 1.0);
+    }
+}
+
+public class SpiralRainbowEffect : BaseLampEffect
+{
+    public override string Name => "Spiral Rainbow";
+
+    public SpiralRainbowEffect(double speed = 1.0, double spiralDensity = 5.0)
+    {
+        Parameters["Speed"] = speed;
+        Parameters["SpiralDensity"] = spiralDensity;
+    }
+
+    public override Color GetColorForLamp(int lampIndex, double time, LampInfo lampInfo, int totalLamps)
+    {
+        var speed = (double)Parameters["Speed"];
+        var density = (double)Parameters["SpiralDensity"];
+
+        double cx = 0.225; 
+        double cy = 0.100;
+
+        double dx = lampInfo.Position.X - cx;
+        double dy = lampInfo.Position.Y - cy;
+
+        double angle = Math.Atan2(dy, dx) / (2 * Math.PI);
+        double dist = Math.Sqrt(dx * dx + dy * dy);
+
+        double hueVal = angle + time * speed * 0.2 + dist * density * 2.0;
+        double hue = (hueVal % 1.0 + 1.0) % 1.0 * 360.0;
+
+        return HsvToRgb(hue, 1.0, 1.0);
+    }
 }

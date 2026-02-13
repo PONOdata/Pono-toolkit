@@ -18,22 +18,38 @@ using LenovoLegionToolkit.Lib;
 using LenovoLegionToolkit.Lib.Utils;
 using Wpf.Ui.Controls;
 
+using LenovoLegionToolkit.WPF.Utils;
+
 namespace LenovoLegionToolkit.WPF.Pages;
+
 
 public partial class LampArrayRGBKeyboardPage : UiPage
 {
-    private readonly LampArrayPreviewController _controller;
+    private readonly LampArrayController _controller;
     private WinUIColor _selectedColor = WinUIColor.FromArgb(255, 255, 0, 128);
-    
+
+    private readonly HashSet<int> _selectedIndices = new();
+    private readonly Dictionary<int, ILampEffect> _lampEffectMap = new();
+    private readonly Dictionary<int, LampArrayZoneControl> _controlMap = new();
+    private readonly CustomPatternEffect _globalCustomEffect = new();
+    private readonly AuroraSyncEffect _globalAuroraEffect = new();
+    private readonly SpectrumScreenCapture _screenCapture = new();
+    private RGBColor[,] _screenBuffer = new RGBColor[32, 18]; // Low res for performance
+    private CancellationTokenSource? _screenCaptureCts;
+
+    private readonly ILampEffect _defaultEffect = new RainbowEffect(4.0, true);
+
     private CancellationTokenSource? _probeCts;
     private bool _isUpdatingUi = false;
     private bool _isProbing = false;
+    private bool _isDragging = false;
+    private Point _startPoint;
 
     public LampArrayRGBKeyboardPage()
     {
         InitializeComponent();
 
-        _controller = new LampArrayPreviewController();
+        _controller = new LampArrayController();
 
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
@@ -49,14 +65,21 @@ public partial class LampArrayRGBKeyboardPage : UiPage
         try 
         {
             var mi = await Compatibility.GetMachineInformationAsync();
-            bool showAmbients = mi.LegionSeries == LegionSeries.Legion_Pro_7 && mi.Generation >= 10;
+            bool showAmbients = mi is { LegionSeries: LegionSeries.Legion_Pro_7, Generation: >= 10 };
             
             if (!showAmbients)
             {
                 _rearAmbientLight.Visibility = Visibility.Collapsed;
                 _aftAmbientLight.Visibility = Visibility.Collapsed;
-                if (_cbiRear != null) _cbiRear.Visibility = Visibility.Collapsed;
-                if (_cbiAft != null) _cbiAft.Visibility = Visibility.Collapsed;
+                if (_cbiRear != null)
+                {
+                    _cbiRear.Visibility = Visibility.Collapsed;
+                }
+
+                if (_cbiAft != null)
+                {
+                    _cbiAft.Visibility = Visibility.Collapsed;
+                }
                 _zoneSelect.SelectedIndex = 0;
             }
 
@@ -106,9 +129,76 @@ public partial class LampArrayRGBKeyboardPage : UiPage
         CompositionTarget.Rendering -= OnEffectTick;
 
         _controller.Dispose();
+        StopScreenCapture();
     }
 
+    private void CalculateAuroraBounds()
+    {
+         double minX = double.MaxValue, minY = double.MaxValue;
+         double maxX = double.MinValue, maxY = double.MinValue;
+         bool found = false;
+ 
+         var lamps = _controller.GetLamps().ToList();
+         foreach(var lamp in lamps)
+         {
+             if (lamp.Info.Position.X < minX) minX = lamp.Info.Position.X;
+             if (lamp.Info.Position.Y < minY) minY = lamp.Info.Position.Y;
+             if (lamp.Info.Position.X > maxX) maxX = lamp.Info.Position.X;
+             if (lamp.Info.Position.Y > maxY) maxY = lamp.Info.Position.Y;
+             found = true;
+         }
 
+         if (found)
+         {
+             double width = maxX - minX;
+             double height = maxY - minY;
+             double centerX = minX + width / 2.0;
+             double centerY = minY + height / 2.0;
+              
+             if (height < 0.05) height = 0.15; 
+             if (width < 0.2) width = 0.45;
+
+             if (width < 0.2) width = 0.45;
+ 
+             centerY -= 0.04; 
+ 
+             _globalAuroraEffect.SetBounds(centerX, centerY, width, height);
+         }
+    }
+
+    private void StartScreenCapture()
+    {
+        if (_screenCaptureCts != null) return;
+        
+        CalculateAuroraBounds();
+
+        _screenCaptureCts = new CancellationTokenSource();
+        var token = _screenCaptureCts.Token;
+
+        Task.Run(async () =>
+        {
+            try
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    _screenCapture.CaptureScreen(ref _screenBuffer, 32, 18, token);
+                    _globalAuroraEffect.UpdateScreenData(_screenBuffer, 32, 18);
+                    await Task.Delay(33, token); // ~30 FPS
+                }
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex) 
+            {
+                Log.Instance.Trace($"Screen capture failed: {ex.Message}");
+            }
+        }, token);
+    }
+
+    private void StopScreenCapture()
+    {
+        _screenCaptureCts?.Cancel();
+        _screenCaptureCts = null;
+    }
     
     private void ZoneSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
@@ -174,9 +264,6 @@ public partial class LampArrayRGBKeyboardPage : UiPage
         UpdateEffectSelectionUI();
     }
 
-    private bool _isDragging = false;
-    private Point _startPoint;
-
     private void PreviewGrid_MouseDown(object sender, MouseButtonEventArgs e)
     {
         if (sender is not Grid grid) return;
@@ -229,7 +316,6 @@ public partial class LampArrayRGBKeyboardPage : UiPage
         
         var rect = new Rect(Canvas.GetLeft(_selectionRect), Canvas.GetTop(_selectionRect), _selectionRect.Width, _selectionRect.Height);
         
-        // Small threshold to avoid accidental selection on click
         if (rect.Width < 2 && rect.Height < 2) return;
 
         foreach (var kvp in _controlMap)
@@ -253,7 +339,7 @@ public partial class LampArrayRGBKeyboardPage : UiPage
                     }
                 }
             }
-            catch {}
+            catch { /* Ignore */ }
         }
         
         UpdateEffectSelectionUI();
@@ -264,8 +350,10 @@ public partial class LampArrayRGBKeyboardPage : UiPage
         _selectedIndices.Clear();
         foreach(var root in new DependencyObject[] { _visualKeyboard, _rearAmbientLight, _aftAmbientLight })
         {
-            if (root == null) continue;
-            foreach(var key in EnumerateKeys(root)) key.IsChecked = false;
+            foreach (var key in EnumerateKeys(root))
+            {
+                key.IsChecked = false;
+            }
         }
     }
 
@@ -281,14 +369,13 @@ public partial class LampArrayRGBKeyboardPage : UiPage
         }
         _effectSelect.IsEnabled = true;
 
-        // Determine if all selected share the same effect
         ILampEffect? firstEffect = null;
         bool mixed = false;
 
         foreach(var idx in _selectedIndices)
         {
-            if (!_lampEffectMap.TryGetValue(idx, out var effect)) effect = _defaultEffect; 
-            
+            var effect = _lampEffectMap.GetValueOrDefault(idx, _defaultEffect);
+
             if (firstEffect == null) firstEffect = effect;
             else if (effect != firstEffect && effect?.Name != firstEffect?.Name) 
             {
@@ -314,8 +401,34 @@ public partial class LampArrayRGBKeyboardPage : UiPage
             else if (firstEffect is RippleEffect) _effectSelect.SelectedIndex = 5;
             else if (firstEffect is SparkleEffect) _effectSelect.SelectedIndex = 6;
             else if (firstEffect is GradientEffect) _effectSelect.SelectedIndex = 7;
+
             else if (firstEffect is CustomPatternEffect) _effectSelect.SelectedIndex = 8;
+            else if (firstEffect is RainbowWaveEffect rwe) 
+            {
+                _effectSelect.SelectedIndex = 9;
+                _directionPanel.Visibility = Visibility.Visible;
+                if (rwe.Parameters.TryGetValue("Direction", out var d) && d is GradientDirection dir)
+                {
+                    _directionSelect.SelectedIndex = (int)dir;
+                }
+            }
+            else if (firstEffect is SpiralRainbowEffect) 
+            {
+                _effectSelect.SelectedIndex = 10;
+                _directionPanel.Visibility = Visibility.Collapsed;
+            }
+            else if (firstEffect is AuroraSyncEffect) 
+            {
+                _effectSelect.SelectedIndex = 11;
+                _directionPanel.Visibility = Visibility.Collapsed;
+            }
         }
+        else
+        {
+             _directionPanel.Visibility = Visibility.Collapsed;
+        }
+
+        _isUpdatingUi = false;
         _isUpdatingUi = false;
         
         if (_selectionSummary != null) 
@@ -324,11 +437,11 @@ public partial class LampArrayRGBKeyboardPage : UiPage
 
     private void EffectSelect_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (_isUpdatingUi || _controller == null || _selectedIndices.Count == 0) return;
+        if (_isUpdatingUi || _selectedIndices.Count == 0) return;
         
         ILampEffect effectToApply;
         
-        if (_effectSelect.SelectedIndex == 8) // Custom
+        if (_effectSelect.SelectedIndex == 8)
         {
             effectToApply = _globalCustomEffect;
         }
@@ -343,23 +456,58 @@ public partial class LampArrayRGBKeyboardPage : UiPage
                 4 => new MeteorEffect(_selectedColor, 3, 2.0),
                 5 => new RippleEffect(_selectedColor, 2.0),
                 6 => new SparkleEffect(_selectedColor, 0.5),
-                7 => new GradientEffect(new[] { _selectedColor, WinUIColor.FromArgb(255, 0, 0, 0) }),
+                7 => new GradientEffect([_selectedColor, WinUIColor.FromArgb(255, 0, 0, 0)], GetSelectedDirection()),
+                9 => new RainbowWaveEffect(1.0, 2.0, GetSelectedDirection()),
+                10 => new SpiralRainbowEffect(),
+                11 => _globalAuroraEffect,
                 _ => new RainbowEffect(4.0, true)
             };
         }
 
-        // Apply
+        // Show/Hide direction panel
+        if (_effectSelect.SelectedIndex == 7 || _effectSelect.SelectedIndex == 9)
+        {
+            if (_directionPanel != null) _directionPanel.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            if (_directionPanel != null) _directionPanel.Visibility = Visibility.Collapsed;
+        }
+
+        if (_effectSelect.SelectedIndex == 11)
+        {
+             StartScreenCapture();
+        }
+        else
+        {
+             StopScreenCapture();
+        }
+
         foreach(var idx in _selectedIndices)
         {
             _lampEffectMap[idx] = effectToApply;
         }
         _controller.SetEffectForIndices(_selectedIndices.ToList(), effectToApply);
 
-        // Sync UI for these keys
         SyncVisualsForIndices(_selectedIndices);
-        
-        if (_selectionSummary != null) 
-             _selectionSummary.Text = $"{_selectedIndices.Count} keys selected ({effectToApply.Name})";
+
+        if (_selectionSummary != null)
+        {
+            _selectionSummary.Text = $"{_selectedIndices.Count} keys selected ({effectToApply.Name})";
+        }
+    }
+
+    private GradientDirection GetSelectedDirection()
+    {
+        if (_directionSelect == null) return GradientDirection.LeftToRight;
+        return _directionSelect.SelectedIndex switch
+        {
+            0 => GradientDirection.LeftToRight,
+            1 => GradientDirection.RightToLeft,
+            2 => GradientDirection.TopToBottom,
+            3 => GradientDirection.BottomToTop,
+            _ => GradientDirection.LeftToRight
+        };
     }
 
     private void SyncVisualsForIndices(IEnumerable<int> indices)
@@ -381,9 +529,6 @@ public partial class LampArrayRGBKeyboardPage : UiPage
         }
     }
     
-    // Color Handlers
-
-
     private void OnColorChanged(object sender, EventArgs e)
     {
          if (_colorPicker == null) return;
@@ -431,15 +576,6 @@ public partial class LampArrayRGBKeyboardPage : UiPage
         ApplyColorToSelection(WinUIColor.FromArgb(0,0,0,0));
     }
 
-    // New Fields
-    private readonly HashSet<int> _selectedIndices = new();
-    private readonly Dictionary<int, ILampEffect> _lampEffectMap = new();
-    private readonly Dictionary<int, LampArrayZoneControl> _controlMap = new();
-    private readonly CustomPatternEffect _globalCustomEffect = new();
-    private readonly ILampEffect _defaultEffect = new RainbowEffect(4.0, true);
-
-
-    // Sliders
     private void BrightnessSlider_ValueChanged(object sender, RoutedEventArgs e)
     {
         if (sender is Slider slider && _controller != null) 
@@ -464,8 +600,6 @@ public partial class LampArrayRGBKeyboardPage : UiPage
              _controller.SmoothTransition = _smoothTransitionCheckBox.IsChecked ?? true;
     }
     
-    // Probe - Simplified to just toggle off effect?
-    // User didn't request probe fixes, but let's keep it safe.
     private async void ProbeLamps_Click(object sender, RoutedEventArgs e)
     {
         _isProbing = true;

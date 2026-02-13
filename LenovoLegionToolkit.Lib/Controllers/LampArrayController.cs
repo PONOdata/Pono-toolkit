@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Devices.Lights;
@@ -14,63 +13,8 @@ using NeoSmart.AsyncLock;
 
 namespace LenovoLegionToolkit.Lib.Controllers;
 
-public class LampArrayPreviewController : IDisposable
+public class LampArrayController : IDisposable
 {
-    private class LampArrayDevice
-    {
-        public LampArray Device { get; }
-        public Dictionary<VirtualKey, List<int>> VirtualKeyToIndex { get; } = new();
-
-        public LampArrayDevice(LampArray device)
-        {
-            Device = device;
-            Log.Instance.Trace($"Initializing device: {device.DeviceId}, Lamp count: {device.LampCount}");
-
-            Log.Instance.Trace($"--- Exporting hardware VirtualKey mapping table ---");
-            var mappedKeys = 0;
-            for (var vk = 1; vk <= 255; vk++)
-            {
-                var key = (VirtualKey)vk;
-                try
-                {
-                    var indices = device.GetIndicesForKey(key);
-                    if (indices != null && indices.Length > 0)
-                    {
-                        VirtualKeyToIndex[key] = indices.ToList();
-                        mappedKeys++;
-                        Log.Instance.Trace(
-                            $"Hardware Export: {key}(0x{vk:X2}) -> Lamp Indices [{string.Join(", ", indices)}]");
-                    }
-                }
-                catch
-                {
-                }
-            }
-
-            Log.Instance.Trace($"--- Export complete: Found {mappedKeys} valid key bindings ---");
-        }
-
-        public void SetLayout(int width, int height, IEnumerable<(ushort Code, int X, int Y)> keys)
-        {
-        }
-    }
-
-    public IDictionary<string, IDictionary<VirtualKey, List<int>>> GetHardwareKeyMap()
-    {
-        var result = new Dictionary<string, IDictionary<VirtualKey, List<int>>>();
-        lock (_lampArrays)
-        {
-            foreach (var kvp in _lampArrays)
-            {
-                var deviceMap = new Dictionary<VirtualKey, List<int>>();
-                foreach (var mapKvp in kvp.Value.VirtualKeyToIndex) deviceMap[mapKvp.Key] = mapKvp.Value.ToList();
-                result[kvp.Key] = deviceMap;
-            }
-        }
-
-        return result;
-    }
-
     private readonly AsyncLock _lock = new();
     private readonly Dictionary<string, LampArrayDevice> _lampArrays = [];
     private DeviceWatcher? _watcher;
@@ -85,6 +29,25 @@ public class LampArrayPreviewController : IDisposable
     private double _transitionStartTime;
     private double _transitionDuration;
     private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
+
+    private readonly global::System.Collections.Concurrent.ConcurrentDictionary<int, ILampEffect> _effectOverrides = new();
+    private readonly global::System.Collections.Concurrent.ConcurrentDictionary<int, Color> _lastFrameColors = new();
+
+    private class LampArrayDevice
+    {
+        public LampArray Device { get; }
+        private Dictionary<VirtualKey, List<int>> VirtualKeyToIndex { get; } = new();
+
+        public LampArrayDevice(LampArray device)
+        {
+            Device = device;
+            Log.Instance.Trace($"Initializing device: {device.DeviceId}, Lamp count: {device.LampCount}");
+        }
+
+        public void SetLayout(int width, int height, IEnumerable<(ushort Code, int X, int Y)> keys)
+        {
+        }
+    }
 
     public double Brightness
     {
@@ -104,8 +67,6 @@ public class LampArrayPreviewController : IDisposable
         set => _smoothTransition = value;
     }
 
-    public ILampEffect? CurrentEffect => _currentEffect;
-
     public bool IsAvailable
     {
         get
@@ -116,20 +77,6 @@ public class LampArrayPreviewController : IDisposable
                     if (kvp.Value.Device.IsAvailable)
                         return true;
                 return false;
-            }
-        }
-    }
-
-    public int LampCount
-    {
-        get
-        {
-            lock (_lampArrays)
-            {
-                foreach (var kvp in _lampArrays)
-                    if (kvp.Value.Device.IsAvailable)
-                        return kvp.Value.Device.LampCount;
-                return 0;
             }
         }
     }
@@ -197,97 +144,6 @@ public class LampArrayPreviewController : IDisposable
         }
     }
 
-    public IDictionary<VirtualKey, List<int>> GetVirtualKeyMapping()
-    {
-        lock (_lampArrays)
-        {
-            foreach (var kvp in _lampArrays)
-                if (kvp.Value.Device.IsAvailable)
-                    return new Dictionary<VirtualKey, List<int>>(kvp.Value.VirtualKeyToIndex);
-        }
-
-        return new Dictionary<VirtualKey, List<int>>();
-    }
-
-
-
-    public void SetPreviewColor(RGBColor color)
-    {
-        if (!IsAvailable)
-            return;
-
-        var winColor = ToWindowsColor(color);
-
-        lock (_lampArrays)
-        {
-            foreach (var kvp in _lampArrays)
-                if (kvp.Value.Device.IsAvailable)
-                    try
-                    {
-                        kvp.Value.Device.SetColor(winColor);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Instance.Trace($"Failed to set preview color: {ex.Message}");
-                    }
-        }
-    }
-
-    public void SetPreviewColorsForIndices(int[] indices, RGBColor color)
-    {
-        if (!IsAvailable)
-            return;
-
-        var winColor = ToWindowsColor(color);
-
-        lock (_lampArrays)
-        {
-            foreach (var kvp in _lampArrays)
-                if (kvp.Value.Device.IsAvailable)
-                    try
-                    {
-                        kvp.Value.Device.SetColorsForIndices(CreateColorArray(winColor, indices.Length), indices);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Instance.Trace($"Failed to set preview colors for indices: {ex.Message}");
-                    }
-        }
-    }
-
-
-
-    public void SetPreviewZoneColors(RGBColor[] zoneColors, ILampArrayZoneMapper mapper)
-    {
-        if (!IsAvailable) return;
-
-        lock (_lampArrays)
-        {
-            foreach (var kvp in _lampArrays)
-            {
-                if (!kvp.Value.Device.IsAvailable)
-                    continue;
-
-                try
-                {
-                    for (var zone = 0; zone < zoneColors.Length; zone++)
-                    {
-                        var indices = mapper.GetLampIndicesForZone(zone, kvp.Value.Device.LampCount);
-                        if (indices.Length > 0)
-                        {
-                            var winColor = ToWindowsColor(zoneColors[zone]);
-                            kvp.Value.Device.SetColorsForIndices(CreateColorArray(winColor, indices.Length), indices);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Log.Instance.Trace($"Failed to set preview zone colors: {ex.Message}");
-                }
-            }
-        }
-    }
-
     public IEnumerable<(string DeviceId, LampInfo Info)> GetLamps()
     {
         lock (_lampArrays)
@@ -301,36 +157,6 @@ public class LampArrayPreviewController : IDisposable
             }
         }
     }
-
-    public List<string> GetDeviceDetails()
-    {
-        var details = new List<string>();
-        lock (_lampArrays)
-        {
-            foreach (var kvp in _lampArrays)
-            {
-                var d = kvp.Value.Device;
-                var sb = new StringBuilder();
-                sb.AppendLine($"Device ID: {d.DeviceId}");
-                sb.AppendLine($"  IsAvailable: {d.IsAvailable}");
-                sb.AppendLine($"  LampCount: {d.LampCount}");
-                sb.AppendLine($"  HardwareVendorId: {d.HardwareVendorId:X4}");
-                sb.AppendLine($"  HardwareProductId: {d.HardwareProductId:X4}");
-                sb.AppendLine($"  HardwareVersion: {d.HardwareVersion:X4}");
-                sb.AppendLine($"  LampArrayKind: {d.LampArrayKind}");
-                sb.AppendLine($"  MinUpdateInterval: {d.MinUpdateInterval}");
-                sb.AppendLine($"  SupportsVirtualKeys: {d.SupportsVirtualKeys}");
-
-                details.Add(sb.ToString());
-            }
-        }
-
-        return details;
-    }
-
-
-
-
 
     public void SetAllLampsColor(Color color)
     {
@@ -393,116 +219,6 @@ public class LampArrayPreviewController : IDisposable
                     Log.Instance.Trace($"Failed to set lamp colors on {kvp.Key}: {ex.Message}");
                 }
             }
-        }
-    }
-
-
-
-    public void SetColorsForAllLamps(IDictionary<ushort, Color> scanCodeColors)
-    {
-        if (!IsAvailable)
-        {
-            Log.Instance.Trace($"SetColorsForAllLamps Stopped: Controller not initialized.");
-            return;
-        }
-
-        if (scanCodeColors == null)
-            return;
-
-        Log.Instance.Trace($"Update for all lamps: Dictionary size {scanCodeColors?.Count ?? 0}");
-
-        lock (_lampArrays)
-        {
-            foreach (var kvp in _lampArrays)
-            {
-                if (!kvp.Value.Device.IsAvailable)
-                {
-                    Log.Instance.Trace($"Device {kvp.Key} Unavailable, skipping");
-                    continue;
-                }
-
-                var device = kvp.Value;
-                var lampCount = device.Device.LampCount;
-                var fullColors = new Color[lampCount];
-                var indices = new int[lampCount];
-
-                Log.Instance.Trace($"Preparing buffer for {kvp.Key} with size {lampCount}");
-
-                for (var i = 0; i < lampCount; i++)
-                {
-                    fullColors[i] = Color.FromArgb(255, 0, 0, 0);
-                    indices[i] = i;
-                }
-
-                var mappedCount = 0;
-                var keyMatchCount = 0;
-                var keyFailCount = 0;
-
-                foreach (var kvp2 in scanCodeColors)
-                {
-                    var vk = (VirtualKey)kvp2.Key;
-                    if (device.VirtualKeyToIndex.TryGetValue(vk, out var indexList))
-                    {
-                        keyMatchCount++;
-                        foreach (var idx in indexList)
-                            if (idx >= 0 && idx < lampCount)
-                            {
-                                fullColors[idx] = kvp2.Value;
-                                mappedCount++;
-                            }
-                            else
-                            {
-                                Log.Instance.Trace($"Warning: Index out of bounds {idx} Max {lampCount}");
-                            }
-                    }
-                    else
-                    {
-                        keyFailCount++;
-                        if (keyFailCount < 5)
-                            Log.Instance.Trace(
-                                $"Compatibility skip: Key {vk}(0x{kvp2.Key:X2}) no response from hardware");
-                    }
-                }
-
-                Log.Instance.Trace(
-                    $"Sync Result: Hardware hit {keyMatchCount} physical keys, skipped {keyFailCount} unknown keys. Total lit {mappedCount}/{lampCount} lamps.");
-                Log.Instance.Trace($"Sending SetColorsForIndices command...");
-
-                try
-                {
-                    device.Device.SetColorsForIndices(fullColors, indices);
-                    Log.Instance.Trace($"Hardware command sent successfully: {kvp.Key}");
-                }
-                catch (Exception ex)
-                {
-                    Log.Instance.Trace($"!!! Hardware command failed ({kvp.Key}): {ex.Message}");
-                    Log.Instance.Trace($"StackTrace: {ex.StackTrace}");
-                }
-            }
-        }
-    }
-
-    public void ApplyProfile(IEnumerable<SpectrumKeyboardBacklightEffect> effects)
-    {
-        if (!IsAvailable)
-            return;
-    }
-
-    public void ApplyEffect(ILampEffect effect, bool immediate = false)
-    {
-        if (!IsAvailable) return;
-
-        if (immediate || !_smoothTransition)
-        {
-            _currentEffect = effect;
-            _targetEffect = null;
-            effect.Reset();
-        }
-        else
-        {
-            _targetEffect = effect;
-            _transitionStartTime = _stopwatch.Elapsed.TotalSeconds;
-            _transitionDuration = 0.5;
         }
     }
 
@@ -575,10 +291,6 @@ public class LampArrayPreviewController : IDisposable
             }
         }
     }
-    
-    // Add dictionary for overrides
-    private readonly global::System.Collections.Concurrent.ConcurrentDictionary<int, ILampEffect> _effectOverrides = new();
-    private readonly global::System.Collections.Concurrent.ConcurrentDictionary<int, Color> _lastFrameColors = new();
 
     public void SetEffectForIndices(IEnumerable<int> indices, ILampEffect? effect)
     {
@@ -682,18 +394,6 @@ public class LampArrayPreviewController : IDisposable
         Log.Instance.Trace($"LampArray availability changed: IsAvailable={sender.IsAvailable}");
     }
 
-    private static Color ToWindowsColor(RGBColor color)
-    {
-        return Color.FromArgb(255, color.R, color.G, color.B);
-    }
-
-    private static Color[] CreateColorArray(Color color, int count)
-    {
-        var colors = new Color[count];
-        Array.Fill(colors, color);
-        return colors;
-    }
-
     public void Dispose()
     {
         if (_isDisposed)
@@ -712,10 +412,4 @@ public class LampArrayPreviewController : IDisposable
 
         GC.SuppressFinalize(this);
     }
-}
-
-public interface ILampArrayZoneMapper
-{
-    int ZoneCount { get; }
-    int[] GetLampIndicesForZone(int zone, int totalLampCount);
 }

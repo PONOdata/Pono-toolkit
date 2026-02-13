@@ -206,6 +206,27 @@
                             <ComboBoxItem Content="Sparkle" />
                             <ComboBoxItem Content="Gradient" />
                             <ComboBoxItem Content="Custom (Spatial)" />
+                            <ComboBoxItem Content="Rainbow Wave" />
+                            <ComboBoxItem Content="Spiral Rainbow" />
+                            <ComboBoxItem Content="Aurora Sync" />
+                        </ComboBox>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,16" x:Name="_directionPanel" Visibility="Collapsed">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock VerticalAlignment="Center" Text="Direction" />
+                        <ComboBox
+                            x:Name="_directionSelect"
+                            Grid.Column="1"
+                            Width="200"
+                            SelectionChanged="EffectSelect_SelectionChanged">
+                            <ComboBoxItem Content="Left to Right" />
+                            <ComboBoxItem Content="Right to Left" />
+                            <ComboBoxItem Content="Top to Bottom" />
+                            <ComboBoxItem Content="Bottom to Top" />
                         </ComboBox>
                     </Grid>
 
