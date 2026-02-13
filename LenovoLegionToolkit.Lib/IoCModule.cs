@@ -46,6 +46,7 @@ public class IoCModule : Module
         builder.Register<SpectrumKeyboardSettings>();
         builder.Register<SunriseSunsetSettings>();
         builder.Register<UpdateCheckSettings>();
+        builder.Register<LampArraySettings>();
         builder.Register<FanCurveSettings>().SingleInstance();
 
         builder.Register<AlwaysOnUSBFeature>();

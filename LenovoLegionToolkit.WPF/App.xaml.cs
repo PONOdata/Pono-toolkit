@@ -150,7 +150,8 @@ public partial class App
                 SafeInitAsync(InitGpuOverclockControllerAsync, "GPU Overclock"),
                 SafeInitAsync(InitHybridModeAsync, "Hybrid Mode"),
                 SafeInitAsync(InitFanManagerExtension, "Fan Manager"),
-                SafeInitAsync(InitAutomationLocalization, "Automation Localization")
+                SafeInitAsync(InitAutomationLocalization, "Automation Localization"),
+                SafeInitAsync(InitLampArrayControllerAsync, "LampArray")
             };
 
             await Task.WhenAll(initTasks);
@@ -376,6 +377,13 @@ public partial class App
 
         var fanManager = IoCContainer.Resolve<FanCurveManager>();
         if (fanManager.IsEnabled) await fanManager.SetRegister().ConfigureAwait(false);
+
+        await SafeExecuteAsync<LampArrayController>(async c =>
+        {
+            var settings = IoCContainer.Resolve<LampArraySettings>();
+            c.SaveSettings(settings);
+            await c.StopAsync();
+        });
 
         Shutdown();
     }
@@ -695,6 +703,21 @@ public partial class App
         catch (Exception ex)
         {
             Log.Instance.Trace($"Couldn't reapply parameters.", ex);
+        }
+    }
+
+    private static async Task InitLampArrayControllerAsync()
+    {
+        try
+        {
+            var controller = IoCContainer.Resolve<LampArrayController>();
+            var settings = IoCContainer.Resolve<LampArraySettings>();
+            controller.SetScreenCaptureProvider(new SpectrumScreenCapture());
+            await controller.InitializeAsync(settings);
+        }
+        catch (Exception ex)
+        {
+            Log.Instance.Trace($"InitLampArrayControllerAsync failed.", ex);
         }
     }
 

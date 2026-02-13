@@ -304,6 +304,22 @@ public enum KnownFolder
     SavedSearches
 }
 
+public enum LampEffectType
+{
+    Static,
+    Breathe,
+    Wave,
+    Rainbow,
+    Meteor,
+    Ripple,
+    Sparkle,
+    Gradient,
+    CustomPattern,
+    RainbowWave,
+    SpiralRainbow,
+    AuroraSync,
+}
+
 public enum LightingChangeState
 {
     Panel = 0,

@@ -7,18 +7,19 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
+using LenovoLegionToolkit.Lib;
 using LenovoLegionToolkit.Lib.Controllers;
+using LenovoLegionToolkit.Lib.Settings;
+using LenovoLegionToolkit.Lib.Utils;
 using LenovoLegionToolkit.Lib.Utils.LampEffects;
 using LenovoLegionToolkit.WPF.Controls.LampArray;
+using LenovoLegionToolkit.WPF.Utils;
 using Button = System.Windows.Controls.Button;
 using WinUIColor = Windows.UI.Color;
 using WpfColor = System.Windows.Media.Color;
 using System.Windows.Media;
-using LenovoLegionToolkit.Lib;
-using LenovoLegionToolkit.Lib.Utils;
+using Microsoft.Win32;
 using Wpf.Ui.Controls;
-
-using LenovoLegionToolkit.WPF.Utils;
 
 namespace LenovoLegionToolkit.WPF.Pages;
 
@@ -26,6 +27,7 @@ namespace LenovoLegionToolkit.WPF.Pages;
 public partial class LampArrayRGBKeyboardPage : UiPage
 {
     private readonly LampArrayController _controller;
+    private readonly LampArraySettings _settings;
     private WinUIColor _selectedColor = WinUIColor.FromArgb(255, 255, 0, 128);
 
     private readonly HashSet<int> _selectedIndices = new();
@@ -49,7 +51,8 @@ public partial class LampArrayRGBKeyboardPage : UiPage
     {
         InitializeComponent();
 
-        _controller = new LampArrayController();
+        _controller = IoCContainer.Resolve<LampArrayController>();
+        _settings = IoCContainer.Resolve<LampArraySettings>();
 
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
@@ -110,11 +113,32 @@ public partial class LampArrayRGBKeyboardPage : UiPage
             }
 
             if (_zoneSelect.SelectedIndex == -1) _zoneSelect.SelectedIndex = 0;
-            
-            var allIndices = _controlMap.Keys.ToList();
-            foreach(var idx in allIndices) _lampEffectMap[idx] = _defaultEffect;
-            _controller.SetEffectForIndices(allIndices, _defaultEffect);
-            
+
+            var store = _settings.Store;
+            var hasPerLampConfig = store.PerLampEffects.Count > 0;
+
+            if (hasPerLampConfig)
+            {
+                RestoreEffectsFromSettings();
+            }
+            else
+            {
+                var allIndices = _controlMap.Keys.ToList();
+                foreach(var idx in allIndices) _lampEffectMap[idx] = _defaultEffect;
+                _controller.SetEffectForIndices(allIndices, _defaultEffect);
+            }
+
+            _controller.Brightness = store.Brightness;
+            _controller.Speed = store.Speed;
+            _controller.SmoothTransition = store.SmoothTransition;
+
+            if (_brightnessValue != null)
+                _brightnessValue.Text = $"{store.Brightness * 100:F0}%";
+            if (_speedValue != null)
+                _speedValue.Text = $"{store.Speed * 100:F0}%";
+            if (_smoothTransitionCheckBox != null)
+                _smoothTransitionCheckBox.IsChecked = store.SmoothTransition;
+
             UpdateZoneVisibility();
             ClearSelection();
             UpdateEffectSelectionUI();
@@ -128,7 +152,7 @@ public partial class LampArrayRGBKeyboardPage : UiPage
     {
         CompositionTarget.Rendering -= OnEffectTick;
 
-        _controller.Dispose();
+        _controller.SaveSettings(_settings);
         StopScreenCapture();
     }
 
@@ -653,7 +677,6 @@ public partial class LampArrayRGBKeyboardPage : UiPage
     private void OnEffectTick(object? sender, EventArgs e)
     {
         if (_isProbing) return;
-        _controller.UpdateEffect();
         
         if (_controlMap == null) return;
 
@@ -693,6 +716,87 @@ public partial class LampArrayRGBKeyboardPage : UiPage
             var child = VisualTreeHelper.GetChild(root, i);
             if (child is LampArrayZoneControl zone) yield return zone;
             foreach (var sub in EnumerateKeys(child)) yield return sub;
+        }
+    }
+
+    private void RestoreEffectsFromSettings()
+    {
+        var store = _settings.Store;
+
+        if (store.DefaultEffect is { } defCfg)
+        {
+            var defEffect = LampArrayController.EffectFromConfig(defCfg);
+            if (defEffect != null)
+            {
+                foreach (var idx in _controlMap.Keys.ToList())
+                    _lampEffectMap[idx] = defEffect;
+                _controller.SetEffectForIndices(_controlMap.Keys.ToList(), defEffect);
+            }
+        }
+
+        foreach (var kvp in store.PerLampEffects)
+        {
+            var effect = LampArrayController.EffectFromConfig(kvp.Value);
+            if (effect != null)
+            {
+                _lampEffectMap[kvp.Key] = effect;
+                _controller.SetEffectForIndices([kvp.Key], effect);
+            }
+        }
+    }
+
+    private void ExportProfile_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new SaveFileDialog
+        {
+            Filter = "JSON Files (*.json)|*.json",
+            DefaultExt = "json",
+            FileName = "lamp_array_profile.json"
+        };
+
+        if (dialog.ShowDialog() != true) return;
+
+        try
+        {
+            _controller.SaveSettings(_settings);
+            _settings.ExportToFile(dialog.FileName);
+            SnackbarHelper.Show("Export", "Profile exported successfully.", SnackbarType.Success);
+        }
+        catch (Exception ex)
+        {
+            Log.Instance.Trace($"Export profile failed.", ex);
+            SnackbarHelper.Show("Export", $"Export failed: {ex.Message}", SnackbarType.Error);
+        }
+    }
+
+    private void ImportProfile_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new OpenFileDialog
+        {
+            Filter = "JSON Files (*.json)|*.json",
+            DefaultExt = "json"
+        };
+
+        if (dialog.ShowDialog() != true) return;
+
+        try
+        {
+            _settings.ImportFromFile(dialog.FileName);
+
+            var store = _settings.Store;
+            _controller.Brightness = store.Brightness;
+            _controller.Speed = store.Speed;
+            _controller.SmoothTransition = store.SmoothTransition;
+
+            RestoreEffectsFromSettings();
+            UpdateEffectSelectionUI();
+
+            SnackbarHelper.Show("Import", "Profile imported successfully.", SnackbarType.Success);
+        }
+        catch (Exception ex)
+        {
+            Log.Instance.Trace($"Import profile failed.", ex);
+            SnackbarHelper.Show("Import", $"Import failed: {ex.Message}", SnackbarType.Error);
         }
     }
 }

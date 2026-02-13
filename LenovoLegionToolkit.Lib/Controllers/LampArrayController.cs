@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Devices.Lights;
 using Windows.System;
 using Windows.UI;
+using LenovoLegionToolkit.Lib.Settings;
 using LenovoLegionToolkit.Lib.Utils;
 using LenovoLegionToolkit.Lib.Utils.LampEffects;
 using NeoSmart.AsyncLock;
@@ -15,10 +17,20 @@ namespace LenovoLegionToolkit.Lib.Controllers;
 
 public class LampArrayController : IDisposable
 {
+    public interface IScreenCaptureProvider
+    {
+        void CaptureScreen(ref RGBColor[,] buffer, int width, int height, CancellationToken token);
+    }
+
     private readonly AsyncLock _lock = new();
     private readonly Dictionary<string, LampArrayDevice> _lampArrays = [];
     private DeviceWatcher? _watcher;
     private bool _isDisposed;
+    private CancellationTokenSource? _renderCts;
+    private CancellationTokenSource? _screenCaptureCts;
+    private IScreenCaptureProvider? _screenCaptureProvider;
+    private RGBColor[,] _screenBuffer = new RGBColor[32, 18];
+    private bool _auroraActive;
 
     private double _brightness = 1.0;
     private double _speed = 1.0;
@@ -98,6 +110,8 @@ public class LampArrayController : IDisposable
             _watcher.EnumerationCompleted += Watcher_EnumerationCompleted;
             _watcher.Start();
 
+            StartRenderLoop();
+
             Log.Instance.Trace($"LampArray device watcher started.");
         }
     }
@@ -119,6 +133,8 @@ public class LampArrayController : IDisposable
 
             Log.Instance.Trace($"Stopping LampArray device watcher...");
 
+            StopRenderLoop();
+
             _watcher.Added -= Watcher_Added;
             _watcher.Removed -= Watcher_Removed;
             _watcher.EnumerationCompleted -= Watcher_EnumerationCompleted;
@@ -134,6 +150,134 @@ public class LampArrayController : IDisposable
 
             Log.Instance.Trace($"LampArray device watcher stopped.");
         }
+    }
+
+    private void StartRenderLoop()
+    {
+        if (_renderCts != null) return;
+        _renderCts = new CancellationTokenSource();
+        var token = _renderCts.Token;
+        Task.Run(async () =>
+        {
+            while (!token.IsCancellationRequested)
+            {
+                try
+                {
+                    CheckAuroraSyncState();
+                    UpdateEffect();
+                }
+                catch (Exception ex)
+                {
+                    Log.Instance.Trace($"Render loop error: {ex.Message}");
+                }
+                await Task.Delay(33, token);
+            }
+        }, token);
+    }
+
+    private void StopRenderLoop()
+    {
+        _renderCts?.Cancel();
+        _renderCts = null;
+        StopScreenCapture();
+    }
+
+    public void SetScreenCaptureProvider(IScreenCaptureProvider provider)
+    {
+        _screenCaptureProvider = provider;
+    }
+
+    private void CheckAuroraSyncState()
+    {
+        var hasAurora = _currentEffect is AuroraSyncEffect
+            || _effectOverrides.Values.Any(e => e is AuroraSyncEffect);
+
+        if (hasAurora && !_auroraActive)
+        {
+            _auroraActive = true;
+            CalculateAndSetAuroraBounds();
+            StartScreenCapture();
+        }
+        else if (!hasAurora && _auroraActive)
+        {
+            _auroraActive = false;
+            StopScreenCapture();
+        }
+    }
+
+    private void CalculateAndSetAuroraBounds()
+    {
+        double minX = double.MaxValue, minY = double.MaxValue;
+        double maxX = double.MinValue, maxY = double.MinValue;
+        bool found = false;
+
+        foreach (var lamp in GetLamps())
+        {
+            if (lamp.Info.Position.X < minX) minX = lamp.Info.Position.X;
+            if (lamp.Info.Position.Y < minY) minY = lamp.Info.Position.Y;
+            if (lamp.Info.Position.X > maxX) maxX = lamp.Info.Position.X;
+            if (lamp.Info.Position.Y > maxY) maxY = lamp.Info.Position.Y;
+            found = true;
+        }
+
+        if (!found) return;
+
+        double width = maxX - minX;
+        double height = maxY - minY;
+        double centerX = minX + width / 2.0;
+        double centerY = minY + height / 2.0;
+
+        if (height < 0.05) height = 0.15;
+        if (width < 0.2) width = 0.45;
+        centerY -= 0.04;
+
+        void SetBounds(ILampEffect? effect)
+        {
+            if (effect is AuroraSyncEffect aurora)
+                aurora.SetBounds(centerX, centerY, width, height);
+        }
+
+        SetBounds(_currentEffect);
+        foreach (var e in _effectOverrides.Values)
+            SetBounds(e);
+    }
+
+    private void StartScreenCapture()
+    {
+        if (_screenCaptureCts != null || _screenCaptureProvider == null) return;
+
+        _screenCaptureCts = new CancellationTokenSource();
+        var token = _screenCaptureCts.Token;
+
+        Task.Run(async () =>
+        {
+            try
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    _screenCaptureProvider.CaptureScreen(ref _screenBuffer, 32, 18, token);
+
+                    if (_currentEffect is AuroraSyncEffect a)
+                        a.UpdateScreenData(_screenBuffer, 32, 18);
+                    foreach (var e in _effectOverrides.Values)
+                        if (e is AuroraSyncEffect ae)
+                            ae.UpdateScreenData(_screenBuffer, 32, 18);
+
+                    await Task.Delay(33, token);
+                }
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
+            {
+                Log.Instance.Trace($"Screen capture failed: {ex.Message}");
+            }
+        }, token);
+    }
+
+    private void StopScreenCapture()
+    {
+        _screenCaptureCts?.Cancel();
+        _screenCaptureCts = null;
     }
 
     public void SetLayout(int width, int height, IEnumerable<(ushort Code, int X, int Y)> keys)
@@ -389,6 +533,129 @@ public class LampArrayController : IDisposable
         }
     }
 
+    public async Task InitializeAsync(LampArraySettings settings)
+    {
+        var store = settings.Store;
+        _brightness = store.Brightness;
+        _speed = store.Speed;
+        _smoothTransition = store.SmoothTransition;
+
+        if (store.DefaultEffect is { } defCfg)
+            _currentEffect = EffectFromConfig(defCfg);
+
+        foreach (var kvp in store.PerLampEffects)
+        {
+            var effect = EffectFromConfig(kvp.Value);
+            if (effect != null)
+                _effectOverrides[kvp.Key] = effect;
+        }
+
+        await StartAsync();
+    }
+
+    public void SaveSettings(LampArraySettings settings)
+    {
+        var store = settings.Store;
+        store.Brightness = _brightness;
+        store.Speed = _speed;
+        store.SmoothTransition = _smoothTransition;
+
+        if (_currentEffect != null)
+            store.DefaultEffect = ConfigFromEffect(_currentEffect);
+
+        store.PerLampEffects.Clear();
+        foreach (var kvp in _effectOverrides)
+            store.PerLampEffects[kvp.Key] = ConfigFromEffect(kvp.Value);
+
+        settings.Save();
+    }
+
+    public static LampArraySettings.LampEffectConfig ConfigFromEffect(ILampEffect effect)
+    {
+        var effectType = effect.Name switch
+        {
+            "Static" => LampEffectType.Static,
+            "Breathe" => LampEffectType.Breathe,
+            "Wave" => LampEffectType.Wave,
+            "Rainbow" => LampEffectType.Rainbow,
+            "Meteor" => LampEffectType.Meteor,
+            "Ripple" => LampEffectType.Ripple,
+            "Sparkle" => LampEffectType.Sparkle,
+            "Gradient" => LampEffectType.Gradient,
+            "Custom Pattern" => LampEffectType.CustomPattern,
+            "Rainbow Wave" => LampEffectType.RainbowWave,
+            "Spiral Rainbow" => LampEffectType.SpiralRainbow,
+            "Aurora Sync" => LampEffectType.AuroraSync,
+            _ => LampEffectType.Rainbow
+        };
+
+        var config = new LampArraySettings.LampEffectConfig { EffectType = effectType };
+        foreach (var kvp in effect.Parameters)
+        {
+            if (kvp.Value is Color c)
+                config.Parameters[kvp.Key] = $"{c.A},{c.R},{c.G},{c.B}";
+            else if (kvp.Value is Color[] colors)
+                config.Parameters[kvp.Key] = string.Join(";", colors.Select(cc => $"{cc.A},{cc.R},{cc.G},{cc.B}"));
+            else if (kvp.Value is Enum e)
+                config.Parameters[kvp.Key] = e.ToString();
+            else if (kvp.Value is int or double or bool or string)
+                config.Parameters[kvp.Key] = kvp.Value;
+        }
+        return config;
+    }
+
+    public static ILampEffect? EffectFromConfig(LampArraySettings.LampEffectConfig config)
+    {
+        static Color ParseColor(string s)
+        {
+            var parts = s.Split(',');
+            return Color.FromArgb(byte.Parse(parts[0]), byte.Parse(parts[1]), byte.Parse(parts[2]), byte.Parse(parts[3]));
+        }
+
+        static T GetParam<T>(Dictionary<string, object> p, string key, T fallback)
+        {
+            if (!p.TryGetValue(key, out var val)) return fallback;
+            try { return (T)Convert.ChangeType(val, typeof(T)); }
+            catch { return fallback; }
+        }
+
+        var ps = config.Parameters;
+
+        return config.EffectType switch
+        {
+            LampEffectType.Static => new StaticEffect(ps.TryGetValue("Color", out var sc) ? ParseColor(sc.ToString()!) : Color.FromArgb(255, 255, 255, 255)),
+            LampEffectType.Breathe => new BreatheEffect(ps.TryGetValue("Color", out var bc) ? ParseColor(bc.ToString()!) : Color.FromArgb(255, 255, 255, 255), GetParam(ps, "Period", 3.0)),
+            LampEffectType.Wave => new WaveEffect(
+                ps.TryGetValue("Color1", out var wc1) ? ParseColor(wc1.ToString()!) : Color.FromArgb(255, 255, 255, 255),
+                ps.TryGetValue("Color2", out var wc2) ? ParseColor(wc2.ToString()!) : Color.FromArgb(0, 0, 0, 0),
+                GetParam(ps, "Period", 2.0)),
+            LampEffectType.Rainbow => new RainbowEffect(GetParam(ps, "Period", 4.0), GetParam(ps, "Spatial", true)),
+            LampEffectType.Meteor => new MeteorEffect(
+                ps.TryGetValue("Color", out var mc) ? ParseColor(mc.ToString()!) : Color.FromArgb(255, 255, 255, 255),
+                GetParam(ps, "MeteorCount", 3),
+                GetParam(ps, "Speed", 2.0)),
+            LampEffectType.Ripple => new RippleEffect(
+                ps.TryGetValue("Color", out var rc) ? ParseColor(rc.ToString()!) : Color.FromArgb(255, 255, 255, 255),
+                GetParam(ps, "Period", 2.0)),
+            LampEffectType.Sparkle => new SparkleEffect(
+                ps.TryGetValue("Color", out var skc) ? ParseColor(skc.ToString()!) : Color.FromArgb(255, 255, 255, 255),
+                GetParam(ps, "Density", 0.5)),
+            LampEffectType.Gradient => new GradientEffect(
+                ps.TryGetValue("Colors", out var gc) ? gc.ToString()!.Split(';').Select(ParseColor).ToArray() : [Color.FromArgb(255, 255, 255, 255), Color.FromArgb(255, 0, 0, 0)],
+                ps.TryGetValue("Direction", out var gd) && Enum.TryParse<GradientDirection>(gd.ToString(), out var gdir) ? gdir : GradientDirection.LeftToRight),
+            LampEffectType.CustomPattern => new CustomPatternEffect(),
+            LampEffectType.RainbowWave => new RainbowWaveEffect(
+                GetParam(ps, "Speed", 1.0),
+                GetParam(ps, "Scale", 2.0),
+                ps.TryGetValue("Direction", out var rwd) && Enum.TryParse<GradientDirection>(rwd.ToString(), out var rwdir) ? rwdir : GradientDirection.LeftToRight),
+            LampEffectType.SpiralRainbow => new SpiralRainbowEffect(
+                GetParam(ps, "Speed", 1.0),
+                GetParam(ps, "SpiralDensity", 5.0)),
+            LampEffectType.AuroraSync => new AuroraSyncEffect(),
+            _ => new RainbowEffect(4.0, true)
+        };
+    }
+
     private void LampArray_AvailabilityChanged(LampArray sender, object args)
     {
         Log.Instance.Trace($"LampArray availability changed: IsAvailable={sender.IsAvailable}");
@@ -400,6 +667,8 @@ public class LampArrayController : IDisposable
             return;
 
         _isDisposed = true;
+
+        StopRenderLoop();
 
         _watcher?.Stop();
         _watcher = null;
