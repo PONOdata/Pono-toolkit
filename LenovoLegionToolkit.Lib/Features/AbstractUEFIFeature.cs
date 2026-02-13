@@ -13,6 +13,11 @@ public abstract class AbstractUEFIFeature<T>(string guid, string scopeName, uint
     {
         try
         {
+            if (AppFlags.Instance.Debug)
+            {
+                return true;
+            }
+
             _ = await GetStateAsync().ConfigureAwait(false);
             return true;
         }

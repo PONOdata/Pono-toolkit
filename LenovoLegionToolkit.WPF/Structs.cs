@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
 using LenovoLegionToolkit.Lib;
@@ -11,6 +8,10 @@ using LenovoLegionToolkit.Lib.Utils;
 using LenovoLegionToolkit.WPF.Resources;
 
 namespace LenovoLegionToolkit.WPF;
+
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 public class AmdCcdGroup : INotifyPropertyChanged
 {
@@ -42,8 +43,8 @@ public class AmdCoreItem : INotifyPropertyChanged
     public int Index { get; set; }
     public string DisplayName { get; set; } = string.Empty;
 
-    private double _offsetValue;
-    public double OffsetValue
+    private double? _offsetValue;
+    public double? OffsetValue
     {
         get => _offsetValue;
         set
@@ -56,15 +57,29 @@ public class AmdCoreItem : INotifyPropertyChanged
         }
     }
 
-    private bool _isUserEnabled;
-    public bool IsUserEnabled
+    private bool _isActive = true;
+    public bool IsActive
     {
-        get => _isUserEnabled;
+        get => _isActive;
         set
         {
-            if (_isUserEnabled != value)
+            if (_isActive != value)
             {
-                _isUserEnabled = value;
+                _isActive = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    private bool _isEnabled = true;
+    public bool IsEnabled
+    {
+        get => _isEnabled;
+        set
+        {
+            if (_isEnabled != value)
+            {
+                _isEnabled = value;
                 OnPropertyChanged();
             }
         }

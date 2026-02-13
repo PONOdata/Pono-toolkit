@@ -3,14 +3,10 @@ using LenovoLegionToolkit.Lib.Utils;
 
 namespace LenovoLegionToolkit.Lib.Features.OverDrive;
 
-public class OverDriveCapabilityFeature : AbstractCapabilityFeature<OverDriveState>
+public class OverDriveCapabilityFeature() : AbstractCapabilityFeature<OverDriveState>(CapabilityID.OverDrive)
 {
-    public OverDriveCapabilityFeature() : base(CapabilityID.OverDrive)
+    protected override Task<bool> ValidateExtraSupportAsync(MachineInformation mi)
     {
-    }
-
-    protected override async Task<bool> ValidateExtraSupportAsync(MachineInformation mi)
-    {
-        return await Task.FromResult(Compatibility.GetIsOverdriverSupported()).ConfigureAwait(false);
+        return Task.FromResult(Compatibility.GetIsOverdriverSupported());
     }
 }

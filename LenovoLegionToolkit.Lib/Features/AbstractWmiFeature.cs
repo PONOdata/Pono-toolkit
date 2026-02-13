@@ -11,6 +11,11 @@ public abstract class AbstractWmiFeature<T>(Func<Task<int>> getValue, Func<int, 
     {
         try
         {
+            if (AppFlags.Instance.Debug)
+            {
+                return true;
+            }
+
             if (isSupported is null)
                 return true;
 

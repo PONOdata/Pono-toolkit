@@ -11,6 +11,11 @@ public abstract class AbstractLenovoLightingFeature<T>(int lightingID, int contr
 
     public virtual async Task<bool> IsSupportedAsync()
     {
+        if (AppFlags.Instance.Debug)
+        {
+            return true;
+        }
+
         if (ForceDisable)
             return false;
 
