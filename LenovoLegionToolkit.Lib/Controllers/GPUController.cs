@@ -203,8 +203,6 @@ public class GPUController
         {
             _state = GPUState.NvidiaGpuNotFound;
 
-            Log.Instance.Trace($"GPU present [state={_state}, processes.Count={_processes.Count}, gpuInstanceId={_gpuInstanceId}]");
-
             return;
         }
 
