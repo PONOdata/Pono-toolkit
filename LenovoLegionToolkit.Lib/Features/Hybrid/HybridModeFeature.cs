@@ -13,6 +13,11 @@ public class HybridModeFeature(GSyncFeature gSyncFeature, IGPUModeFeature igpuMo
 
     public async Task<bool> IsSupportedAsync()
     {
+        if (AppFlags.Instance.Debug)
+        {
+            return true;
+        }
+
         var mi = await Compatibility.GetMachineInformationAsync().ConfigureAwait(false);
         return mi.Properties.SupportsGSync || mi.Properties.SupportsIGPUMode;
     }

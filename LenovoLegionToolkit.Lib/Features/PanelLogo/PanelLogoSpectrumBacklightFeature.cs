@@ -1,6 +1,7 @@
-﻿using System;
+﻿using LenovoLegionToolkit.Lib.Controllers;
+using LenovoLegionToolkit.Lib.Utils;
+using System;
 using System.Threading.Tasks;
-using LenovoLegionToolkit.Lib.Controllers;
 
 namespace LenovoLegionToolkit.Lib.Features.PanelLogo;
 
@@ -8,6 +9,11 @@ public class PanelLogoSpectrumBacklightFeature(SpectrumKeyboardBacklightControll
 {
     public async Task<bool> IsSupportedAsync()
     {
+        if (AppFlags.Instance.Debug)
+        {
+            return true;
+        }
+
         var isSupported = await controller.IsSupportedAsync().ConfigureAwait(false);
         if (!isSupported)
             return false;

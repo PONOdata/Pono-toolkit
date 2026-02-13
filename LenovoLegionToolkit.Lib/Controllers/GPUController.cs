@@ -9,7 +9,10 @@ using LenovoLegionToolkit.Lib.System;
 using LenovoLegionToolkit.Lib.System.Management;
 using LenovoLegionToolkit.Lib.Utils;
 using NeoSmart.AsyncLock;
+using NvAPIWrapper;
 using NvAPIWrapper.GPU;
+using NvAPIWrapper.Native.Exceptions;
+using Resource = LenovoLegionToolkit.Lib.Resources.Resource;
 
 namespace LenovoLegionToolkit.Lib.Controllers;
 
@@ -32,6 +35,11 @@ public class GPUController
     {
         try
         {
+            if (AppFlags.Instance.Debug)
+            {
+                return true;
+            }
+
             NVAPI.Initialize();
             PhysicalGPU? gpu = NVAPI.GetGPU();
             return gpu is not null;
@@ -195,8 +203,6 @@ public class GPUController
         {
             _state = GPUState.NvidiaGpuNotFound;
 
-            Log.Instance.Trace($"GPU present [state={_state}, processes.Count={_processes.Count}, gpuInstanceId={_gpuInstanceId}]");
-
             return;
         }
 
@@ -207,12 +213,12 @@ public class GPUController
             if (!string.IsNullOrWhiteSpace(stateId))
                 _performanceState += $", {stateId}";
         }
-        catch (Exception ex) when (ex.Message == "NVAPI_GPU_NOT_POWERED")
+        catch (NVIDIAApiException ex) when ((int)ex.Status == -105 || (int)ex.Status == -220)
         {
             _state = GPUState.PoweredOff;
             _performanceState = Resource.GPUController_PoweredOff;
 
-            Log.Instance.Trace($"Powered off [state={_state}, processes.Count={_processes.Count}, gpuInstanceId={_gpuInstanceId}]");
+            Log.Instance.Trace($"Powered off [status={(int)ex.Status}, state={_state}, processes.Count={_processes.Count}, gpuInstanceId={_gpuInstanceId}]");
 
             return;
         }

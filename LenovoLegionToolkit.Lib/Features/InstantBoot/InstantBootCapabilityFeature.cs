@@ -20,6 +20,11 @@ public class InstantBootCapabilityFeature : IFeature<InstantBootState>
 
     public async Task<bool> IsSupportedAsync()
     {
+        if (AppFlags.Instance.Debug)
+        {
+            return true;
+        }
+
         return await _ac.IsSupportedAsync().ConfigureAwait(false) && await _usbPowerDelivery.IsSupportedAsync().ConfigureAwait(false);
     }
 

@@ -12,6 +12,11 @@ public class HDRFeature : IFeature<HDRState>
     {
         try
         {
+            if (AppFlags.Instance.Debug)
+            {
+                return true;
+            }
+
             Log.Instance.Trace($"Checking HDR support...");
 
             var display = await InternalDisplay.GetAsync().ConfigureAwait(false);

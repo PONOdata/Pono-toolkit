@@ -1,6 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using LenovoLegionToolkit.Lib.Utils;
 using NeoSmart.AsyncLock;
+using System;
+using System.Threading.Tasks;
 
 namespace LenovoLegionToolkit.Lib.Features.Hybrid.Notify;
 
@@ -35,6 +36,11 @@ public class DGPUNotify(DGPUGamezoneNotify gamezoneNotify, DGPUCapabilityNotify 
 
     public async Task<bool> IsSupportedAsync()
     {
+        if (AppFlags.Instance.Debug)
+        {
+            return true;
+        }
+
         var dgpuNotify = await ResolveInternalAsync().ConfigureAwait(false);
         if (dgpuNotify is null)
             return false;
