@@ -101,7 +101,7 @@ public class FanCurveManager : IDisposable
 
         try
         {
-            var pluginDir = Path.Combine(Folders.Program, "Plugins");
+            var pluginDir = Path.Combine(Folders.AppData, "Plugins");
             Log.Instance.Trace($"Scanning for plugins in: {pluginDir} (Full: {Path.GetFullPath(pluginDir)})");
             
             if (!Directory.Exists(pluginDir))

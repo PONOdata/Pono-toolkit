@@ -27,7 +27,7 @@ public partial class RGBKeyboardBacklightControl
     private readonly RGBKeyboardBacklightController _controller = IoCContainer.Resolve<RGBKeyboardBacklightController>();
     private readonly RGBKeyboardBacklightListener _listener = IoCContainer.Resolve<RGBKeyboardBacklightListener>();
     private readonly VantageDisabler _vantageDisabler = IoCContainer.Resolve<VantageDisabler>();
-    private readonly LampArrayPreviewController _previewController = IoCContainer.Resolve<LampArrayPreviewController>();
+
 
     private RGBColor[]? _pendingZoneColors;
     private RGBKeyboardBacklightEffect? _pendingEffect;
@@ -42,7 +42,7 @@ public partial class RGBKeyboardBacklightControl
         InitializeComponent();
 
         _listener.Changed += Listener_Changed;
-        _previewController.AvailabilityChanged += PreviewController_AvailabilityChanged;
+
 
         SizeChanged += RGBKeyboardBacklightControl_SizeChanged;
         Unloaded += RGBKeyboardBacklightControl_Unloaded;
@@ -55,26 +55,17 @@ public partial class RGBKeyboardBacklightControl
             await RefreshAsync();
         }));
 
-        _ = _previewController.StartAsync();
+
     }
 
     private void RGBKeyboardBacklightControl_Unloaded(object sender, RoutedEventArgs e)
     {
-        _ = _previewController.StopAsync();
+
     }
 
-    private void PreviewController_AvailabilityChanged(object? sender, LampArrayAvailabilityChangedEventArgs e)
-    {
-        Dispatcher.Invoke(() =>
-        {
-            UpdatePreviewIndicator(e.IsAvailable);
-        });
-    }
 
-    private void UpdatePreviewIndicator(bool isAvailable)
-    {
-        _previewIndicator.Visibility = isAvailable ? Visibility.Visible : Visibility.Collapsed;
-    }
+
+
 
     private void UpdateApplyButtonState()
     {
@@ -134,7 +125,7 @@ public partial class RGBKeyboardBacklightControl
             zone.SelectedColor = pickerControl.SelectedColor;
 
         UpdatePendingZoneColors();
-        ApplyPreview();
+
     }
 
     private async void ApplyButton_Click(object sender, RoutedEventArgs e)
@@ -155,7 +146,7 @@ public partial class RGBKeyboardBacklightControl
     private void CardControl_Changed(object? sender, EventArgs e)
     {
         UpdatePendingState();
-        ApplyPreview();
+
     }
 
     private void UpdatePendingState()
@@ -183,21 +174,14 @@ public partial class RGBKeyboardBacklightControl
         UpdateApplyButtonState();
     }
 
-    private void ApplyPreview()
-    {
-        if (!_previewController.IsAvailable || _pendingZoneColors is null)
-            return;
 
-        var mapper = new FourZoneMapper();
-        _previewController.SetPreviewZoneColors(_pendingZoneColors, mapper);
-    }
 
     protected override async Task OnRefreshAsync()
     {
         if (!await _controller.IsSupportedAsync())
             throw new InvalidOperationException("RGB Keyboard does not seem to be supported");
 
-        UpdatePreviewIndicator(_previewController.IsAvailable);
+
 
         var vantageStatus = await _vantageDisabler.GetStatusAsync();
         if (vantageStatus == SoftwareStatus.Enabled)

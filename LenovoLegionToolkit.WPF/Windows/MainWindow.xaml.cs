@@ -104,6 +104,12 @@ public partial class MainWindow
             _navigationStore.Items.Remove(_fanItem);
         }
 
+        var mi = await Compatibility.GetMachineInformationAsync();
+        if (!(mi.LegionSeries == LegionSeries.Legion_Pro_7 && mi.Generation >= 10))
+        {
+            _navigationStore.Items.Remove(_lampArrayKeyboardItem);
+        }
+
         SmartKeyHelper.Instance.BringToForeground = () => Dispatcher.Invoke(BringToForeground);
 
         _specialKeyListener.Changed += (_, args) =>
