@@ -1,17 +1,19 @@
-﻿using System;
+﻿using LenovoLegionToolkit.Lib;
+using LenovoLegionToolkit.Lib.Messaging;
+using LenovoLegionToolkit.Lib.Messaging.Messages;
+using LenovoLegionToolkit.Lib.Overclocking.Amd;
+using LenovoLegionToolkit.Lib.System;
+using LenovoLegionToolkit.Lib.Utils;
+using LenovoLegionToolkit.WPF.Resources;
+using LenovoLegionToolkit.WPF.Windows.Utils;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using LenovoLegionToolkit.Lib;
-using LenovoLegionToolkit.Lib.Messaging;
-using LenovoLegionToolkit.Lib.Messaging.Messages;
-using LenovoLegionToolkit.Lib.Overclocking.Amd;
-using LenovoLegionToolkit.Lib.Utils;
-using LenovoLegionToolkit.WPF.Resources;
-using Microsoft.Win32;
 using Wpf.Ui.Controls;
 
 namespace LenovoLegionToolkit.WPF.Windows.Overclocking.Amd;
@@ -362,7 +364,21 @@ public partial class AmdOverclocking : UiWindow
         }
 
         _controller.SwitchProfile(CpuProfileMode.X3DGaming);
-        MessagingCenter.Publish(new NotificationMessage(NotificationType.AutomationNotification, Resource.SettingsPage_UseNewDashboard_Restart_Message));
+
+        var dialog = new DialogWindow
+        {
+            Title = Resource.Warning,
+            Content = Resource.SettingsPage_UseNewDashboard_Restart_Message,
+            Owner = this,
+        };
+
+        var (shouldRestart, _) = dialog.Result;
+        if (shouldRestart)
+        {
+            Power.RestartAsync().ConfigureAwait(false);
+        }
+
+        dialog.Show();
     }
 
     private void X3DGamingModeDisabled_OnClick(object sender, RoutedEventArgs e)
@@ -373,6 +389,20 @@ public partial class AmdOverclocking : UiWindow
         }
 
         _controller.SwitchProfile(CpuProfileMode.Productivity);
-        MessagingCenter.Publish(new NotificationMessage(NotificationType.AutomationNotification, Resource.SettingsPage_UseNewDashboard_Restart_Message));
+        
+        var dialog = new DialogWindow
+        {
+            Title = Resource.Warning,
+            Content = Resource.SettingsPage_UseNewDashboard_Restart_Message,
+            Owner = this,
+        };
+
+        var (shouldRestart, _) = dialog.Result;
+        if (shouldRestart)
+        {
+            Power.RestartAsync().ConfigureAwait(false);
+        }
+
+        dialog.Show();
     }
 }
