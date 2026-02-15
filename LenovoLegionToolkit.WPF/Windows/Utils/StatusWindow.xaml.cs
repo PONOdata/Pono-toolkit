@@ -134,7 +134,6 @@ public partial class StatusWindow
         _cpuFanAndPowerDesc.Visibility = sensorVis;
         _cpuFanAndPowerLabel.Visibility = sensorVis;
 
-        // Use cached controller type to avoid blocking UI thread
         var isV5 = _cachedControllerType == typeof(SensorsControllerV5);
         _systemFanGrid.Visibility = (useSensors && isV5) ? Visibility.Visible : Visibility.Collapsed;
 
@@ -241,16 +240,13 @@ public partial class StatusWindow
         {
             if (await _sensorsController.IsSupportedAsync().WaitAsync(token))
             {
-                // Cache the controller type for synchronous UI access
                 var controller = await _sensorsController.GetControllerAsync().WaitAsync(token);
                 _cachedControllerType = controller?.GetType();
                 
                 sensorsData = await _sensorsController.GetDataAsync().WaitAsync(token);
             }
-            // SGC data - assume accessed via getters which return cached values from Producer Loop
             if (await _sensorsGroupController.IsSupportedAsync().WaitAsync(token) is LibreHardwareMonitorInitialState.Success or LibreHardwareMonitorInitialState.Initialized)
-            {
-                // Do NOT call UpdateAsync here, as it's driven by Producer
+            {    
                 cpuPower = await _sensorsGroupController.GetCpuPowerAsync().WaitAsync(token);
                 gpuPower = await _sensorsGroupController.GetGpuPowerAsync().WaitAsync(token);
                 cpuClock = await _sensorsGroupController.GetCpuCoreClockAsync().WaitAsync(token);
@@ -277,7 +273,7 @@ public partial class StatusWindow
         {
             UpdateFreqAndTemp(_cpuFreqAndTempLabel, data.CpuClock, data.CpuTemp);
             UpdateFanAndPower(_cpuFanAndPowerLabel, data.SensorsData?.CPU.FanSpeed ?? -1, data.CpuPower);
-            // Use cached controller type to avoid blocking UI thread
+            
             if (_cachedControllerType == typeof(SensorsControllerV4) ||
                 _cachedControllerType == typeof(SensorsControllerV5))
             {

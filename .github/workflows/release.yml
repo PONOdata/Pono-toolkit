@@ -9,15 +9,18 @@ on:
       channel:
         description: 'Release channel'
         required: true
-        default: stable
+        default: Stable
         type: choice
         options:
-          - stable
-          - beta
-          - dev
+          - Stable
+          - Beta
+          - Dev
   push:
     tags:
       - "v*"
+
+permissions:
+  contents: write
 
 jobs:
   build-and-release:
@@ -37,7 +40,7 @@ jobs:
     - name: Resolve release metadata
       id: release_meta
       run: |
-        $channel = "stable"
+        $channel = "Stable"
         $prerelease = "false"
         $targetCommitish = "master"
 
@@ -45,31 +48,31 @@ jobs:
             $version = "${{ github.event.inputs.version }}"
             $channel = "${{ github.event.inputs.channel }}"
 
-          if ($version -notmatch '^\d+\.\d+\.\d+(\.\d+)?$') {
-            Write-Error "Invalid version '$version'. Expected format: X.Y.Z or X.Y.Z.W"
-            exit 1
-          }
+            if ($version -notmatch '^\d+\.\d+\.\d+(\.\d+)?$') {
+                Write-Error "Invalid version '$version'. Expected format: X.Y.Z or X.Y.Z.W"
+                exit 1
+            }
         } else {
             $tag = "${{ github.ref_name }}"
             $version = $tag -replace '^v', ''
 
             if ($tag -match '-beta\.') {
-                $channel = "beta"
+                $channel = "Beta"
             } elseif ($tag -match '-dev\.') {
-                $channel = "dev"
+                $channel = "Dev"
             }
         }
 
         switch ($channel) {
-            "stable" {
+            "Stable" {
                 $prerelease = "false"
                 $targetCommitish = "master"
             }
-            "beta" {
+            "Beta" {
                 $prerelease = "true"
                 $targetCommitish = "master"
             }
-            "dev" {
+            "Dev" {
                 $prerelease = "false"
                 $targetCommitish = "dev"
             }
@@ -97,10 +100,15 @@ jobs:
       
     - name: Build
       run: .\make_action.bat ${{ steps.release_meta.outputs.version }}
+
+    - name: Rename installer
+      run: |
+        Rename-Item -Path "build_installer\LenovoLegionToolkitSetup.exe" -NewName "LenovoLegionToolkitSetup-v${{ steps.release_meta.outputs.version }}.exe"
+      shell: powershell
       
     - name: Verify installer
       run: |
-        $installerPath = "build_installer\LenovoLegionToolkitSetup.exe"
+        $installerPath = "build_installer\LenovoLegionToolkitSetup-v${{ steps.release_meta.outputs.version }}.exe"
         if (-not (Test-Path $installerPath)) {
           Write-Error "Installer file not found at $installerPath"
           exit 1
@@ -114,16 +122,16 @@ jobs:
         tag_name: ${{ steps.release_meta.outputs.tag_name }}
         target_commitish: ${{ steps.release_meta.outputs.target_commitish }}
         prerelease: ${{ steps.release_meta.outputs.prerelease }}
-        name: LenovoLegionToolkit [${{ steps.release_meta.outputs.version }}] (${{ steps.release_meta.outputs.channel }})
+        name: Lenovo Legion Toolkit v${{ steps.release_meta.outputs.version }} (${{ steps.release_meta.outputs.channel }})
         body: |
           ## Release Notes
           Version ${{ steps.release_meta.outputs.version }}
           Channel: ${{ steps.release_meta.outputs.channel }}
-        files: build_installer/LenovoLegionToolkitSetup.exe
+        files: build_installer/LenovoLegionToolkitSetup-v${{ steps.release_meta.outputs.version }}.exe
         token: ${{ secrets.GITHUB_TOKEN }}
         
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: installer-v${{ steps.release_meta.outputs.version }}-${{ steps.release_meta.outputs.channel }}
-        path: build_installer/LenovoLegionToolkitSetup.exe
+        path: build_installer/LenovoLegionToolkitSetup-v${{ steps.release_meta.outputs.version }}.exe
