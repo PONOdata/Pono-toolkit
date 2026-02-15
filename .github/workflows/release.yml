@@ -39,6 +39,8 @@ jobs:
         
     - name: Resolve release metadata
       id: release_meta
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         $channel = "Stable"
         $prerelease = "false"
@@ -60,6 +62,27 @@ jobs:
                 $channel = "Beta"
             } elseif ($tag -match '-dev\.') {
                 $channel = "Dev"
+            }
+
+            # Check GitHub API for authoritative channel determination
+            try {
+                $releaseInfo = gh release view "$tag" --json prerelease,targetCommitish 2>$null
+                if ($LASTEXITCODE -eq 0) {
+                    $json = $releaseInfo | ConvertFrom-Json
+                    
+                    if ($json.targetCommitish -eq 'dev') {
+                        $channel = "Dev"
+                        Write-Output "Detected target 'dev': Forcing channel to Dev"
+                    } elseif ($json.prerelease) {
+                        $channel = "Beta"
+                        Write-Output "Detected Pre-release on master: Forcing channel to Beta"
+                    } else {
+                        $channel = "Stable"
+                        Write-Output "Detected Release on master: Forcing channel to Stable"
+                    }
+                }
+            } catch {
+                Write-Output "Could not fetch release info. Falling back to tag name logic."
             }
         }
 
@@ -118,7 +141,7 @@ jobs:
     - name: Create Release and Upload Installer
       uses: softprops/action-gh-release@v2.0.8
       with:
-        draft: true
+        draft: ${{ github.event_name == 'workflow_dispatch' }}
         tag_name: ${{ steps.release_meta.outputs.tag_name }}
         target_commitish: ${{ steps.release_meta.outputs.target_commitish }}
         prerelease: ${{ steps.release_meta.outputs.prerelease }}
