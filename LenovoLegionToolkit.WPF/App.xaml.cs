@@ -129,6 +129,8 @@ public partial class App
             WinFormsApp.SetHighDpiMode(WinFormsHighDpiMode.PerMonitorV2);
             RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
 
+            MigrateSettingsToNew();
+
             ConfigureFeatureFlags();
 
             if (AppFlags.Instance.Debug) Console.WriteLine(@"[Startup] Initializing Features...");
@@ -623,6 +625,13 @@ public partial class App
         };
     }
 
+    #endregion
+    #region Utils
+
+    private static void MigrateSettingsToNew()
+    {
+        _ = IoCContainer.Resolve<FloatingGadgetSettings>().Store;
+    }
     #endregion
 
     #region Feature Initialization

@@ -38,6 +38,7 @@ public class IoCModule : Module
 
         builder.Register<ApplicationSettings>();
         builder.Register<BalanceModeSettings>();
+        builder.Register<FloatingGadgetSettings>();
         builder.Register<GodModeSettings>();
         builder.Register<GPUOverclockSettings>();
         builder.Register<IntegrationsSettings>();

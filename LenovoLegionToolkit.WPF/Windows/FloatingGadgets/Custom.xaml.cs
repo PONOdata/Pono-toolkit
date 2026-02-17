@@ -23,7 +23,7 @@ public partial class Custom
 {
     private static Custom? _instance;
 
-    private readonly ApplicationSettings _settings = IoCContainer.Resolve<ApplicationSettings>();
+    private readonly FloatingGadgetSettings _floatingGadgetSettings = IoCContainer.Resolve<FloatingGadgetSettings>();
     private readonly SensorsGroupController _controller = IoCContainer.Resolve<SensorsGroupController>();
     private bool _isInitializing = true;
 
@@ -99,12 +99,12 @@ public partial class Custom
             }
         }
 
-        var activeItems = new HashSet<FloatingGadgetItem>(_settings.Store.FloatingGadgetItems);
+        var activeItems = new HashSet<FloatingGadgetItem>(_floatingGadgetSettings.Store.Items);
 
         if (activeItems.Count == 0)
         {
             activeItems = new HashSet<FloatingGadgetItem>(
-                _settings.Store.FloatingGadgetItems.Cast<FloatingGadgetItem>()
+                _floatingGadgetSettings.Store.Items.Cast<FloatingGadgetItem>()
             );
         }
 
@@ -157,8 +157,8 @@ public partial class Custom
             }
         }
 
-        _settings.Store.FloatingGadgetItems = selectedItems;
-        _settings.SynchronizeStore();
+        _floatingGadgetSettings.Store.Items = selectedItems;
+        _floatingGadgetSettings.SynchronizeStore();
         MessagingCenter.Publish(new FloatingGadgetElementChangedMessage(selectedItems));
     }
 

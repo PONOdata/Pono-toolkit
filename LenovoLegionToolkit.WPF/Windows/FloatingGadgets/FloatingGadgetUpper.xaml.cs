@@ -88,6 +88,7 @@ public partial class FloatingGadgetUpper
     #endregion
 
     private readonly ApplicationSettings _settings = IoCContainer.Resolve<ApplicationSettings>();
+    private readonly FloatingGadgetSettings _floatingGadgetSettings = IoCContainer.Resolve<FloatingGadgetSettings>();
     private readonly SensorsController _controller = IoCContainer.Resolve<SensorsController>();
     private readonly SensorsGroupController _sensorsGroupControllers = IoCContainer.Resolve<SensorsGroupController>();
     private readonly FpsSensorController _fpsController = IoCContainer.Resolve<FpsSensorController>();
@@ -114,7 +115,7 @@ public partial class FloatingGadgetUpper
 
         RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
 
-        _activeItems = new HashSet<FloatingGadgetItem>(_settings.Store.FloatingGadgetItems);
+        _activeItems = new HashSet<FloatingGadgetItem>(_floatingGadgetSettings.Store.Items);
 
         _itemsMap = new()
         {
@@ -149,11 +150,11 @@ public partial class FloatingGadgetUpper
             { _pchGroup, ([FloatingGadgetItem.PchTemperature, FloatingGadgetItem.PchFan], null) }
         };
 
-        if (_settings.Store.FloatingGadgetItems.Count == 0)
+        if (_floatingGadgetSettings.Store.Items.Count == 0)
         {
-            _settings.Store.FloatingGadgetItems = Enum.GetValues<FloatingGadgetItem>().ToList();
-            _settings.SynchronizeStore();
-            _activeItems = new HashSet<FloatingGadgetItem>(_settings.Store.FloatingGadgetItems);
+            _floatingGadgetSettings.Store.Items = Enum.GetValues<FloatingGadgetItem>().ToList();
+            _floatingGadgetSettings.SynchronizeStore();
+            _activeItems = new HashSet<FloatingGadgetItem>(_floatingGadgetSettings.Store.Items);
         }
 
         IsVisibleChanged += FloatingGadget_IsVisibleChanged;
