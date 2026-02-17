@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using Windows.Win32;
 using Windows.Win32.System.Services;
@@ -17,17 +18,19 @@ internal static class ServiceControllerExtension
         if (serviceHandle.IsInvalid)
             throw new ExternalException("Open Service Error");
 
-        var result = PInvoke.ChangeServiceConfig(serviceHandle,
+        var result = PInvoke.ChangeServiceConfig(
+            new SC_HANDLE(serviceHandle.DangerousGetHandle()),
             (ENUM_SERVICE_TYPE)PInvoke.SERVICE_NO_CHANGE,
             enabled ? SERVICE_START_TYPE.SERVICE_AUTO_START : SERVICE_START_TYPE.SERVICE_DISABLED,
-            SERVICE_ERROR.SERVICE_ERROR_NORMAL,
-            null,
-            null,
-            out _,
+            (SERVICE_ERROR)PInvoke.SERVICE_NO_CHANGE,
             null,
             null,
             null,
-            null);
+            null,
+            null,
+            null,
+            null
+        );
 
         if (result)
             return;

@@ -262,7 +262,7 @@ public class SensorsGroupController : IDisposable
         foreach (var hw in _hardware.Where(h => h.HardwareType == HardwareType.Memory))
         {
             if (hw.Sensors == null) continue;
-            _memoryTempSensors.AddRange(hw.Sensors.Where(s => s.SensorType == SensorType.Temperature));
+            _memoryTempSensors.AddRange(hw.Sensors.Where(s => s.SensorType == SensorType.Temperature && s.Name.Contains("DIMM")));
         }
 
         foreach (var storage in _hardware.Where(h => h.HardwareType == HardwareType.Storage))
