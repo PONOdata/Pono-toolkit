@@ -29,15 +29,14 @@
             <Setter Property="BorderThickness" Value="0,0,0,1" />
             <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
         </Style>
-
         <Style x:Key="RowSeparator" TargetType="Rectangle">
             <Setter Property="Height" Value="1" />
             <Setter Property="Fill" Value="{DynamicResource DividerStrokeColorDefaultBrush}" />
             <Setter Property="VerticalAlignment" Value="Bottom" />
         </Style>
-
         <Style x:Key="ModernExpanderStyle" TargetType="Expander">
-            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+            <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Margin" Value="0,0,0,16" />
@@ -66,7 +65,10 @@
                                     IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
                                     <ToggleButton.Template>
                                         <ControlTemplate TargetType="ToggleButton">
-                                            <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
+                                            <Border
+                                                Padding="{TemplateBinding Padding}"
+                                                Background="{TemplateBinding Background}"
+                                                CornerRadius="8">
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="*" />
@@ -116,7 +118,6 @@
                                         </ControlTemplate>
                                     </ToggleButton.Template>
                                 </ToggleButton>
-
                                 <ContentPresenter
                                     x:Name="ExpandSite"
                                     Margin="0,0,0,10"
@@ -130,7 +131,6 @@
                                 </ContentPresenter>
                             </DockPanel>
                         </Border>
-
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsExpanded" Value="True">
                                 <Setter TargetName="HeaderSite" Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
@@ -192,7 +192,6 @@
             </Setter>
         </Style>
     </Window.Resources>
-
 
     <Grid Background="{DynamicResource ApplicationPageBackgroundBrush}">
         <Grid.RowDefinitions>
@@ -392,7 +391,6 @@
                                                 Height="44"
                                                 Margin="4,2"
                                                 IsEnabled="{Binding IsEnabled}">
-
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*" />
                                                     <ColumnDefinition Width="Auto" />
@@ -410,6 +408,7 @@
                                                     <TextBlock
                                                         VerticalAlignment="Center"
                                                         FontWeight="Medium"
+                                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                                         Text="{Binding DisplayName}" />
                                                 </StackPanel>
 
