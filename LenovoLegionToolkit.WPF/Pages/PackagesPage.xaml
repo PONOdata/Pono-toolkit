@@ -34,8 +34,7 @@
 
             <custom:CardControl
                 Grid.Row="1"
-                Margin="0,0,16,8"
-                FocusVisualStyle="{DynamicResource DefaultControlFocusVisualStyle}">
+                Margin="0,0,16,8">
                 <custom:CardControl.Header>
                     <Grid>
                         <Grid.RowDefinitions>

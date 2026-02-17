@@ -20,6 +20,64 @@
                 <ResourceDictionary Source="pack://application:,,,/Styles/InfoBar.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Styles/NavigationStore.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="{x:Static SystemParameters.FocusVisualStyleKey}">
+                <Setter Property="Control.Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Grid />
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource DefaultButtonStyle}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            </Style>
+            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DefaultTextBoxStyle}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            </Style>
+            <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource DefaultComboBoxStyle}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            </Style>
+            <Style TargetType="{x:Type ComboBoxItem}" BasedOn="{StaticResource DefaultComboBoxItemStyle}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            </Style>
+            <Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource DefaultRadioButtonStyle}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            </Style>
+            <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource DefaultCheckBoxStyle}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            </Style>
+
+            <Style TargetType="{x:Type wpfui:NavigationItem}" BasedOn="{StaticResource NavigationStoreItem}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            </Style>
+            <Style TargetType="{x:Type wpfui:NavigationHeader}" BasedOn="{StaticResource NavigationStoreHeader}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            </Style>
+            <Style TargetType="{x:Type wpfui:CardControl}" BasedOn="{StaticResource DefaultUiCardControlStyle}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            </Style>
+            <Style TargetType="{x:Type wpfui:CardAction}" BasedOn="{StaticResource DefaultUiCardActionStyle}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            </Style>
+            <Style TargetType="{x:Type wpfui:CardExpander}" BasedOn="{StaticResource DefaultUiCardExpanderStyle}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            </Style>
+            <Style TargetType="{x:Type wpfui:Button}" BasedOn="{StaticResource DefaultUiButtonStyle}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            </Style>
+            <Style TargetType="{x:Type wpfui:TextBox}" BasedOn="{StaticResource DefaultUiTextBoxStyle}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            </Style>
+            <Style TargetType="{x:Type wpfui:ToggleSwitch}" BasedOn="{StaticResource DefaultUiToggleSwitchStyle}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            </Style>
+            <Style TargetType="{x:Type wpfui:NumberBox}" BasedOn="{StaticResource DefaultUiNumberBoxStyle}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            </Style>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>
