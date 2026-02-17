@@ -439,7 +439,17 @@ public class SensorsGroupController : IDisposable
                 if (_isResetting || _computer == null || !_hardwareInitialized) return;
                 try
                 {
-                    foreach (var h in _hardware) h?.Update();
+                    foreach (var h in _hardware)
+                    {
+                        if (h == null) continue;
+
+                        if (gpuInactive && h.HardwareType == HardwareType.GpuNvidia)
+                        {
+                            continue;
+                        }
+
+                        h.Update();
+                    }
 
                     lock (_dataLock)
                     {

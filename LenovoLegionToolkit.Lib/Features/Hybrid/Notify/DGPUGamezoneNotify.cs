@@ -11,6 +11,11 @@ public class DGPUGamezoneNotify : AbstractDGPUNotify
     {
         try
         {
+            if (AppFlags.Instance.Debug)
+            {
+                return true;
+            }
+
             var mi = await Compatibility.GetMachineInformationAsync().ConfigureAwait(false);
             return mi is { Properties.SupportsIGPUMode: true };
         }

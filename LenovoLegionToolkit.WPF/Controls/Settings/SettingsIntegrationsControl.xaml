@@ -1,0 +1,93 @@
+<UserControl
+    x:Class="LenovoLegionToolkit.WPF.Controls.Settings.SettingsIntegrationsControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:LenovoLegionToolkit.WPF.Controls"
+    xmlns:custom="clr-namespace:LenovoLegionToolkit.WPF.Controls.Custom"
+    xmlns:resources="clr-namespace:LenovoLegionToolkit.WPF.Resources"
+    xmlns:wpfui="http://schemas.lepo.co/wpfui/2022/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="0,0,16,12">
+            <custom:CardControl Margin="0,0,0,8" Icon="PlugConnected24">
+                <custom:CardControl.Header>
+                    <controls:CardHeaderControl Title="{x:Static resources:Resource.SettingsPage_HWiNFO_Title}" Subtitle="{x:Static resources:Resource.SettingsPage_HWiNFO_Message}" />
+                </custom:CardControl.Header>
+                    <wpfui:ToggleSwitch
+                    x:Name="_hwinfoIntegrationToggle"
+                    Margin="0,0,0,8"
+                    AutomationProperties.Name="{x:Static resources:Resource.SettingsPage_HWiNFO_Title}"
+                    Click="HWiNFOIntegrationToggle_Click"
+                    Visibility="Hidden" />
+            </custom:CardControl>
+            <custom:CardControl Margin="0,0,0,8" Icon="WindowConsole20">
+                <custom:CardControl.Header>
+                    <controls:CardHeaderControl Title="{x:Static resources:Resource.SettingsPage_CLI_Title}" Subtitle="{x:Static resources:Resource.SettingsPage_CLI_Message}" />
+                </custom:CardControl.Header>
+                    <wpfui:ToggleSwitch
+                    x:Name="_cliInterfaceToggle"
+                    Margin="0,0,0,8"
+                    AutomationProperties.Name="{x:Static resources:Resource.SettingsPage_CLI_Title}"
+                    Click="CLIInterfaceToggle_Click"
+                    Visibility="Hidden" />
+            </custom:CardControl>
+            <custom:CardControl Margin="0,0,0,8" Icon="Folder24">
+                <custom:CardControl.Header>
+                    <controls:CardHeaderControl Title="{x:Static resources:Resource.SettingsPage_CLIAddToPath_Title}" Subtitle="{x:Static resources:Resource.SettingsPage_CLIAddToPath_Message}" />
+                </custom:CardControl.Header>
+                    <wpfui:ToggleSwitch
+                    x:Name="_cliPathToggle"
+                    Margin="0,0,0,8"
+                    AutomationProperties.Name="{x:Static resources:Resource.SettingsPage_CLIAddToPath_Title}"
+                    Click="CLIPathToggle_Click"
+                    Visibility="Hidden" />
+            </custom:CardControl>
+            <custom:CardControl Margin="0,0,0,8" Icon="Board24">
+                <custom:CardControl.Header>
+                    <controls:CardHeaderControl Title="{x:Static resources:Resource.SettingsPage_FloatingGadgets_Title}" Subtitle="{x:Static resources:Resource.SettingsPage_FloatingGadgets_Message}" />
+                </custom:CardControl.Header>
+                <StackPanel Orientation="Horizontal">
+                    <wpfui:NumberBox
+                        x:Name="_floatingGadgetsInterval"
+                        Width="60"
+                        Margin="5,0,8,0"
+                        VerticalAlignment="Center"
+                        Maximum="5"
+                        Minimum="1"
+                        SpinButtonPlacementMode="Compact"
+                        ToolTip="{x:Static resources:Resource.SettingsPage_FloatingGadgets_Tooltip}"
+                        ValueChanged="FloatingGadgetsInput_ValueChanged"
+                        Visibility="Hidden"
+                        Value="1" />
+                    <ComboBox
+                        x:Name="_floatingGadgetsStyleComboBox"
+                        Width="100"
+                        Margin="5,0,8,0"
+                        VerticalAlignment="Center"
+                        SelectionChanged="StyleComboBox_SelectionChanged"
+                        Visibility="Hidden">
+                        <ComboBoxItem Content="{x:Static resources:Resource.Default}" Tag="Default" IsSelected="True" />
+                        <ComboBoxItem Content="{x:Static resources:Resource.FloatingGadget_Style_Simple}" Tag="Simple" />
+                    </ComboBox>
+                    <Button
+                        x:Name="_customButton"
+                        Width="100"
+                        Height="35"
+                        Margin="5,0,8,0"
+                        VerticalAlignment="Center"
+                        Click="CustomButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center" Text="{x:Static resources:Resource.DashboardPage_Customize}" />
+                        </StackPanel>
+                    </Button>
+                    <wpfui:ToggleSwitch
+                        x:Name="_floatingGadgetsToggle"
+                        Margin="5,0,0,8"
+                        VerticalAlignment="Center"
+                        AutomationProperties.Name="{x:Static resources:Resource.SettingsPage_FloatingGadgets_Title}"
+                        Click="FloatingGadgets_Click"
+                        Visibility="Hidden" />
+                </StackPanel>
+            </custom:CardControl>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

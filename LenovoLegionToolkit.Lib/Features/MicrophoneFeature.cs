@@ -1,9 +1,10 @@
-﻿using System;
+﻿using LenovoLegionToolkit.Lib.Extensions;
+using LenovoLegionToolkit.Lib.Utils;
+using NAudio.CoreAudioApi;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LenovoLegionToolkit.Lib.Extensions;
-using NAudio.CoreAudioApi;
 
 namespace LenovoLegionToolkit.Lib.Features;
 
@@ -17,6 +18,11 @@ public class MicrophoneFeature : IFeature<MicrophoneState>
     {
         try
         {
+            if (AppFlags.Instance.Debug)
+            {
+                return Task.FromResult(true);
+            }
+
             var isSupported = AudioEndpointVolumes.Any();
             return Task.FromResult(isSupported);
         }

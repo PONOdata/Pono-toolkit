@@ -34,12 +34,25 @@ public partial class AddAutomationStepWindow
 
     private void CancelButton_Click(object sender, RoutedEventArgs e) => Close();
 
+    private void _searchBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+    {
+        _ = RefreshAsync();
+    }
+
     private Task RefreshAsync()
     {
         _content.Children.Clear();
 
+        var filter = _searchBox.Text?.Trim() ?? string.Empty;
+
         foreach (var control in _controls)
-            _content.Children.Add(CreateCardControl(control));
+        {
+            if (string.IsNullOrWhiteSpace(filter) ||
+                control.Title.Contains(filter, StringComparison.OrdinalIgnoreCase))
+            {
+                _content.Children.Add(CreateCardControl(control));
+            }
+        }
 
         return Task.CompletedTask;
     }

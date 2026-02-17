@@ -53,6 +53,11 @@ public partial class ITSModeFeature : IFeature<ITSMode>
 
     public async Task<bool> IsSupportedAsync()
     {
+        if (AppFlags.Instance.Debug)
+        {
+            return true;
+        }
+
         var machineInfo = await Compatibility.GetMachineInformationAsync().ConfigureAwait(false);
         return machineInfo.Properties.SupportsITSMode;
     }

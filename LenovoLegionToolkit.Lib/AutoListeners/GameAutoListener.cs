@@ -301,8 +301,6 @@ public class GameAutoListener : AbstractAutoListener<GameAutoListener.ChangedEve
                 Log.Instance.Trace($"Ignoring, process cache is not empty.");
                 return;
             }
-
-            RaiseChangedIfNeeded(e);
         }
     }
 

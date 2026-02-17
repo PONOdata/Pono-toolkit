@@ -1,6 +1,7 @@
-﻿using System;
+﻿using LenovoLegionToolkit.Lib.System;
+using LenovoLegionToolkit.Lib.Utils;
+using System;
 using System.Threading.Tasks;
-using LenovoLegionToolkit.Lib.System;
 
 namespace LenovoLegionToolkit.Lib.Features;
 
@@ -10,6 +11,11 @@ public class OneLevelWhiteKeyboardBacklightFeature() : AbstractDriverFeature<One
     {
         try
         {
+            if (AppFlags.Instance.Debug)
+            {
+                return true;
+            }
+
             var outBuffer = await SendCodeAsync(DriverHandle(), ControlCode, GetInBufferValue()).ConfigureAwait(false);
             var result = ((int)outBuffer & 16) == 16;
             return result;

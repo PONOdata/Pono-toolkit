@@ -58,6 +58,8 @@ public partial class CreateAutomationPipelineWindow
     private readonly HashSet<Type> _existingTriggerTypes;
     private readonly Action<IAutomationPipelineTrigger> _createPipeline;
 
+    private readonly HashSet<IAutomationPipelineTrigger> _selectedTriggers = new();
+
     private bool _multiSelect;
 
     public CreateAutomationPipelineWindow(HashSet<Type> existingTriggerTypes, Action<IAutomationPipelineTrigger> createPipeline)
@@ -85,16 +87,7 @@ public partial class CreateAutomationPipelineWindow
 
     private void CreateButton_Click(object sender, RoutedEventArgs e)
     {
-        var triggers = _content.Children.ToArray()
-            .OfType<CardControl>()
-            .Select(c => c.Header)
-            .OfType<CardHeaderControl>()
-            .Select(c => c.Accessory)
-            .OfType<CheckBox>()
-            .Where(c => c.IsChecked ?? false)
-            .Select(c => c.Tag)
-            .OfType<IAutomationPipelineTrigger>()
-            .ToArray();
+        var triggers = _selectedTriggers.ToArray();
 
         if (triggers.IsEmpty())
             return;
@@ -120,6 +113,11 @@ public partial class CreateAutomationPipelineWindow
 
     private void CancelButton_Click(object sender, RoutedEventArgs e) => Close();
 
+    private void _searchBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+    {
+        _ = RefreshAsync();
+    }
+
     private Task RefreshAsync()
     {
         _content.Children.Clear();
@@ -127,9 +125,15 @@ public partial class CreateAutomationPipelineWindow
         if (!_multiSelect)
             _content.Children.Add(CreateMultipleSelectCardControl());
 
+        var filter = _searchBox.Text?.Trim() ?? string.Empty;
+
         foreach (var trigger in _triggers)
         {
-            _content.Children.Add(CreateCardControl(trigger));
+            if (string.IsNullOrWhiteSpace(filter) ||
+                trigger.DisplayName.Contains(filter, StringComparison.OrdinalIgnoreCase))
+            {
+                _content.Children.Add(CreateCardControl(trigger));
+            }
         }
 
         _createButton.IsEnabled = false;
@@ -170,10 +174,16 @@ public partial class CreateAutomationPipelineWindow
             var checkbox = new CheckBox
             {
                 Tag = trigger,
-                HorizontalAlignment = HorizontalAlignment.Right
+                HorizontalAlignment = HorizontalAlignment.Right,
+                IsChecked = _selectedTriggers.Contains(trigger)
             };
             checkbox.Click += (_, e) =>
             {
+                if (checkbox.IsChecked == true)
+                    _selectedTriggers.Add(trigger);
+                else
+                    _selectedTriggers.Remove(trigger);
+
                 RefreshCreateButton();
                 e.Handled = true;
             };
@@ -205,8 +215,14 @@ public partial class CreateAutomationPipelineWindow
                 if (accessory is not CheckBox checkbox)
                     return;
 
-                var isChecked = checkbox.IsChecked ?? false;
-                checkbox.IsChecked = !isChecked;
+                var isChecked = !checkbox.IsChecked ?? false;
+                checkbox.IsChecked = isChecked;
+
+                if (isChecked)
+                    _selectedTriggers.Add(trigger);
+                else
+                    _selectedTriggers.Remove(trigger);
+
                 RefreshCreateButton();
             }
             else
@@ -227,14 +243,6 @@ public partial class CreateAutomationPipelineWindow
             return;
         }
 
-        var anyChecked = _content.Children.ToArray()
-            .OfType<CardControl>()
-            .Select(c => c.Header)
-            .OfType<CardHeaderControl>()
-            .Select(c => c.Accessory)
-            .OfType<CheckBox>()
-            .Any(c => c.IsChecked ?? false);
-
-        _createButton.IsEnabled = anyChecked;
+        _createButton.IsEnabled = _selectedTriggers.Count > 0;
     }
 }

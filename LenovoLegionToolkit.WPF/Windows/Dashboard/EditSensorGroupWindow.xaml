@@ -16,7 +16,7 @@
     FlowDirection="{x:Static utils:LocalizationHelper.Direction}"
     ResizeMode="NoResize"
     WindowBackdropType="Mica"
-    WindowStartupLocation="CenterOwner">
+    WindowStartupLocation="CenterScreen">
 
     <wpfui:UiWindow.Resources>
         <system:Double x:Key="PrimaryFontSize">14</system:Double>
