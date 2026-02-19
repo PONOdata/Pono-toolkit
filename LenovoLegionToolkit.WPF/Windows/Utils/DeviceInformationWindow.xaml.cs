@@ -98,7 +98,7 @@ public partial class DeviceInformationWindow
 
     private async void RefreshWarrantyButton_OnClick(object sender, RoutedEventArgs e) => await RefreshAsync(true);
 
-    private void DeviceCardControl_Click(object sender, RoutedEventArgs e)
+    private async Task DeviceCardControl_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not CardControl card || (card.Content as TextBlock)?.Text is not { } str)
         {
@@ -120,6 +120,12 @@ public partial class DeviceInformationWindow
 
                 if (_amdOverclockingWindow is not { IsLoaded: true })
                 {
+                    var mi = await Compatibility.GetMachineInformationAsync().ConfigureAwait(false);
+                    if (!mi.Properties.IsAmdDevice)
+                    {
+                        return;
+                    }
+
                     _amdOverclockingWindow = new AmdOverclocking();
                     _amdOverclockingWindow.Show();
                 }
