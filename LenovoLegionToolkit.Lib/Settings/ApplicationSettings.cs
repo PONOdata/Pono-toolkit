@@ -55,7 +55,7 @@ public class ApplicationSettings : AbstractSettings<ApplicationSettingsStore>
         public bool LockWindowSize { get; set; }
         public bool EnableLogging { get; set; }
         public bool ShowFloatingGadgets { get; set; }
-        public int FloatingGadgetsRefreshInterval { get; set; }
+        public int FloatingGadgetsRefreshInterval { get; set; } = 1;
         public string BackGroundImageFilePath { get; set; } = string.Empty;
         public double Opacity { get; set; } = 1.0f;
         public int SelectedStyleIndex { get; set; } = 0;
