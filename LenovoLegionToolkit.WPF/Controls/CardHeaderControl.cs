@@ -3,6 +3,8 @@ using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
+using Wpf.Ui.Common;
+using Wpf.Ui.Controls;
 
 namespace LenovoLegionToolkit.WPF.Controls;
 
@@ -24,13 +26,41 @@ public class CardHeaderControl : UserControl
         TextTrimming = TextTrimming.CharacterEllipsis,
     };
 
-    private readonly TextBlock _warningTextBlock = new()
+    private readonly SymbolIcon _infoIcon = new() { FontSize = 12, Margin = new(0, 2, 4, 0), VerticalAlignment = VerticalAlignment.Top };
+    private readonly TextBlock _infoTextBlock = new()
     {
         FontSize = 12,
-        Margin = new(0, 4, 0, 0),
         TextWrapping = TextWrapping.Wrap,
         TextTrimming = TextTrimming.CharacterEllipsis,
     };
+    private readonly Grid _infoGrid = new() { Margin = new(0, 4, 0, 0) };
+
+    private readonly SymbolIcon _warningIcon = new() { FontSize = 12, Margin = new(0, 2, 4, 0), VerticalAlignment = VerticalAlignment.Top };
+    private readonly TextBlock _warningTextBlock = new()
+    {
+        FontSize = 12,
+        TextWrapping = TextWrapping.Wrap,
+        TextTrimming = TextTrimming.CharacterEllipsis,
+    };
+    private readonly Grid _warningGrid = new() { Margin = new(0, 4, 0, 0) };
+
+    private readonly SymbolIcon _errorIcon = new() { FontSize = 12, Margin = new(0, 2, 4, 0), VerticalAlignment = VerticalAlignment.Top };
+    private readonly TextBlock _errorTextBlock = new()
+    {
+        FontSize = 12,
+        TextWrapping = TextWrapping.Wrap,
+        TextTrimming = TextTrimming.CharacterEllipsis,
+    };
+    private readonly Grid _errorGrid = new() { Margin = new(0, 4, 0, 0) };
+
+    private readonly SymbolIcon _successIcon = new() { FontSize = 12, Margin = new(0, 2, 4, 0), VerticalAlignment = VerticalAlignment.Top };
+    private readonly TextBlock _successTextBlock = new()
+    {
+        FontSize = 12,
+        TextWrapping = TextWrapping.Wrap,
+        TextTrimming = TextTrimming.CharacterEllipsis,
+    };
+    private readonly Grid _successGrid = new() { Margin = new(0, 4, 0, 0) };
 
     private readonly StackPanel _stackPanel = new();
 
@@ -93,6 +123,36 @@ public class CardHeaderControl : UserControl
         }
     }
 
+    public string Info
+    {
+        get => _infoTextBlock.Text;
+        set
+        {
+            _infoTextBlock.Text = value;
+            RefreshLayout();
+        }
+    }
+
+    public string Error
+    {
+        get => _errorTextBlock.Text;
+        set
+        {
+            _errorTextBlock.Text = value;
+            RefreshLayout();
+        }
+    }
+
+    public string Success
+    {
+        get => _successTextBlock.Text;
+        set
+        {
+            _successTextBlock.Text = value;
+            RefreshLayout();
+        }
+    }
+
     public string? SubtitleToolTip
     {
         get => _subtitleTextBlock.ToolTip as string;
@@ -137,8 +197,16 @@ public class CardHeaderControl : UserControl
         Grid.SetRow(_titleTextBlock, 0);
         Grid.SetRow(_stackPanel, 1);
 
+        ConfigureMessageGrid(_infoGrid, _infoIcon, _infoTextBlock);
+        ConfigureMessageGrid(_warningGrid, _warningIcon, _warningTextBlock);
+        ConfigureMessageGrid(_errorGrid, _errorIcon, _errorTextBlock);
+        ConfigureMessageGrid(_successGrid, _successIcon, _successTextBlock);
+
         _stackPanel.Children.Add(_subtitleTextBlock);
-        _stackPanel.Children.Add(_warningTextBlock);
+        _stackPanel.Children.Add(_infoGrid);
+        _stackPanel.Children.Add(_warningGrid);
+        _stackPanel.Children.Add(_errorGrid);
+        _stackPanel.Children.Add(_successGrid);
 
         _grid.Children.Add(_titleTextBlock);
         _grid.Children.Add(_stackPanel);
@@ -146,20 +214,37 @@ public class CardHeaderControl : UserControl
         Content = _grid;
 
         UpdateTextStyle();
+        RefreshLayout();
+
         IsEnabledChanged += (_, _) => UpdateTextStyle();
+    }
+
+    private static void ConfigureMessageGrid(Grid grid, SymbolIcon icon, TextBlock text)
+    {
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+        Grid.SetColumn(icon, 0);
+        Grid.SetColumn(text, 1);
+
+        grid.Children.Add(icon);
+        grid.Children.Add(text);
     }
 
     protected override AutomationPeer OnCreateAutomationPeer() => new CardHeaderControlAutomationPeer(this);
 
     private void RefreshLayout()
     {
-        if (string.IsNullOrWhiteSpace(Subtitle) && string.IsNullOrWhiteSpace(Warning))
+        if (string.IsNullOrWhiteSpace(Subtitle) && string.IsNullOrWhiteSpace(Warning) && string.IsNullOrWhiteSpace(Info) && string.IsNullOrWhiteSpace(Error) && string.IsNullOrWhiteSpace(Success))
             Grid.SetRowSpan(_titleTextBlock, 2);
         else
             Grid.SetRowSpan(_titleTextBlock, 1);
 
         _subtitleTextBlock.Visibility = string.IsNullOrWhiteSpace(Subtitle) ? Visibility.Collapsed : Visibility.Visible;
-        _warningTextBlock.Visibility = string.IsNullOrWhiteSpace(Warning) ? Visibility.Collapsed : Visibility.Visible;
+        _infoGrid.Visibility = string.IsNullOrWhiteSpace(Info) ? Visibility.Collapsed : Visibility.Visible;
+        _warningGrid.Visibility = string.IsNullOrWhiteSpace(Warning) ? Visibility.Collapsed : Visibility.Visible;
+        _errorGrid.Visibility = string.IsNullOrWhiteSpace(Error) ? Visibility.Collapsed : Visibility.Visible;
+        _successGrid.Visibility = string.IsNullOrWhiteSpace(Success) ? Visibility.Collapsed : Visibility.Visible;
     }
 
     private void UpdateTextStyle()
@@ -168,13 +253,35 @@ public class CardHeaderControl : UserControl
         {
             _titleTextBlock.SetResourceReference(ForegroundProperty, "TextFillColorPrimaryBrush");
             _subtitleTextBlock.SetResourceReference(ForegroundProperty, "TextFillColorSecondaryBrush");
+
+            _infoIcon.Symbol = SymbolRegular.Info24;
+            _infoIcon.SetResourceReference(ForegroundProperty, "SystemAccentColorSecondaryBrush");
+            _infoTextBlock.SetResourceReference(ForegroundProperty, "SystemAccentColorSecondaryBrush");
+
+            _warningIcon.Symbol = SymbolRegular.ErrorCircle24;
+            _warningIcon.SetResourceReference(ForegroundProperty, "SystemFillColorCautionBrush");
             _warningTextBlock.SetResourceReference(ForegroundProperty, "SystemFillColorCautionBrush");
+
+            _errorIcon.Symbol = SymbolRegular.DismissCircle24;
+            _errorIcon.SetResourceReference(ForegroundProperty, "SystemFillColorCriticalBrush");
+            _errorTextBlock.SetResourceReference(ForegroundProperty, "SystemFillColorCriticalBrush");
+
+            _successIcon.Symbol = SymbolRegular.CheckmarkCircle24;
+            _successIcon.SetResourceReference(ForegroundProperty, "SystemFillColorSuccessBrush");
+            _successTextBlock.SetResourceReference(ForegroundProperty, "SystemFillColorSuccessBrush");
         }
         else
         {
             _titleTextBlock.SetResourceReference(ForegroundProperty, "TextFillColorDisabledBrush");
             _subtitleTextBlock.SetResourceReference(ForegroundProperty, "TextFillColorDisabledBrush");
+            _infoIcon.SetResourceReference(ForegroundProperty, "TextFillColorDisabledBrush");
+            _infoTextBlock.SetResourceReference(ForegroundProperty, "TextFillColorDisabledBrush");
+            _warningIcon.SetResourceReference(ForegroundProperty, "TextFillColorDisabledBrush");
             _warningTextBlock.SetResourceReference(ForegroundProperty, "TextFillColorDisabledBrush");
+            _errorIcon.SetResourceReference(ForegroundProperty, "TextFillColorDisabledBrush");
+            _errorTextBlock.SetResourceReference(ForegroundProperty, "TextFillColorDisabledBrush");
+            _successIcon.SetResourceReference(ForegroundProperty, "TextFillColorDisabledBrush");
+            _successTextBlock.SetResourceReference(ForegroundProperty, "TextFillColorDisabledBrush");
         }
     }
 
