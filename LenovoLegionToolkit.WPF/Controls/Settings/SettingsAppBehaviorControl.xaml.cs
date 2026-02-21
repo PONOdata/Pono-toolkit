@@ -88,7 +88,7 @@ public partial class SettingsAppBehaviorControl
 
     private void AutorunComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (_isRefreshing)
+        if (_isRefreshing || !IsLoaded)
             return;
 
         if (!_autorunComboBox.TryGetSelectedItem(out AutorunState state))
@@ -99,7 +99,7 @@ public partial class SettingsAppBehaviorControl
 
     private void MinimizeToTrayToggle_Click(object sender, RoutedEventArgs e)
     {
-        if (_isRefreshing)
+        if (_isRefreshing || !IsLoaded)
             return;
 
         var state = _minimizeToTrayToggle.IsChecked;
@@ -112,7 +112,7 @@ public partial class SettingsAppBehaviorControl
 
     private void MinimizeOnCloseToggle_Click(object sender, RoutedEventArgs e)
     {
-        if (_isRefreshing)
+        if (_isRefreshing || !IsLoaded)
             return;
 
         var state = _minimizeOnCloseToggle.IsChecked;
@@ -125,7 +125,7 @@ public partial class SettingsAppBehaviorControl
 
     private void LockWindowSizeToggle_Click(object sender, RoutedEventArgs e)
     {
-        if (_isRefreshing)
+        if (_isRefreshing || !IsLoaded)
             return;
 
         var state = _lockWindowSizeToggle.IsChecked;
@@ -138,7 +138,7 @@ public partial class SettingsAppBehaviorControl
 
     private async void EnableLoggingToggle_Click(object sender, RoutedEventArgs e)
     {
-        if (_isRefreshing)
+        if (_isRefreshing || !IsLoaded)
             return;
 
         if (App.Current.MainWindow is not MainWindow mainWindow)
@@ -175,7 +175,7 @@ public partial class SettingsAppBehaviorControl
 
     private void NotificationsCard_Click(object sender, RoutedEventArgs e)
     {
-        if (_isRefreshing)
+        if (_isRefreshing || !IsLoaded)
             return;
 
         var window = new NotificationsSettingsWindow { Owner = Window.GetWindow(this) };
@@ -184,7 +184,7 @@ public partial class SettingsAppBehaviorControl
 
     private void BackupSettings_Click(object sender, RoutedEventArgs e)
     {
-        if (_isRefreshing)
+        if (_isRefreshing || !IsLoaded)
             return;
 
         var window = new SettingsBackupWindow { Owner = Window.GetWindow(this) };
@@ -193,7 +193,7 @@ public partial class SettingsAppBehaviorControl
 
     private async void UseNewSensorDashboard_Toggle(object sender, RoutedEventArgs e)
     {
-        if (_isRefreshing)
+        if (_isRefreshing || !IsLoaded)
             return;
 
         var state = _useNewSensorDashboardToggle.IsChecked;
@@ -231,7 +231,7 @@ public partial class SettingsAppBehaviorControl
 
     private void DashboardCustomButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_isRefreshing)
+        if (_isRefreshing || !IsLoaded)
             return;
 
         EditSensorGroupWindow.ShowInstance();
@@ -239,7 +239,7 @@ public partial class SettingsAppBehaviorControl
 
     private void DetectionModeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (_isRefreshing)
+        if (_isRefreshing || !IsLoaded)
             return;
 
         if (_detectionModeComboBox.SelectedItem is not ComboBoxItem item || item.Tag is not string tag)
@@ -280,7 +280,7 @@ public partial class SettingsAppBehaviorControl
 
     private void ArgumentWindowButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_isRefreshing)
+        if (_isRefreshing || !IsLoaded)
             return;
 
         ArgumentWindow.ShowInstance();
@@ -288,7 +288,7 @@ public partial class SettingsAppBehaviorControl
 
     private async void FloatingGadgets_Click(object sender, RoutedEventArgs e)
     {
-        if (_isRefreshing)
+        if (_isRefreshing || !IsLoaded)
             return;
 
         try
@@ -409,7 +409,7 @@ public partial class SettingsAppBehaviorControl
 
     private void FloatingGadgetsInput_ValueChanged(object sender, RoutedEventArgs e)
     {
-        if (_isRefreshing)
+        if (_isRefreshing || !IsLoaded)
             return;
 
         _floatingGadgetSettings.Store.FloatingGadgetsRefreshInterval = (int)(_floatingGadgetsInterval.Value ?? 1);
@@ -418,7 +418,7 @@ public partial class SettingsAppBehaviorControl
 
     private void StyleComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (_isRefreshing)
+        if (_isRefreshing || !IsLoaded)
             return;
 
         try
@@ -466,7 +466,7 @@ public partial class SettingsAppBehaviorControl
 
     private void CustomButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_isRefreshing)
+        if (_isRefreshing || !IsLoaded)
             return;
 
         CustomGadgetWindow.ShowInstance();
