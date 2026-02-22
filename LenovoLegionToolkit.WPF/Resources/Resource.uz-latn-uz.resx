@@ -2267,6 +2267,12 @@ Siziń skriptińiz durıs orınlanıp atırǵanına isenim kámil etiń.</value>
   <data name="SensorSettingsPage_CPU_Frequency_Title" xml:space="preserve">
     <value>CPU Frequency</value>
   </data>
+  <data name="SensorSettingsPage_Discrete_GPU_Title" xml:space="preserve">
+    <value>dGPU</value>
+  </data>
+  <data name="SensorSettingsPage_IGPU_Title" xml:space="preserve">
+    <value>iGPU</value>
+  </data>
   <data name="SensorSettingsPage_Max_Frequency_Title" xml:space="preserve">
     <value>Max Frequency</value>
   </data>

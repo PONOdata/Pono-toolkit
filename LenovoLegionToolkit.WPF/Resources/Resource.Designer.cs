@@ -6421,6 +6421,24 @@ namespace LenovoLegionToolkit.WPF.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to dGPU.
+        /// </summary>
+        public static string SensorSettingsPage_Discrete_GPU_Title {
+            get {
+                return ResourceManager.GetString("SensorSettingsPage_Discrete_GPU_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to iGPU.
+        /// </summary>
+        public static string SensorSettingsPage_IGPU_Title {
+            get {
+                return ResourceManager.GetString("SensorSettingsPage_IGPU_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Max Frequency.
         /// </summary>
         public static string SensorSettingsPage_Max_Frequency_Title {
