@@ -6,7 +6,7 @@
     xmlns:custom="clr-namespace:LenovoLegionToolkit.WPF.Controls.Custom"
     xmlns:resources="clr-namespace:LenovoLegionToolkit.WPF.Resources"
     xmlns:wpfui="http://schemas.lepo.co/wpfui/2022/xaml">
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="0,0,16,12">
             <custom:CardControl Margin="0,0,0,8" Icon="Games24">
                 <custom:CardControl.Header>
@@ -131,6 +131,28 @@
                         AutomationProperties.Name="{x:Static resources:Resource.SettingsPage_UseNewSensorDashboard_Title}"
                         Click="UseNewSensorDashboard_Toggle"
                         Visibility="Hidden" />
+                </StackPanel>
+            </custom:CardControl>
+            <custom:CardControl
+                x:Name="_sensorSettingsCardControl"
+                Margin="0,0,0,8"
+                Icon="DataUsage24"
+                Visibility="Hidden">
+                <custom:CardControl.Header>
+                    <controls:CardHeaderControl Title="{x:Static resources:Resource.SettingsPage_SensorSettings_Title}" Subtitle="{x:Static resources:Resource.SettingsPage_SensorSettings_Message}" />
+                </custom:CardControl.Header>
+                <StackPanel Orientation="Horizontal">
+                    <Button
+                        x:Name="_sensorSettingsButton"
+                        Width="100"
+                        Height="35"
+                        Margin="5,0,8,0"
+                        VerticalAlignment="Center"
+                        Click="SensorSettingsButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center" Text="{x:Static resources:Resource.DashboardPage_Customize}" />
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
             </custom:CardControl>
             <custom:CardControl Margin="0,0,0,8" Icon="ProjectionScreen24">

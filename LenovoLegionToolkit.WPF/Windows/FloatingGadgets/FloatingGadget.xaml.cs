@@ -1,4 +1,12 @@
-﻿using System;
+﻿using LenovoLegionToolkit.Lib;
+using LenovoLegionToolkit.Lib.Controllers.Sensors;
+using LenovoLegionToolkit.Lib.Messaging;
+using LenovoLegionToolkit.Lib.Messaging.Messages;
+using LenovoLegionToolkit.Lib.Settings;
+using LenovoLegionToolkit.Lib.Utils;
+using LenovoLegionToolkit.WPF.Resources;
+using LenovoLegionToolkit.WPF.Settings;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -9,13 +17,6 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
-using LenovoLegionToolkit.Lib;
-using LenovoLegionToolkit.Lib.Controllers.Sensors;
-using LenovoLegionToolkit.Lib.Messaging;
-using LenovoLegionToolkit.Lib.Messaging.Messages;
-using LenovoLegionToolkit.Lib.Settings;
-using LenovoLegionToolkit.Lib.Utils;
-using LenovoLegionToolkit.WPF.Resources;
 
 namespace LenovoLegionToolkit.WPF.Windows.FloatingGadgets;
 
@@ -54,6 +55,7 @@ public partial class FloatingGadget
     private readonly SensorsController _controller = IoCContainer.Resolve<SensorsController>();
     private readonly SensorsGroupController _sensorsGroupControllers = IoCContainer.Resolve<SensorsGroupController>();
     private readonly FpsSensorController _fpsController = IoCContainer.Resolve<FpsSensorController>();
+    private readonly SensorsControlSettings _sensorsControlSettings = IoCContainer.Resolve<SensorsControlSettings>();
 
     private readonly SemaphoreSlim _refreshLock = new(1, 1);
     private readonly StringBuilder _stringBuilder = new(64);
@@ -75,7 +77,9 @@ public partial class FloatingGadget
         InitializeComponent();
 
         if (!AppFlags.Instance.EnableHardwareAcceleration && !_settings.Store.EnableHardwareAcceleration)
+        {
             RenderOptions.ProcessRenderMode = RenderMode.SoftwareOnly;
+        }
 
         if (_floatingGadgetSettings.Store.Items.Count == 0)
         {
@@ -192,6 +196,8 @@ public partial class FloatingGadget
     {
         if (IsVisible)
         {
+            _sensorsGroupControllers.ShowAverageCpuFrequency = _sensorsControlSettings.Store.ShowCpuAverageFrequency;
+
             _cts?.Cancel();
             _cts?.Dispose();
             _cts = new CancellationTokenSource();

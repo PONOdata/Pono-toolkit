@@ -13,6 +13,7 @@ using LenovoLegionToolkit.Lib.System;
 using LenovoLegionToolkit.Lib.Utils;
 using LenovoLegionToolkit.WPF.Extensions;
 using LenovoLegionToolkit.WPF.Resources;
+using LenovoLegionToolkit.WPF.Settings;
 using LenovoLegionToolkit.WPF.Utils;
 using LenovoLegionToolkit.WPF.Windows;
 using LenovoLegionToolkit.WPF.Windows.Dashboard;
@@ -26,6 +27,7 @@ namespace LenovoLegionToolkit.WPF.Controls.Settings;
 public partial class SettingsAppBehaviorControl
 {
     private readonly ApplicationSettings _settings = IoCContainer.Resolve<ApplicationSettings>();
+    private readonly DashboardSettings _dashboardSettings = IoCContainer.Resolve<DashboardSettings>();
     private readonly AutomationProcessor _automationProcessor = IoCContainer.Resolve<AutomationProcessor>();
     private readonly FloatingGadgetSettings _floatingGadgetSettings = IoCContainer.Resolve<FloatingGadgetSettings>();
 
@@ -77,9 +79,16 @@ public partial class SettingsAppBehaviorControl
         _enableLoggingToggle.Visibility = Visibility.Visible;
         _useNewSensorDashboardToggle.Visibility = Visibility.Visible;
         _lockWindowSizeToggle.Visibility = Visibility.Visible;
-        _floatingGadgetsToggle.Visibility = Visibility.Visible;
         _floatingGadgetsStyleComboBox.Visibility = Visibility.Visible;
         _floatingGadgetsInterval.Visibility = Visibility.Visible;
+        if (_settings.Store.UseNewSensorDashboard)
+        {
+            _sensorSettingsCardControl.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            _sensorSettingsCardControl.Visibility = Visibility.Collapsed;
+        }
 
         _isRefreshing = false;
 
@@ -226,6 +235,8 @@ public partial class SettingsAppBehaviorControl
                 Resource.SettingsPage_UseNewDashboard_Restart_Message);
             _settings.Store.UseNewSensorDashboard = state.Value;
             _settings.SynchronizeStore();
+            
+            _sensorSettingsCardControl.Visibility = state.Value ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 
@@ -470,5 +481,14 @@ public partial class SettingsAppBehaviorControl
             return;
 
         CustomGadgetWindow.ShowInstance();
+    }
+    
+    private void SensorSettingsButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_isRefreshing || !IsLoaded)
+            return;
+
+        var window = new SensorSettingsWindow { Owner = Window.GetWindow(this) };
+        window.ShowDialog();
     }
 }
