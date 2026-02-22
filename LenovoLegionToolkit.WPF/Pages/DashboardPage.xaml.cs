@@ -29,7 +29,7 @@ public partial class DashboardPage
     {
         InitializeComponent();
 
-        if (!_settings.Store.UseNewSensorDashboard)
+        if (!_settings.Store.EnableHardwareSensors || !_settings.Store.UseNewSensorDashboard)
         {
             sensorControl = new SensorsControl();
         }

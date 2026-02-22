@@ -4142,7 +4142,7 @@ namespace LenovoLegionToolkit.WPF.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You need install PawnIO first to use the new dashboard!.
+        ///   Looks up a localized string similar to You need to install PawnIO first to use hardware sensors!.
         /// </summary>
         public static string MainWindow_PawnIO_Warning_Message {
             get {
@@ -6376,15 +6376,6 @@ namespace LenovoLegionToolkit.WPF.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sensor Settings.
-        /// </summary>
-        public static string SensorSettingsPage_Title {
-            get {
-                return ResourceManager.GetString("SensorSettingsPage_Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Settings.
         /// </summary>
         public static string Settings {
@@ -7070,6 +7061,33 @@ namespace LenovoLegionToolkit.WPF.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enable advanced hardware polling to monitor detailed temperatures, frequencies, and power limits..
+        /// </summary>
+        public static string SettingsPage_HardwareSensors_Message {
+            get {
+                return ResourceManager.GetString("SettingsPage_HardwareSensors_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You need to install PawnIO first to use hardware sensors!.
+        /// </summary>
+        public static string SettingsPage_HardwareSensors_PawnIOWarning {
+            get {
+                return ResourceManager.GetString("SettingsPage_HardwareSensors_PawnIOWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hardware Sensors.
+        /// </summary>
+        public static string SettingsPage_HardwareSensors_Title {
+            get {
+                return ResourceManager.GetString("SettingsPage_HardwareSensors_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Auto (Let Windows decide).
         /// </summary>
         public static string SettingsPage_HWA_GPUPreference_Auto {
@@ -7273,15 +7291,6 @@ namespace LenovoLegionToolkit.WPF.Resources {
         public static string SettingsPage_Select_BackgroundImage_ImageFile {
             get {
                 return ResourceManager.GetString("SettingsPage_Select_BackgroundImage_ImageFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Edit sensor data acquisition and display settings..
-        /// </summary>
-        public static string SettingsPage_SensorSettings_Message {
-            get {
-                return ResourceManager.GetString("SettingsPage_SensorSettings_Message", resourceCulture);
             }
         }
         

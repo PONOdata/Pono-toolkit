@@ -39,6 +39,7 @@ public static class PawnIOHelper
                 return;
             }
 
+            ApplicationSettings.Store.EnableHardwareSensors = false;
             ApplicationSettings.Store.UseNewSensorDashboard = false;
             ApplicationSettings.SynchronizeStore();
         }

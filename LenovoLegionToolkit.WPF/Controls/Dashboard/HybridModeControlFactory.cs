@@ -127,7 +127,7 @@ public static class HybridModeControlFactory
             }
 
             var feature = IoCContainer.Resolve<ApplicationSettings>();
-            if (feature.Store.UseNewSensorDashboard)
+            if (feature.Store.EnableHardwareSensors)
             {
                 var controller = IoCContainer.Resolve<SensorsGroupController>();
                 controller.IsDgpuConnected = e;

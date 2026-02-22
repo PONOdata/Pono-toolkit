@@ -60,7 +60,7 @@
                     Margin="0,0,0,16"
                     FontSize="20"
                     FontWeight="Medium"
-                    Text="{x:Static resources:Resource.SensorSettingsPage_Title}" />
+                    Text="{x:Static resources:Resource.SettingsPage_SensorSettings_Title}" />
                 <custom:CardControl Margin="0,0,0,8">
                     <custom:CardControl.Header>
                         <controls:CardHeaderControl Title="{x:Static resources:Resource.SensorSettingsPage_CPU_Frequency_Title}" Subtitle="{x:Static resources:Resource.SensorSettingsPage_CPU_Frequency_Message}" />

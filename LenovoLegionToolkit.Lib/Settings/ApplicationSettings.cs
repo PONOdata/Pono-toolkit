@@ -52,6 +52,7 @@ public class ApplicationSettings : AbstractSettings<ApplicationSettingsStore>
         public ModifierKey SmartFnLockFlags { get; set; }
         public bool ResetBatteryOnSinceTimerOnReboot { get; set; }
         public bool UseNewSensorDashboard { get; set; }
+        public bool EnableHardwareSensors { get; set; }
         public bool LockWindowSize { get; set; }
         public bool EnableLogging { get; set; }
         public string BackGroundImageFilePath { get; set; } = string.Empty;

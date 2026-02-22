@@ -126,7 +126,7 @@ public partial class StatusWindow
     {
         if (!_machineInfo.HasValue) return;
 
-        var useSensors = _settings.Store.UseNewSensorDashboard;
+        var useSensors = _settings.Store.EnableHardwareSensors;
         var sensorVis = useSensors ? Visibility.Visible : Visibility.Collapsed;
 
         _cpuGrid.Visibility = sensorVis;
@@ -235,7 +235,7 @@ public partial class StatusWindow
 
         await Task.WhenAll(tasks).ConfigureAwait(false);
 
-        if (!_settings.Store.UseNewSensorDashboard) return new(state, mode, godModePresetName, gpuStatus, batteryInfo, batteryState, hasUpdate, sensorsData, cpuPower, gpuPower);
+        if (!_settings.Store.EnableHardwareSensors) return new(state, mode, godModePresetName, gpuStatus, batteryInfo, batteryState, hasUpdate, sensorsData, cpuPower, gpuPower);
 
         try
         {
@@ -268,7 +268,7 @@ public partial class StatusWindow
         UpdateUiLayout(data.GPUStatus);
         RefreshPowerMode(data.PowerModeState, data.ITSMode, data.GodModePresetName);
 
-        var useSensors = _settings.Store.UseNewSensorDashboard;
+        var useSensors = _settings.Store.EnableHardwareSensors;
 
         if (useSensors)
         {

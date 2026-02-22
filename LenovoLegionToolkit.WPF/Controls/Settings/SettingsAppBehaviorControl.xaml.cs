@@ -76,15 +76,30 @@ public partial class SettingsAppBehaviorControl
         _minimizeOnCloseToggle.Visibility = Visibility.Visible;
         _enableLoggingToggle.Visibility = Visibility.Visible;
         _useNewSensorDashboardToggle.Visibility = Visibility.Visible;
+        _hardwareSensorsToggle.Visibility = Visibility.Visible;
         _lockWindowSizeToggle.Visibility = Visibility.Visible;
         _floatingGadgetsToggle.Visibility = Visibility.Visible;
-        if (_settings.Store.UseNewSensorDashboard || _floatingGadgetSettings.Store.ShowFloatingGadgets)
+
+        _hardwareSensorsToggle.IsChecked = _settings.Store.EnableHardwareSensors;
+
+        if (_settings.Store.EnableHardwareSensors)
         {
-            _sensorSettingsCardControl.Visibility = Visibility.Visible;
+            _useNewSensorDashboardCardControl.Visibility = Visibility.Visible;
+            _floatingGadgetsCardControl.Visibility = Visibility.Visible;
         }
         else
         {
-            _sensorSettingsCardControl.Visibility = Visibility.Collapsed;
+            _useNewSensorDashboardCardControl.Visibility = Visibility.Collapsed;
+            _floatingGadgetsCardControl.Visibility = Visibility.Collapsed;
+        }
+
+        if (PawnIOHelper.IsPawnIOInnstalled())
+        {
+            _hardwareSensorsCardHeader.Warning = string.Empty;
+        }
+        else
+        {
+            _hardwareSensorsCardHeader.Warning = Resource.SettingsPage_HardwareSensors_PawnIOWarning;
         }
 
         _isRefreshing = false;
@@ -197,6 +212,68 @@ public partial class SettingsAppBehaviorControl
         window.ShowDialog();
     }
 
+    private async void HardwareSensors_Toggle(object sender, RoutedEventArgs e)
+    {
+        e.Handled = true;
+
+        if (_isRefreshing || !IsLoaded)
+            return;
+
+        var state = _hardwareSensorsToggle.IsChecked;
+        if (state is null)
+            return;
+
+        if (state.Value)
+        {
+            if (!PawnIOHelper.IsPawnIOInnstalled())
+            {
+                var result = await MessageBoxHelper.ShowAsync(
+                    this,
+                    Resource.MainWindow_PawnIO_Warning_Title,
+                    Resource.MainWindow_PawnIO_Warning_Message,
+                    Resource.Yes,
+                    Resource.No);
+
+                if (result)
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "https://pawnio.eu/",
+                        UseShellExecute = true
+                    });
+                }
+
+                _hardwareSensorsToggle.IsChecked = false;
+                return;
+            }
+
+            var sensorsController = IoCContainer.Resolve<SensorsGroupController>();
+            if (!sensorsController.IsLibreHardwareMonitorInitialized())
+            {
+                await sensorsController.IsSupportedAsync();
+            }
+        }
+        else
+        {
+            _useNewSensorDashboardToggle.IsChecked = false;
+            _settings.Store.UseNewSensorDashboard = false;
+            
+            _floatingGadgetsToggle.IsChecked = false;
+            _floatingGadgetSettings.Store.ShowFloatingGadgets = false;
+            if (App.Current.FloatingGadget != null)
+            {
+                App.Current.FloatingGadget.Hide();
+            }
+        }
+
+        _settings.Store.EnableHardwareSensors = state.Value;
+        _settings.SynchronizeStore();
+        _floatingGadgetSettings.SynchronizeStore();
+        
+        _useNewSensorDashboardCardControl.Visibility = state.Value ? Visibility.Visible : Visibility.Collapsed;
+        _floatingGadgetsCardControl.Visibility = state.Value ? Visibility.Visible : Visibility.Collapsed;
+    }
+
     private async void UseNewSensorDashboard_Toggle(object sender, RoutedEventArgs e)
     {
         e.Handled = true;
@@ -208,35 +285,11 @@ public partial class SettingsAppBehaviorControl
         if (state is null)
             return;
 
-        if (state.Value && !PawnIOHelper.IsPawnIOInnstalled())
-        {
-            var result = await MessageBoxHelper.ShowAsync(
-                this,
-                Resource.MainWindow_PawnIO_Warning_Title,
-                Resource.MainWindow_PawnIO_Warning_Message,
-                Resource.Yes,
-                Resource.No);
-
-            if (result)
-            {
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = "https://pawnio.eu/",
-                    UseShellExecute = true
-                });
-            }
-
-            _useNewSensorDashboardToggle.IsChecked = false;
-        }
-        else
-        {
-            await SnackbarHelper.ShowAsync(Resource.SettingsPage_UseNewDashboard_Switch_Title,
-                Resource.SettingsPage_UseNewDashboard_Restart_Message);
-            _settings.Store.UseNewSensorDashboard = state.Value;
-            _settings.SynchronizeStore();
+        await SnackbarHelper.ShowAsync(Resource.SettingsPage_UseNewDashboard_Switch_Title,
+            Resource.SettingsPage_UseNewDashboard_Restart_Message);
             
-            _sensorSettingsCardControl.Visibility = (_settings.Store.UseNewSensorDashboard || _floatingGadgetSettings.Store.ShowFloatingGadgets) ? Visibility.Visible : Visibility.Collapsed;
-        }
+        _settings.Store.UseNewSensorDashboard = state.Value;
+        _settings.SynchronizeStore();
     }
 
     private void DashboardCustomButton_Click(object sender, RoutedEventArgs e)
@@ -296,7 +349,7 @@ public partial class SettingsAppBehaviorControl
         ArgumentWindow.ShowInstance();
     }
 
-    private async void FloatingGadgets_Click(object sender, RoutedEventArgs e)
+    private void FloatingGadgets_Click(object sender, RoutedEventArgs e)
     {
         e.Handled = true;
 
@@ -308,33 +361,6 @@ public partial class SettingsAppBehaviorControl
             var state = _floatingGadgetsToggle.IsChecked;
             if (state is null)
                 return;
-
-            if (state.Value)
-            {
-                if (!PawnIOHelper.IsPawnIOInnstalled())
-                {
-                    var result = await MessageBoxHelper.ShowAsync(
-                        this,
-                        Resource.MainWindow_PawnIO_Warning_Title,
-                        Resource.MainWindow_PawnIO_Warning_Message,
-                        Resource.Yes,
-                        Resource.No);
-
-                    if (result)
-                    {
-                        Process.Start(new ProcessStartInfo
-                        {
-                            FileName = "https://pawnio.eu/",
-                            UseShellExecute = true
-                        });
-                    }
-
-                    _floatingGadgetsToggle.IsChecked = false;
-                    _floatingGadgetSettings.Store.ShowFloatingGadgets = false;
-                    _floatingGadgetSettings.SynchronizeStore();
-                    return;
-                }
-            }
 
             Window? floatingGadget = null;
 
@@ -408,8 +434,6 @@ public partial class SettingsAppBehaviorControl
 
             _floatingGadgetSettings.Store.ShowFloatingGadgets = state.Value;
             _floatingGadgetSettings.SynchronizeStore();
-
-            _sensorSettingsCardControl.Visibility = (_settings.Store.UseNewSensorDashboard || _floatingGadgetSettings.Store.ShowFloatingGadgets) ? Visibility.Visible : Visibility.Collapsed;
         }
         catch (Exception ex)
         {

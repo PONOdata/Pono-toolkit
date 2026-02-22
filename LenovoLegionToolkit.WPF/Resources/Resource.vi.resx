@@ -1505,7 +1505,7 @@ Chọn Có để tắt và Không để bỏ qua.</value>
     <value>Cài đặt</value>
   </data>
   <data name="MainWindow_PawnIO_Warning_Message" xml:space="preserve">
-    <value>Bạn cần cài đặt PawnIO trước để sử dụng bảng cảm biến mới!</value>
+    <value>You need to install PawnIO first to use hardware sensors!</value>
   </data>
   <data name="MainWindow_PawnIO_Warning_Title" xml:space="preserve">
     <value>Cảnh báo</value>
@@ -2253,9 +2253,6 @@ Hãy đảm bảo chương trình hoặc script của bạn chạy đúng trư�
   <data name="SensorSettingsPage_Preferred_GPU_Title" xml:space="preserve">
     <value>Preferred GPU</value>
   </data>
-  <data name="SensorSettingsPage_Title" xml:space="preserve">
-    <value>Sensor Settings</value>
-  </data>
   <data name="Settings" xml:space="preserve">
     <value>Cài đặt</value>
   </data>
@@ -2483,6 +2480,15 @@ Nên khởi động lại sau khi thay đổi tùy chọn này.</value>
   <data name="SettingsPage_HardwareAcceleration_Warning" xml:space="preserve">
     <value>Enabling hardware acceleration may cause flickering or black flashes on some hybrid graphics systems, and may prevent the discrete GPU from being turned off.</value>
   </data>
+  <data name="SettingsPage_HardwareSensors_Message" xml:space="preserve">
+    <value>Enable advanced hardware polling to monitor detailed temperatures, frequencies, and power limits.</value>
+  </data>
+  <data name="SettingsPage_HardwareSensors_PawnIOWarning" xml:space="preserve">
+    <value>You need to install PawnIO first to use hardware sensors!</value>
+  </data>
+  <data name="SettingsPage_HardwareSensors_Title" xml:space="preserve">
+    <value>Hardware Sensors</value>
+  </data>
   <data name="SettingsPage_HWA_GPUPreference_Auto" xml:space="preserve">
     <value>Auto (Let Windows decide)</value>
   </data>
@@ -2551,9 +2557,6 @@ Nên khởi động lại sau khi thay đổi tùy chọn này.</value>
   </data>
   <data name="SettingsPage_Select_BackgroundImage_ImageFile" xml:space="preserve">
     <value>Tệp hình ảnh</value>
-  </data>
-  <data name="SettingsPage_SensorSettings_Message" xml:space="preserve">
-    <value>Edit sensor data acquisition and display settings.</value>
   </data>
   <data name="SettingsPage_SensorSettings_Title" xml:space="preserve">
     <value>Sensor Settings</value>

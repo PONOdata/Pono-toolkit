@@ -897,7 +897,7 @@ public partial class App
 
         try
         {
-            if (settings.Store is { UseNewSensorDashboard: false } && floatingGadgetSettings.Store is { ShowFloatingGadgets: false })
+            if (settings.Store is { EnableHardwareSensors: false })
             {
                 return;
             }
