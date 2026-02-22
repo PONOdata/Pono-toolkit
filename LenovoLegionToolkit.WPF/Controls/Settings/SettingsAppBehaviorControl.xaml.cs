@@ -70,8 +70,6 @@ public partial class SettingsAppBehaviorControl
 
         // Floating Gadgets
         _floatingGadgetsToggle.IsChecked = _floatingGadgetSettings.Store.ShowFloatingGadgets;
-        _floatingGadgetsStyleComboBox.SelectedIndex = _floatingGadgetSettings.Store.SelectedStyleIndex;
-        _floatingGadgetsInterval.Value = _floatingGadgetSettings.Store.FloatingGadgetsRefreshInterval;
 
         _autorunComboBox.Visibility = Visibility.Visible;
         _minimizeToTrayToggle.Visibility = Visibility.Visible;
@@ -79,9 +77,8 @@ public partial class SettingsAppBehaviorControl
         _enableLoggingToggle.Visibility = Visibility.Visible;
         _useNewSensorDashboardToggle.Visibility = Visibility.Visible;
         _lockWindowSizeToggle.Visibility = Visibility.Visible;
-        _floatingGadgetsStyleComboBox.Visibility = Visibility.Visible;
-        _floatingGadgetsInterval.Visibility = Visibility.Visible;
-        if (_settings.Store.UseNewSensorDashboard)
+        _floatingGadgetsToggle.Visibility = Visibility.Visible;
+        if (_settings.Store.UseNewSensorDashboard || _floatingGadgetSettings.Store.ShowFloatingGadgets)
         {
             _sensorSettingsCardControl.Visibility = Visibility.Visible;
         }
@@ -202,6 +199,8 @@ public partial class SettingsAppBehaviorControl
 
     private async void UseNewSensorDashboard_Toggle(object sender, RoutedEventArgs e)
     {
+        e.Handled = true;
+
         if (_isRefreshing || !IsLoaded)
             return;
 
@@ -236,7 +235,7 @@ public partial class SettingsAppBehaviorControl
             _settings.Store.UseNewSensorDashboard = state.Value;
             _settings.SynchronizeStore();
             
-            _sensorSettingsCardControl.Visibility = state.Value ? Visibility.Visible : Visibility.Collapsed;
+            _sensorSettingsCardControl.Visibility = (_settings.Store.UseNewSensorDashboard || _floatingGadgetSettings.Store.ShowFloatingGadgets) ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 
@@ -299,6 +298,8 @@ public partial class SettingsAppBehaviorControl
 
     private async void FloatingGadgets_Click(object sender, RoutedEventArgs e)
     {
+        e.Handled = true;
+
         if (_isRefreshing || !IsLoaded)
             return;
 
@@ -407,6 +408,8 @@ public partial class SettingsAppBehaviorControl
 
             _floatingGadgetSettings.Store.ShowFloatingGadgets = state.Value;
             _floatingGadgetSettings.SynchronizeStore();
+
+            _sensorSettingsCardControl.Visibility = (_settings.Store.UseNewSensorDashboard || _floatingGadgetSettings.Store.ShowFloatingGadgets) ? Visibility.Visible : Visibility.Collapsed;
         }
         catch (Exception ex)
         {
@@ -418,62 +421,7 @@ public partial class SettingsAppBehaviorControl
         }
     }
 
-    private void FloatingGadgetsInput_ValueChanged(object sender, RoutedEventArgs e)
-    {
-        if (_isRefreshing || !IsLoaded)
-            return;
 
-        _floatingGadgetSettings.Store.FloatingGadgetsRefreshInterval = (int)(_floatingGadgetsInterval.Value ?? 1);
-        _floatingGadgetSettings.SynchronizeStore();
-    }
-
-    private void StyleComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (_isRefreshing || !IsLoaded)
-            return;
-
-        try
-        {
-            _floatingGadgetSettings.Store.SelectedStyleIndex = _floatingGadgetsStyleComboBox.SelectedIndex;
-            _floatingGadgetSettings.SynchronizeStore();
-
-            if (_floatingGadgetSettings.Store.ShowFloatingGadgets && App.Current.FloatingGadget != null)
-            {
-                var styleTypeMapping = new Dictionary<int, Type>
-                {
-                    [0] = typeof(FloatingGadget),
-                    [1] = typeof(FloatingGadgetUpper)
-                };
-
-                var constructorMapping = new Dictionary<int, Func<Window>>
-                {
-                    [0] = () => new FloatingGadget(),
-                    [1] = () => new FloatingGadgetUpper()
-                };
-
-                int selectedStyle = _floatingGadgetSettings.Store.SelectedStyleIndex;
-                if (styleTypeMapping.TryGetValue(selectedStyle, out Type? targetType) &&
-                    App.Current.FloatingGadget.GetType() != targetType)
-                {
-                    App.Current.FloatingGadget.Close();
-
-                    if (constructorMapping.TryGetValue(selectedStyle, out Func<Window>? constructor))
-                    {
-                        App.Current.FloatingGadget = constructor();
-                        App.Current.FloatingGadget.Show();
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Instance.Trace($"StyleComboBox_SelectionChanged error: {ex.Message}");
-
-            _isRefreshing = true;
-            _floatingGadgetsStyleComboBox.SelectedIndex = _floatingGadgetSettings.Store.SelectedStyleIndex;
-            _isRefreshing = false;
-        }
-    }
 
     private void CustomButton_Click(object sender, RoutedEventArgs e)
     {
