@@ -239,7 +239,7 @@ public class GPUController
         var processNames = NVAPIExtensions.GetActiveProcesses(gpu);
         var feature = IoCContainer.Resolve<HybridModeFeature>();
 
-        if (await feature.GetStateAsync().ConfigureAwait(false) != HybridModeState.Off)
+        if (await feature.GetStateAsync().ConfigureAwait(false) == HybridModeState.Off)
         {
             if (NVAPI.IsDisplayConnected(gpu))
             {
