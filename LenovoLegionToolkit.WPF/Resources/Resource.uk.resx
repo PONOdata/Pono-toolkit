@@ -776,9 +776,6 @@
   <data name="Delete" xml:space="preserve">
     <value>Видалити</value>
   </data>
-  <data name="DeselectAll" xml:space="preserve">
-    <value>Зняти виділення з усіх</value>
-  </data>
   <data name="DeviceAutomationPipelineTriggerTabItemContent_OnlyConnected" xml:space="preserve">
     <value>Показати лише під'єднані пристрої</value>
   </data>
@@ -1493,6 +1490,9 @@
   <data name="LampArrayRGBKeyboardPage_Wave" xml:space="preserve">
     <value>Wave</value>
   </data>
+  <data name="LivePreview" xml:space="preserve">
+    <value>Live Preview</value>
+  </data>
   <data name="Load" xml:space="preserve">
     <value>Скидання</value>
   </data>
@@ -2198,9 +2198,6 @@
   </data>
   <data name="Saving" xml:space="preserve">
     <value>Збереження...</value>
-  </data>
-  <data name="SelectAll" xml:space="preserve">
-    <value>Виділити усі</value>
   </data>
   <data name="SelectSmartKeyPipelinesWindow_List_Description" xml:space="preserve">
     <value>Оберіть одну чи більше швидких дій для циклу</value>
@@ -3073,8 +3070,5 @@
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Так</value>
-  </data>
-  <data name="LivePreview" xml:space="preserve">
-    <value>Live Preview</value>
   </data>
 </root>

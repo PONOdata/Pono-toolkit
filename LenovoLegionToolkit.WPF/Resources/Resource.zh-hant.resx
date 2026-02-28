@@ -776,9 +776,6 @@
   <data name="Delete" xml:space="preserve">
     <value>刪除</value>
   </data>
-  <data name="DeselectAll" xml:space="preserve">
-    <value>取消全部選擇</value>
-  </data>
   <data name="DeviceAutomationPipelineTriggerTabItemContent_OnlyConnected" xml:space="preserve">
     <value>僅顯示已連接的裝置</value>
   </data>
@@ -1494,6 +1491,9 @@ Do not proceed unless you possess the necessary technical expertise.</value>
   <data name="LampArrayRGBKeyboardPage_Wave" xml:space="preserve">
     <value>Wave</value>
   </data>
+  <data name="LivePreview" xml:space="preserve">
+    <value>Live Preview</value>
+  </data>
   <data name="Load" xml:space="preserve">
     <value>重設</value>
   </data>
@@ -2200,9 +2200,6 @@ Do not proceed unless you possess the necessary technical expertise.</value>
   </data>
   <data name="Saving" xml:space="preserve">
     <value>儲存中……</value>
-  </data>
-  <data name="SelectAll" xml:space="preserve">
-    <value>選取全部</value>
   </data>
   <data name="SelectSmartKeyPipelinesWindow_List_Description" xml:space="preserve">
     <value>選擇一個或更多快捷動作來循環執行。</value>
@@ -3074,8 +3071,5 @@ Do not proceed unless you possess the necessary technical expertise.</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>是</value>
-  </data>
-  <data name="LivePreview" xml:space="preserve">
-    <value>Live Preview</value>
   </data>
 </root>

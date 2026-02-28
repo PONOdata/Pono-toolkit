@@ -777,9 +777,6 @@ FIGYELMEZTETÉS: Ez a művelet nem fog helyesen futni, ha a belső kijelző ki v
   <data name="Delete" xml:space="preserve">
     <value>Törlés</value>
   </data>
-  <data name="DeselectAll" xml:space="preserve">
-    <value>Összes kijelölés megszüntetése</value>
-  </data>
   <data name="DeviceAutomationPipelineTriggerTabItemContent_OnlyConnected" xml:space="preserve">
     <value>Csak a csatlakoztatott eszközök megjelenítése</value>
   </data>
@@ -1495,6 +1492,9 @@ Click Yes to disable and No to ignore.</value>
   <data name="LampArrayRGBKeyboardPage_Wave" xml:space="preserve">
     <value>Wave</value>
   </data>
+  <data name="LivePreview" xml:space="preserve">
+    <value>Live Preview</value>
+  </data>
   <data name="Load" xml:space="preserve">
     <value>Betöltés</value>
   </data>
@@ -2201,9 +2201,6 @@ Először győződjön meg róla, hogy a szkript helyesen fut.</value>
   </data>
   <data name="Saving" xml:space="preserve">
     <value>Mentés...</value>
-  </data>
-  <data name="SelectAll" xml:space="preserve">
-    <value>Összes kijelölése</value>
   </data>
   <data name="SelectSmartKeyPipelinesWindow_List_Description" xml:space="preserve">
     <value>Válasszon ki egy vagy több gyorsműveletet, hogy végigmenjen</value>
@@ -3076,8 +3073,5 @@ A naplózás automatikusan engedélyezésre kerül, ha a folytatást választja.
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Igen</value>
-  </data>
-  <data name="LivePreview" xml:space="preserve">
-    <value>Live Preview</value>
   </data>
 </root>

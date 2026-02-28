@@ -776,9 +776,6 @@ WARNUNG: Diese Aktion wird nicht korrekt ausgeführt, wenn das interne Display a
   <data name="Delete" xml:space="preserve">
     <value>Löschen</value>
   </data>
-  <data name="DeselectAll" xml:space="preserve">
-    <value>Alle abwählen</value>
-  </data>
   <data name="DeviceAutomationPipelineTriggerTabItemContent_OnlyConnected" xml:space="preserve">
     <value>Nur verbundene Geräte anzeigen</value>
   </data>
@@ -1495,6 +1492,9 @@ Klicken Sie auf Ja zum Deaktivieren und Nein zum Ignorieren.</value>
   <data name="LampArrayRGBKeyboardPage_Wave" xml:space="preserve">
     <value>Wave</value>
   </data>
+  <data name="LivePreview" xml:space="preserve">
+    <value>Live Preview</value>
+  </data>
   <data name="Load" xml:space="preserve">
     <value>Zurücksetzen</value>
   </data>
@@ -2201,9 +2201,6 @@ Stellen Sie zunächst sicher, dass Ihr Skript korrekt ausgeführt wird.</value>
   </data>
   <data name="Saving" xml:space="preserve">
     <value>Wird gespeichert...</value>
-  </data>
-  <data name="SelectAll" xml:space="preserve">
-    <value>Alle auswählen</value>
   </data>
   <data name="SelectSmartKeyPipelinesWindow_List_Description" xml:space="preserve">
     <value>Wähle einen oder mehrere Kurzbefehle aus, durch die geblättert wird</value>
@@ -3076,8 +3073,5 @@ Die Protokollierung wird automatisch aktiviert, wenn Sie fortfahren möchten.</v
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Ja</value>
-  </data>
-  <data name="LivePreview" xml:space="preserve">
-    <value>Live Preview</value>
   </data>
 </root>

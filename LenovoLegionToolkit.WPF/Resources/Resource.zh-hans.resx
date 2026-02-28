@@ -778,9 +778,6 @@
   <data name="Delete" xml:space="preserve">
     <value>删除</value>
   </data>
-  <data name="DeselectAll" xml:space="preserve">
-    <value>全不选</value>
-  </data>
   <data name="DeviceAutomationPipelineTriggerTabItemContent_OnlyConnected" xml:space="preserve">
     <value>仅显示被连接的设备</value>
   </data>
@@ -1464,6 +1461,9 @@
   <data name="LampArrayRGBKeyboardPage_Rainbow" xml:space="preserve">
     <value>Rainbow</value>
   </data>
+  <data name="LampArrayRGBKeyboardPage_Rainbow_Wave" xml:space="preserve">
+    <value>Rainbow Wave</value>
+  </data>
   <data name="LampArrayRGBKeyboardPage_Rear_Ambient" xml:space="preserve">
     <value>Rear Ambient</value>
   </data>
@@ -1499,6 +1499,9 @@
   </data>
   <data name="LampArrayRGBKeyboardPage_Wave" xml:space="preserve">
     <value>Wave</value>
+  </data>
+  <data name="LivePreview" xml:space="preserve">
+    <value>Live Preview</value>
   </data>
   <data name="Load" xml:space="preserve">
     <value>重置</value>
@@ -2208,9 +2211,6 @@
   </data>
   <data name="Saving" xml:space="preserve">
     <value>保存中...</value>
-  </data>
-  <data name="SelectAll" xml:space="preserve">
-    <value>全选</value>
   </data>
   <data name="SelectSmartKeyPipelinesWindow_List_Description" xml:space="preserve">
     <value>选择单个或多个快捷操作来循环执行。</value>
@@ -3083,11 +3083,5 @@
   </data>
   <data name="Yes" xml:space="preserve">
     <value>是</value>
-  </data>
-  <data name="LampArrayRGBKeyboardPage_Rainbow_Wave" xml:space="preserve">
-    <value>Rainbow Wave</value>
-  </data>
-  <data name="LivePreview" xml:space="preserve">
-    <value>Live Preview</value>
   </data>
 </root>

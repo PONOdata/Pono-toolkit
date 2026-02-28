@@ -777,9 +777,6 @@ CẢNH BÁO: Hành động sẽ không chạy đúng nếu màn hình laptop kh�
   <data name="Delete" xml:space="preserve">
     <value>Xóa</value>
   </data>
-  <data name="DeselectAll" xml:space="preserve">
-    <value>Bỏ chọn tất cả</value>
-  </data>
   <data name="DeviceAutomationPipelineTriggerTabItemContent_OnlyConnected" xml:space="preserve">
     <value>Chỉ hiển thị các thiết bị đang kết nối</value>
   </data>
@@ -1496,6 +1493,9 @@ Chọn Có để tắt và Không để bỏ qua.</value>
   <data name="LampArrayRGBKeyboardPage_Wave" xml:space="preserve">
     <value>Wave</value>
   </data>
+  <data name="LivePreview" xml:space="preserve">
+    <value>Live Preview</value>
+  </data>
   <data name="Load" xml:space="preserve">
     <value>Tải</value>
   </data>
@@ -2202,9 +2202,6 @@ Hãy đảm bảo chương trình hoặc script của bạn chạy đúng trư�
   </data>
   <data name="Saving" xml:space="preserve">
     <value>Đang lưu...</value>
-  </data>
-  <data name="SelectAll" xml:space="preserve">
-    <value>Chọn tất cả</value>
   </data>
   <data name="SelectSmartKeyPipelinesWindow_List_Description" xml:space="preserve">
     <value>Chọn một hoặc nhiều hành động nhanh để thực hiện trong 1 vòng lặp</value>
@@ -3076,8 +3073,5 @@ Logging sẽ được tự động bật, nếu bạn chọn tiếp tục.</valu
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Có</value>
-  </data>
-  <data name="LivePreview" xml:space="preserve">
-    <value>Live Preview</value>
   </data>
 </root>

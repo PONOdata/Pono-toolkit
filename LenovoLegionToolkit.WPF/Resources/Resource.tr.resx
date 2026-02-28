@@ -777,9 +777,6 @@ UYARI: Dahili ekran kapalıysa veya Hibrit modu etkin değilse bu eylem düzgün
   <data name="Delete" xml:space="preserve">
     <value>Sil</value>
   </data>
-  <data name="DeselectAll" xml:space="preserve">
-    <value>Tüm seçimi kaldır</value>
-  </data>
   <data name="DeviceAutomationPipelineTriggerTabItemContent_OnlyConnected" xml:space="preserve">
     <value>Yalnızca bağlı cihazları göster</value>
   </data>
@@ -1496,6 +1493,9 @@ Devre dışı bırakmak için Evet'i, yok saymak için Hayır'ı tıklayın.</va
   <data name="LampArrayRGBKeyboardPage_Wave" xml:space="preserve">
     <value>Wave</value>
   </data>
+  <data name="LivePreview" xml:space="preserve">
+    <value>Live Preview</value>
+  </data>
   <data name="Load" xml:space="preserve">
     <value>Yükle</value>
   </data>
@@ -2202,9 +2202,6 @@ UYARI: Dahili ekran kapalıysa, bu işlem doğru çalışmaz.</value>
   </data>
   <data name="Saving" xml:space="preserve">
     <value>Kaydediliyor...</value>
-  </data>
-  <data name="SelectAll" xml:space="preserve">
-    <value>Tümünü seç</value>
   </data>
   <data name="SelectSmartKeyPipelinesWindow_List_Description" xml:space="preserve">
     <value>Geçiş yapmak için bir veya daha fazla hızlı işlem seçin</value>
@@ -3076,8 +3073,5 @@ Devam etmeyi seçerseniz, kayıt etme otomatik olarak etkinleştirilecektir.</va
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Evet</value>
-  </data>
-  <data name="LivePreview" xml:space="preserve">
-    <value>Live Preview</value>
   </data>
 </root>

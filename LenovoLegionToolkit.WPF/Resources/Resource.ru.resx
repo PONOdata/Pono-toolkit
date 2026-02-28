@@ -777,9 +777,6 @@
   <data name="Delete" xml:space="preserve">
     <value>Удалить</value>
   </data>
-  <data name="DeselectAll" xml:space="preserve">
-    <value>Снять все</value>
-  </data>
   <data name="DeviceAutomationPipelineTriggerTabItemContent_OnlyConnected" xml:space="preserve">
     <value>Показывать только соединенные устройства</value>
   </data>
@@ -1496,6 +1493,9 @@ Click Yes to disable and No to ignore.</value>
   <data name="LampArrayRGBKeyboardPage_Wave" xml:space="preserve">
     <value>Wave</value>
   </data>
+  <data name="LivePreview" xml:space="preserve">
+    <value>Live Preview</value>
+  </data>
   <data name="Load" xml:space="preserve">
     <value>Сброс</value>
   </data>
@@ -2202,9 +2202,6 @@ It won't affect other full screen windows, but you will not be able to click on 
   </data>
   <data name="Saving" xml:space="preserve">
     <value>Сохранение...</value>
-  </data>
-  <data name="SelectAll" xml:space="preserve">
-    <value>Выбрать все</value>
   </data>
   <data name="SelectSmartKeyPipelinesWindow_List_Description" xml:space="preserve">
     <value>Выбрать одно или несколько быстрых действий для последовательного выполнения</value>
@@ -3077,8 +3074,5 @@ It won't affect other full screen windows, but you will not be able to click on 
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Да</value>
-  </data>
-  <data name="LivePreview" xml:space="preserve">
-    <value>Live Preview</value>
   </data>
 </root>

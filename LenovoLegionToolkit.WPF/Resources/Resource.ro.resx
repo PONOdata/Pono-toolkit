@@ -777,9 +777,6 @@ ATENȚIE: Această acțiune nu va rula corect dacă afișajul intern este oprit 
   <data name="Delete" xml:space="preserve">
     <value>Ștergere</value>
   </data>
-  <data name="DeselectAll" xml:space="preserve">
-    <value>Deselect all</value>
-  </data>
   <data name="DeviceAutomationPipelineTriggerTabItemContent_OnlyConnected" xml:space="preserve">
     <value>Show connected devices only</value>
   </data>
@@ -1496,6 +1493,9 @@ Click Yes to disable and No to ignore.</value>
   <data name="LampArrayRGBKeyboardPage_Wave" xml:space="preserve">
     <value>Wave</value>
   </data>
+  <data name="LivePreview" xml:space="preserve">
+    <value>Live Preview</value>
+  </data>
   <data name="Load" xml:space="preserve">
     <value>Resetare</value>
   </data>
@@ -2202,9 +2202,6 @@ Asigurați-vă mai întâi că scriptul rulează corect.</value>
   </data>
   <data name="Saving" xml:space="preserve">
     <value>Se salvează...</value>
-  </data>
-  <data name="SelectAll" xml:space="preserve">
-    <value>Select all</value>
   </data>
   <data name="SelectSmartKeyPipelinesWindow_List_Description" xml:space="preserve">
     <value>Alegeți una sau mai multe acțiuni rapide de parcurs</value>
@@ -3077,8 +3074,5 @@ Salvarea logurilor va fi activată automat dacă alegeți să continuați.</valu
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Da</value>
-  </data>
-  <data name="LivePreview" xml:space="preserve">
-    <value>Live Preview</value>
   </data>
 </root>

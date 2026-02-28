@@ -777,9 +777,6 @@ ATTENTION : Cette action ne fonctionnera pas correctement, si l'écran intégré
   <data name="Delete" xml:space="preserve">
     <value>Supprimer</value>
   </data>
-  <data name="DeselectAll" xml:space="preserve">
-    <value>Tout déselectionner</value>
-  </data>
   <data name="DeviceAutomationPipelineTriggerTabItemContent_OnlyConnected" xml:space="preserve">
     <value>Afficher uniquement les appareils connectés</value>
   </data>
@@ -1495,6 +1492,9 @@ Click Yes to disable and No to ignore.</value>
   <data name="LampArrayRGBKeyboardPage_Wave" xml:space="preserve">
     <value>Wave</value>
   </data>
+  <data name="LivePreview" xml:space="preserve">
+    <value>Live Preview</value>
+  </data>
   <data name="Load" xml:space="preserve">
     <value>Réinitialiser</value>
   </data>
@@ -2201,9 +2201,6 @@ Assurez-vous d'abord que votre script s'exécute correctement.</value>
   </data>
   <data name="Saving" xml:space="preserve">
     <value>Sauvegarde en cours...</value>
-  </data>
-  <data name="SelectAll" xml:space="preserve">
-    <value>Tout sélectionner</value>
   </data>
   <data name="SelectSmartKeyPipelinesWindow_List_Description" xml:space="preserve">
     <value>Choisissez une ou plusieurs actions rapides à parcourir</value>
@@ -3076,8 +3073,5 @@ La journalisation sera activée automatiquement si vous choisissez de continuer.
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Oui</value>
-  </data>
-  <data name="LivePreview" xml:space="preserve">
-    <value>Live Preview</value>
   </data>
 </root>

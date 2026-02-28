@@ -776,9 +776,6 @@ Attenzione: Questa azione non funzionerà correttamente se il display è spento 
   <data name="Delete" xml:space="preserve">
     <value>Elimina</value>
   </data>
-  <data name="DeselectAll" xml:space="preserve">
-    <value>Deselect all</value>
-  </data>
   <data name="DeviceAutomationPipelineTriggerTabItemContent_OnlyConnected" xml:space="preserve">
     <value>Show connected devices only</value>
   </data>
@@ -1491,6 +1488,9 @@ Click Yes to disable and No to ignore.</value>
   <data name="LampArrayRGBKeyboardPage_Wave" xml:space="preserve">
     <value>Wave</value>
   </data>
+  <data name="LivePreview" xml:space="preserve">
+    <value>Live Preview</value>
+  </data>
   <data name="Load" xml:space="preserve">
     <value>Ripristina</value>
   </data>
@@ -2197,9 +2197,6 @@ Assicurati prima, che il tuo script funzioni correttamente.</value>
   </data>
   <data name="Saving" xml:space="preserve">
     <value>Salvataggio...</value>
-  </data>
-  <data name="SelectAll" xml:space="preserve">
-    <value>Select all</value>
   </data>
   <data name="SelectSmartKeyPipelinesWindow_List_Description" xml:space="preserve">
     <value>Scegli una o più azioni rapide da ciclare</value>
@@ -3072,8 +3069,5 @@ Il logging verrà abilitato automaticamente, se scegli di continuare.</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Si</value>
-  </data>
-  <data name="LivePreview" xml:space="preserve">
-    <value>Live Preview</value>
   </data>
 </root>

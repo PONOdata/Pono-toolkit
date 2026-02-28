@@ -777,9 +777,6 @@ WAARSCHUWING: Deze actie wordt niet correct uitgevoerd als het interne display i
   <data name="Delete" xml:space="preserve">
     <value>Verwijderen</value>
   </data>
-  <data name="DeselectAll" xml:space="preserve">
-    <value>Selectie ongedaan maken</value>
-  </data>
   <data name="DeviceAutomationPipelineTriggerTabItemContent_OnlyConnected" xml:space="preserve">
     <value>Laat alleen geselecteerde apparaten zien</value>
   </data>
@@ -1495,6 +1492,9 @@ Klik Ja om het uit te schakelen en nee om het te negeren.</value>
   <data name="LampArrayRGBKeyboardPage_Wave" xml:space="preserve">
     <value>Wave</value>
   </data>
+  <data name="LivePreview" xml:space="preserve">
+    <value>Live Preview</value>
+  </data>
   <data name="Load" xml:space="preserve">
     <value>Reset</value>
   </data>
@@ -2202,9 +2202,6 @@ Zorg ervoor dat uw script eerst correct wordt uitgevoerd.</value>
   </data>
   <data name="Saving" xml:space="preserve">
     <value>Opslaan...</value>
-  </data>
-  <data name="SelectAll" xml:space="preserve">
-    <value>Alles selecteren</value>
   </data>
   <data name="SelectSmartKeyPipelinesWindow_List_Description" xml:space="preserve">
     <value>Kies een of meer snelle acties om doorheen te bladeren</value>
@@ -3076,8 +3073,5 @@ Logboekregistratie wordt automatisch ingeschakeld als u ervoor kiest om door te 
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Ja</value>
-  </data>
-  <data name="LivePreview" xml:space="preserve">
-    <value>Live Preview</value>
   </data>
 </root>

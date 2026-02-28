@@ -776,9 +776,6 @@ WARNING: This action will not run correctly, if internal display is off or Hybri
   <data name="Delete" xml:space="preserve">
     <value>Delete</value>
   </data>
-  <data name="DeselectAll" xml:space="preserve">
-    <value>Deselect all</value>
-  </data>
   <data name="DeviceAutomationPipelineTriggerTabItemContent_OnlyConnected" xml:space="preserve">
     <value>Show connected devices only</value>
   </data>
@@ -2203,9 +2200,6 @@ Make sure that your script runs correctly first.</value>
   </data>
   <data name="Saving" xml:space="preserve">
     <value>Saving...</value>
-  </data>
-  <data name="SelectAll" xml:space="preserve">
-    <value>Select all</value>
   </data>
   <data name="SelectSmartKeyPipelinesWindow_List_Description" xml:space="preserve">
     <value>Choose one or more quick actions to cycle through</value>

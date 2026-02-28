@@ -776,9 +776,6 @@ Switching modes may require restart.</value>
   <data name="Delete" xml:space="preserve">
     <value>مسح</value>
   </data>
-  <data name="DeselectAll" xml:space="preserve">
-    <value>Deselect all</value>
-  </data>
   <data name="DeviceAutomationPipelineTriggerTabItemContent_OnlyConnected" xml:space="preserve">
     <value>Show connected devices only</value>
   </data>
@@ -1493,6 +1490,9 @@ Click Yes to disable and No to ignore.</value>
   <data name="LampArrayRGBKeyboardPage_Wave" xml:space="preserve">
     <value>Wave</value>
   </data>
+  <data name="LivePreview" xml:space="preserve">
+    <value>Live Preview</value>
+  </data>
   <data name="Load" xml:space="preserve">
     <value>Load</value>
   </data>
@@ -2199,9 +2199,6 @@ WARNING: This action will not run correctly, if internal display is off.</value>
   </data>
   <data name="Saving" xml:space="preserve">
     <value>جاري الحفظ...</value>
-  </data>
-  <data name="SelectAll" xml:space="preserve">
-    <value>Select all</value>
   </data>
   <data name="SelectSmartKeyPipelinesWindow_List_Description" xml:space="preserve">
     <value>اختر إجراءً أو أكثر من الإجراءات السريعة للتنقل خلالها</value>
@@ -3074,8 +3071,5 @@ Moving the mouse or pressing the keyboard will wake displays up.</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>نعم</value>
-  </data>
-  <data name="LivePreview" xml:space="preserve">
-    <value>Live Preview</value>
   </data>
 </root>

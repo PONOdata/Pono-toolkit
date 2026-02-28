@@ -777,9 +777,6 @@ VAROVÁNÍ: Tato akce neproběhne správně, pokud je displej notebooku vypnutý
   <data name="Delete" xml:space="preserve">
     <value>Smazat</value>
   </data>
-  <data name="DeselectAll" xml:space="preserve">
-    <value>Zrušit celý výběr</value>
-  </data>
   <data name="DeviceAutomationPipelineTriggerTabItemContent_OnlyConnected" xml:space="preserve">
     <value>Zobrazit pouze připojená zařízení</value>
   </data>
@@ -1496,6 +1493,9 @@ Click Yes to disable and No to ignore.</value>
   <data name="LampArrayRGBKeyboardPage_Wave" xml:space="preserve">
     <value>Wave</value>
   </data>
+  <data name="LivePreview" xml:space="preserve">
+    <value>Live Preview</value>
+  </data>
   <data name="Load" xml:space="preserve">
     <value>Resetovat</value>
   </data>
@@ -2202,9 +2202,6 @@ Nejprve se ujisti, že tvůj skript běží správně.</value>
   </data>
   <data name="Saving" xml:space="preserve">
     <value>Ukládání...</value>
-  </data>
-  <data name="SelectAll" xml:space="preserve">
-    <value>Označit vše</value>
   </data>
   <data name="SelectSmartKeyPipelinesWindow_List_Description" xml:space="preserve">
     <value>Zvol jednu nebo více rychlých akcí, které chceš procházet</value>
@@ -3077,8 +3074,5 @@ Pokud se rozhodneš pokračovat, protokolování bude automaticky povoleno.</val
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Ano</value>
-  </data>
-  <data name="LivePreview" xml:space="preserve">
-    <value>Live Preview</value>
   </data>
 </root>

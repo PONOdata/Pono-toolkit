@@ -777,9 +777,6 @@ BRĪDINĀJUMS. Ja iekšējais displejs ir izslēgts vai hibrīda režīms nav ak
   <data name="Delete" xml:space="preserve">
     <value>Dzēst</value>
   </data>
-  <data name="DeselectAll" xml:space="preserve">
-    <value>Deselect all</value>
-  </data>
   <data name="DeviceAutomationPipelineTriggerTabItemContent_OnlyConnected" xml:space="preserve">
     <value>Show connected devices only</value>
   </data>
@@ -1496,6 +1493,9 @@ Click Yes to disable and No to ignore.</value>
   <data name="LampArrayRGBKeyboardPage_Wave" xml:space="preserve">
     <value>Wave</value>
   </data>
+  <data name="LivePreview" xml:space="preserve">
+    <value>Live Preview</value>
+  </data>
   <data name="Load" xml:space="preserve">
     <value>Ielādēt</value>
   </data>
@@ -2202,9 +2202,6 @@ Vispirms pārliecinieties, vai skripts darbojas pareizi.</value>
   </data>
   <data name="Saving" xml:space="preserve">
     <value>Saglabā...</value>
-  </data>
-  <data name="SelectAll" xml:space="preserve">
-    <value>Select all</value>
   </data>
   <data name="SelectSmartKeyPipelinesWindow_List_Description" xml:space="preserve">
     <value>Izvēlieties vienu vai vairākas ātrās darbības, pa kurām pārvietoties</value>
@@ -3078,8 +3075,5 @@ Ja izvēlaties turpināt, reģistrēšana tiks iespējota automātiski.</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Jā</value>
-  </data>
-  <data name="LivePreview" xml:space="preserve">
-    <value>Live Preview</value>
   </data>
 </root>

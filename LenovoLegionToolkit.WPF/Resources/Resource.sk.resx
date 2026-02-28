@@ -776,9 +776,6 @@ VAROVANIE: Táto akcia neprebehne správne, ak je displej notebooku vypnutý, al
   <data name="Delete" xml:space="preserve">
     <value>Vymazať</value>
   </data>
-  <data name="DeselectAll" xml:space="preserve">
-    <value>Zrušiť celý výber</value>
-  </data>
   <data name="DeviceAutomationPipelineTriggerTabItemContent_OnlyConnected" xml:space="preserve">
     <value>Show connected devices only</value>
   </data>
@@ -1495,6 +1492,9 @@ Click Yes to disable and No to ignore.</value>
   <data name="LampArrayRGBKeyboardPage_Wave" xml:space="preserve">
     <value>Wave</value>
   </data>
+  <data name="LivePreview" xml:space="preserve">
+    <value>Live Preview</value>
+  </data>
   <data name="Load" xml:space="preserve">
     <value>Reset</value>
   </data>
@@ -2201,9 +2201,6 @@ Prv sa uistite, že váš skript beží správne.</value>
   </data>
   <data name="Saving" xml:space="preserve">
     <value>Ukladanie...</value>
-  </data>
-  <data name="SelectAll" xml:space="preserve">
-    <value>Vybrať všetko</value>
   </data>
   <data name="SelectSmartKeyPipelinesWindow_List_Description" xml:space="preserve">
     <value>Vybrať jednu alebo viac rýchlych akcii na cyklovanie</value>
@@ -3077,8 +3074,5 @@ Ak sa rozhodnete pokračovať záznam chýb bude automaticky zapnutý.</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Áno</value>
-  </data>
-  <data name="LivePreview" xml:space="preserve">
-    <value>Live Preview</value>
   </data>
 </root>

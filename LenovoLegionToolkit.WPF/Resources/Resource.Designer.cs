@@ -2021,15 +2021,6 @@ namespace LenovoLegionToolkit.WPF.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Deselect all.
-        /// </summary>
-        public static string DeselectAll {
-            get {
-                return ResourceManager.GetString("DeselectAll", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Show connected devices only.
         /// </summary>
         public static string DeviceAutomationPipelineTriggerTabItemContent_OnlyConnected {
@@ -6228,15 +6219,6 @@ namespace LenovoLegionToolkit.WPF.Resources {
         public static string Saving {
             get {
                 return ResourceManager.GetString("Saving", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Select all.
-        /// </summary>
-        public static string SelectAll {
-            get {
-                return ResourceManager.GetString("SelectAll", resourceCulture);
             }
         }
         

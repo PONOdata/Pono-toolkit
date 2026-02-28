@@ -776,9 +776,6 @@ DIQQAT: Eger ishki displey óshirilgen yamasa gibrid rejim aktiv emes bolsa, bul
   <data name="Delete" xml:space="preserve">
     <value>Óshiriw</value>
   </data>
-  <data name="DeselectAll" xml:space="preserve">
-    <value>Deselect all</value>
-  </data>
   <data name="DeviceAutomationPipelineTriggerTabItemContent_OnlyConnected" xml:space="preserve">
     <value>Show connected devices only</value>
   </data>
@@ -1495,6 +1492,9 @@ Click Yes to disable and No to ignore.</value>
   <data name="LampArrayRGBKeyboardPage_Wave" xml:space="preserve">
     <value>Wave</value>
   </data>
+  <data name="LivePreview" xml:space="preserve">
+    <value>Live Preview</value>
+  </data>
   <data name="Load" xml:space="preserve">
     <value>Júklew</value>
   </data>
@@ -2201,9 +2201,6 @@ Siziń skriptińiz durıs orınlanıp atırǵanına isenim kámil etiń.</value>
   </data>
   <data name="Saving" xml:space="preserve">
     <value>Saqlanbaqta...</value>
-  </data>
-  <data name="SelectAll" xml:space="preserve">
-    <value>Select all</value>
   </data>
   <data name="SelectSmartKeyPipelinesWindow_List_Description" xml:space="preserve">
     <value>Izbe-iz orınlanıw ushın bir yamasa bir neshe tez háreketlerdi tańlaw</value>
@@ -3076,8 +3073,5 @@ Eger siz dawam etiwdi tańlasańız, jurnaldı júrgiziw avtomatikalıq qosılad
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Awa</value>
-  </data>
-  <data name="LivePreview" xml:space="preserve">
-    <value>Live Preview</value>
   </data>
 </root>

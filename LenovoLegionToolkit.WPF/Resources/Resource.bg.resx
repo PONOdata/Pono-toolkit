@@ -776,9 +776,6 @@
   <data name="Delete" xml:space="preserve">
     <value>Изтрий</value>
   </data>
-  <data name="DeselectAll" xml:space="preserve">
-    <value>Deselect all</value>
-  </data>
   <data name="DeviceAutomationPipelineTriggerTabItemContent_OnlyConnected" xml:space="preserve">
     <value>Show connected devices only</value>
   </data>
@@ -1495,6 +1492,9 @@ Click Yes to disable and No to ignore.</value>
   <data name="LampArrayRGBKeyboardPage_Wave" xml:space="preserve">
     <value>Wave</value>
   </data>
+  <data name="LivePreview" xml:space="preserve">
+    <value>Live Preview</value>
+  </data>
   <data name="Load" xml:space="preserve">
     <value>Зареди</value>
   </data>
@@ -2199,9 +2199,6 @@ It won't affect other full screen windows, but you will not be able to click on 
   </data>
   <data name="Saving" xml:space="preserve">
     <value>Запазване...</value>
-  </data>
-  <data name="SelectAll" xml:space="preserve">
-    <value>Select all</value>
   </data>
   <data name="SelectSmartKeyPipelinesWindow_List_Description" xml:space="preserve">
     <value>Изберете едно или повече бързи действия, през които ще може да преминете</value>
@@ -3075,8 +3072,5 @@ Note: Using the new sensor dashboard may cause some antivirus programmes to disp
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Да</value>
-  </data>
-  <data name="LivePreview" xml:space="preserve">
-    <value>Live Preview</value>
   </data>
 </root>
