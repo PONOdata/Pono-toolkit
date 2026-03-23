@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -48,5 +49,14 @@ public partial class UnsupportedWindow
     {
         _taskCompletionSource.TrySetResult(false);
         Close();
+    }
+ 
+    private void Hyperlink_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Wpf.Ui.Controls.Hyperlink { Tag: string uriString })
+        {
+            Process.Start("explorer.exe", uriString);
+            e.Handled = true;
+        }
     }
 }

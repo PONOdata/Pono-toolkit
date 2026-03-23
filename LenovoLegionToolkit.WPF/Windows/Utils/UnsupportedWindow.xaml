@@ -1,4 +1,4 @@
-﻿<wpfui:UiWindow
+<wpfui:UiWindow
     x:Class="LenovoLegionToolkit.WPF.Windows.Utils.UnsupportedWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -110,7 +110,7 @@
                     Text="{x:Static resources:Resource.UnsupportedWindow_Disclaimer}"
                     TextWrapping="Wrap" />
 
-                <wpfui:Hyperlink Content="{x:Static resources:Resource.UnsupportedWindow_Disclaimer_GitHub}" NavigateUri="https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit#contribution" />
+                <wpfui:Hyperlink Click="Hyperlink_Click" Content="{x:Static resources:Resource.UnsupportedWindow_Disclaimer_GitHub}" Tag="https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit#contribution" />
 
             </StackPanel>
 
