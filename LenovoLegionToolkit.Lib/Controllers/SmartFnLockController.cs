@@ -50,6 +50,8 @@ public class SmartFnLockController(FnLockFeature feature, ApplicationSettings se
         if (isModifierActive == _wasModifierActive)
             return;
 
+        Log.Instance.Trace($"Modifier key state changed. Active: {isModifierActive} [ctrl={_ctrlDepressed}, shift={_shiftDepressed}, alt={_altDepressed}, flags={settings.Store.SmartFnLockFlags}]");
+
         _wasModifierActive = isModifierActive;
 
         bool isLatestEvent = Interlocked.Read(ref _latestEventId) == eventId;
@@ -114,8 +116,6 @@ public class SmartFnLockController(FnLockFeature feature, ApplicationSettings se
 
         if (flags.HasFlag(ModifierKey.Alt))
             result |= _altDepressed;
-
-        Log.Instance.Trace($"Modifier key is depressed: {result} [ctrl={_ctrlDepressed}, shift={_shiftDepressed}, alt={_altDepressed}, flags={flags}]");
 
         return result;
     }
