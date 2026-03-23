@@ -42,6 +42,13 @@ public static partial class WMI
             "SetSmartFanMode",
             new() { { "Data", data } });
 
+        public static Task<int> GetThermalModeAsync() => CallAsync("root\\WMI",
+            $"SELECT * FROM LENOVO_GAMEZONE_DATA",
+            "GetThermalMode",
+            [],
+            pdc => Convert.ToInt32(pdc["Data"].Value));
+
+
         public static Task<int> GetIntelligentSubModeAsync() => CallAsync("root\\WMI",
             $"SELECT * FROM LENOVO_GAMEZONE_DATA",
             "GetIntelligentSubMode",
