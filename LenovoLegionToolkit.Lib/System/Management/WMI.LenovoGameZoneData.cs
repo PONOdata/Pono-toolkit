@@ -48,7 +48,6 @@ public static partial class WMI
             [],
             pdc => Convert.ToInt32(pdc["Data"].Value));
 
-
         public static Task<int> GetIntelligentSubModeAsync() => CallAsync("root\\WMI",
             $"SELECT * FROM LENOVO_GAMEZONE_DATA",
             "GetIntelligentSubMode",

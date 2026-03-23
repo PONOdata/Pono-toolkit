@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Win32;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
@@ -18,18 +19,22 @@ public class SmartFnLockController(FnLockFeature feature, ApplicationSettings se
     private bool _shiftDepressed;
     private bool _altDepressed;
     private bool _restoreFnLock;
+    private bool _wasModifierActive;
+    private long _latestEventId;
 
     public void OnKeyboardEvent(nuint wParam, KBDLLHOOKSTRUCT kbStruct)
     {
         if (settings.Store.SmartFnLockFlags == 0)
             return;
 
+        long currentEventId = Interlocked.Increment(ref _latestEventId);
+
         Task.Run(async () =>
         {
             try
             {
                 using (await _lock.LockAsync().ConfigureAwait(false))
-                    await OnKeyboardEventAsync(wParam, kbStruct).ConfigureAwait(false);
+                    await OnKeyboardEventAsync(wParam, kbStruct, currentEventId).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -38,15 +43,30 @@ public class SmartFnLockController(FnLockFeature feature, ApplicationSettings se
         });
     }
 
-    private async Task OnKeyboardEventAsync(nuint wParam, KBDLLHOOKSTRUCT kbStruct)
+    private async Task OnKeyboardEventAsync(nuint wParam, KBDLLHOOKSTRUCT kbStruct, long eventId)
     {
-        if (IsModifierKeyPressed(wParam, kbStruct))
+        bool isModifierActive = IsModifierKeyPressed(wParam, kbStruct);
+
+        if (isModifierActive == _wasModifierActive)
+            return;
+
+        _wasModifierActive = isModifierActive;
+
+        bool isLatestEvent = Interlocked.Read(ref _latestEventId) == eventId;
+
+        if (isModifierActive)
         {
             if (_restoreFnLock)
                 return;
 
+            if (!isLatestEvent)
+                return;
+
             var state = await feature.GetStateAsync().ConfigureAwait(false);
             if (state == FnLockState.Off)
+                return;
+
+            if (Interlocked.Read(ref _latestEventId) != eventId)
                 return;
 
             Log.Instance.Trace($"Disabling Fn Lock temporarily...");
@@ -56,6 +76,9 @@ public class SmartFnLockController(FnLockFeature feature, ApplicationSettings se
         }
         else if (_restoreFnLock)
         {
+            if (!isLatestEvent)
+                return;
+
             Log.Instance.Trace($"Re-enabling Fn Lock...");
 
             await feature.SetStateAsync(FnLockState.On).ConfigureAwait(false);
