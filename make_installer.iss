@@ -193,8 +193,8 @@ Source: "build\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createa
 Source: "LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; AppUserModelID: "eef45acd-2cf3-4d7d-9d33-92f37c74cc31_6qs7aha96dxnt!App"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; AppUserModelID: "eef45acd-2cf3-4d7d-9d33-92f37c74cc31_6qs7aha96dxnt!App"
 
 [Run]
 ; Unregister existing package identity (required for upgrades)

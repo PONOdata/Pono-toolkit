@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Security.Principal;
 using LenovoLegionToolkit.Lib;
 using LenovoLegionToolkit.Lib.Automation;
 using LenovoLegionToolkit.Lib.Controllers;
@@ -133,6 +134,17 @@ public partial class App
 
     private async Task<bool> InitializeCoreEnvironmentAsync(StartupEventArgs e)
     {
+        if (!EnsureSingleInstance())
+        {
+            return false;
+        }
+
+        if (!IsAdministrator())
+        {
+            Elevate(e.Args);
+            return false;
+        }
+
 #if DEBUG
         if (Debugger.IsAttached)
         {
@@ -154,11 +166,6 @@ public partial class App
         {
             InitializeDebugConsole();
             Console.WriteLine(@"[Startup] Ensuring Single Instance...");
-        }
-
-        if (!EnsureSingleInstance())
-        {
-            return false;
         }
 
         await Compatibility.PrintMachineInfoAsync().ConfigureAwait(false);
@@ -626,6 +633,41 @@ public partial class App
         }, TaskCreationOptions.LongRunning);
 
         return true;
+    }
+
+    private static bool IsAdministrator()
+    {
+        using var identity = WindowsIdentity.GetCurrent();
+        var principal = new WindowsPrincipal(identity);
+        return principal.IsInRole(WindowsBuiltInRole.Administrator);
+    }
+
+    private static void Elevate(string[] args)
+    {
+        var exePath = Environment.ProcessPath;
+        if (string.IsNullOrEmpty(exePath))
+        {
+            return;
+        }
+
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = exePath,
+            Arguments = string.Join(" ", args.Select(arg => arg.Contains(' ') ? $"\"{arg}\"" : arg)),
+            Verb = "runas",
+            UseShellExecute = true
+        };
+
+        try
+        {
+            Process.Start(startInfo);
+            Environment.Exit(0);
+        }
+        catch (Exception ex)
+        {
+            Log.Instance.Trace($"Elevation failed: {ex.Message}");
+            Environment.Exit(-1);
+        }
     }
 
     #endregion
