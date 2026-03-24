@@ -131,6 +131,7 @@ public static partial class Compatibility
         ("LOQ", LegionSeries.LOQ),
         ("IdeaPad Gaming", LegionSeries.IdeaPad_Gaming),
         ("IdeaPad", LegionSeries.IdeaPad),
+        ("XiaoXin", LegionSeries.IdeaPad),
         ("YOGA", LegionSeries.YOGA),
         ("Lenovo Slim", LegionSeries.Lenovo_Slim),
         ("ThinkBook", LegionSeries.ThinkBook),
