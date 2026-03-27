@@ -81,6 +81,7 @@ public static partial class Compatibility
         "14APH",
         "14IRP",
         "14AKP",
+        "14IRH",
 
         // Chinese variants
         "G5000",
@@ -135,7 +136,8 @@ public static partial class Compatibility
         ("YOGA", LegionSeries.YOGA),
         ("Lenovo Slim", LegionSeries.Lenovo_Slim),
         ("ThinkBook", LegionSeries.ThinkBook),
-        ("Legion", LegionSeries.Legion_Legacy)
+        ("Legion", LegionSeries.Legion_Legacy),
+        ("Motorola", LegionSeries.Motorola)
     ];
 
     private static MachineInformation? _machineInformation;
@@ -549,7 +551,10 @@ public static partial class Compatibility
         {
             return false;
         }
-        return lower.Contains("IdeaPad".ToLowerInvariant()) || lower.Contains("ThinkBook".ToLowerInvariant()) || lower.Contains("Lenovo Slim".ToLowerInvariant());
+        return lower.Contains("IdeaPad".ToLowerInvariant())
+            || lower.Contains("ThinkBook".ToLowerInvariant()) 
+            || lower.Contains("Lenovo Slim".ToLowerInvariant())
+            || lower.Contains("Motobook".ToLowerInvariant());
     }
 
     private static int GetMachineGeneration(string model)

@@ -244,7 +244,7 @@ public partial class App
             SafeInitAsync(InitFanManagerExtension, "Fan Manager"),
             SafeInitAsync(InitAutomationLocalization, "Automation Localization"),
             SafeInitAsync(InitAMDOverclocking, "AMD Overclocking"),
-            SafeInitAsync(InitSetPowerMode, "Set Power Mode"),
+            // SafeInitAsync(InitSetPowerMode, "Set Power Mode"),
         };
 
         await Task.WhenAll(initTasks);

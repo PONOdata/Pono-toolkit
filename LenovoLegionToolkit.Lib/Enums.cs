@@ -355,6 +355,7 @@ public enum LegionSeries
     LOQ = 11,
     YOGA = 12,
     ThinkBook = 13,
+    Motorola = 14,
     Unknown = 255
 }
 
