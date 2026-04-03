@@ -160,7 +160,12 @@
 
             </wpfui:NavigationStore>
 
-            <Border Grid.Column="1" Background="{DynamicResource ControlFillColorDefaultBrush}" CornerRadius="4" Margin="0,0,12,12" ClipToBounds="True">
+            <Border
+                Grid.Column="1"
+                Margin="0,0,12,12"
+                Background="{DynamicResource ControlFillColorDefaultBrush}"
+                ClipToBounds="True"
+                CornerRadius="4">
                 <Frame Name="_rootFrame" Margin="24,0,0,0" />
             </Border>
 
@@ -196,6 +201,7 @@
             Grid.Row="2"
             Padding="8,4,8,6"
             Background="Orange"
+            MouseLeftButtonDown="SoftwareIndicator_MouseLeftButtonDown"
             Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                 <wpfui:SymbolIcon
@@ -214,6 +220,7 @@
             Grid.Row="3"
             Padding="8,4,8,6"
             Background="Orange"
+            MouseLeftButtonDown="SoftwareIndicator_MouseLeftButtonDown"
             Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                 <wpfui:SymbolIcon
@@ -232,6 +239,7 @@
             Grid.Row="3"
             Padding="8,4,8,6"
             Background="Orange"
+            MouseLeftButtonDown="SoftwareIndicator_MouseLeftButtonDown"
             Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                 <wpfui:SymbolIcon
@@ -250,6 +258,7 @@
             Grid.Row="4"
             Padding="8,4,8,6"
             Background="Orange"
+            MouseLeftButtonDown="SoftwareIndicator_MouseLeftButtonDown"
             Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                 <wpfui:SymbolIcon

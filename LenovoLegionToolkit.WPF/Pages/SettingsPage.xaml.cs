@@ -1,19 +1,23 @@
-﻿using System;
+﻿using LenovoLegionToolkit.Lib;
+using LenovoLegionToolkit.Lib.SoftwareDisabler;
+using LenovoLegionToolkit.Lib.Utils;
+using LenovoLegionToolkit.WPF.Controls.Settings;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
-using LenovoLegionToolkit.Lib;
-using LenovoLegionToolkit.Lib.SoftwareDisabler;
-using LenovoLegionToolkit.Lib.Utils;
-using LenovoLegionToolkit.WPF.Controls.Settings;
 using Wpf.Ui.Common;
 
 namespace LenovoLegionToolkit.WPF.Pages;
 
 public partial class SettingsPage
 {
+    public static SettingsPage? Instance { get; private set; }
+    public static string? PendingTabKey { get; set; }
+
     private SettingsAppearanceControl? _appearanceControl;
     private SettingsAppBehaviorControl? _appBehaviorControl;
     private SettingsSoftwareControlControl? _softwareControlControl;
@@ -29,8 +33,21 @@ public partial class SettingsPage
     public SettingsPage()
     {
         InitializeComponent();
-
+        Instance = this;
         IsVisibleChanged += SettingsPage_IsVisibleChanged;
+    }
+
+    public void ApplyPendingTab()
+    {
+        if (!_isInitialized || string.IsNullOrEmpty(PendingTabKey)) return;
+
+        var items = _navigationListBox.ItemsSource as IEnumerable<NavigationItem>;
+        var target = items?.FirstOrDefault(i => i.Key == PendingTabKey);
+
+        if (target != null)
+            _navigationListBox.SelectedItem = target;
+
+        PendingTabKey = null;
     }
 
     private async void SettingsPage_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -86,7 +103,17 @@ public partial class SettingsPage
         };
 
         _navigationListBox.ItemsSource = navigationItems;
-        _navigationListBox.SelectedIndex = 0;
+
+        if (!string.IsNullOrEmpty(PendingTabKey))
+        {
+            var target = navigationItems.FirstOrDefault(i => i.Key == PendingTabKey);
+            _navigationListBox.SelectedItem = target ?? navigationItems[0];
+            PendingTabKey = null;
+        }
+        else
+        {
+            _navigationListBox.SelectedIndex = 0;
+        }
     }
 
     private async void NavigationListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -565,4 +565,11 @@ public partial class MainWindow
     {
         SetVisual();
     }
+
+    private void SoftwareIndicator_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        SettingsPage.PendingTabKey = "SoftwareControl";
+        _navigationStore.Navigate("settings");
+        SettingsPage.Instance?.ApplyPendingTab();
+    }
 }
