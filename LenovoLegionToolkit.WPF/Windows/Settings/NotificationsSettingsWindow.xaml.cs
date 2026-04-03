@@ -21,7 +21,7 @@ public partial class NotificationsSettingsWindow
         _notificationDurationCard,
         _updateAvailableCard,
         _capsLockCard,
-        _numsLockCard,
+        _numLockCard,
         _fnLockCard,
         _touchpadLockCard,
         _keyboardBacklightCard,
@@ -47,7 +47,7 @@ public partial class NotificationsSettingsWindow
 
         _updateAvailableToggle.IsChecked = _settings.Store.Notifications.UpdateAvailable;
         _capsLockToggle.IsChecked = _settings.Store.Notifications.CapsLock;
-        _numsLockToggle.IsChecked = _settings.Store.Notifications.NumsLock;
+        _numLockToggle.IsChecked = _settings.Store.Notifications.NumLock;
         _fnLockToggle.IsChecked = _settings.Store.Notifications.FnLock;
         _touchpadLockToggle.IsChecked = _settings.Store.Notifications.TouchpadLock;
         _keyboardBacklightToggle.IsChecked = _settings.Store.Notifications.KeyboardBacklight;
@@ -130,13 +130,13 @@ public partial class NotificationsSettingsWindow
         _settings.SynchronizeStore();
     }
 
-    private void NumsLockToggle_Click(object sender, RoutedEventArgs e)
+    private void NumLockToggle_Click(object sender, RoutedEventArgs e)
     {
-        var state = _numsLockToggle.IsChecked;
+        var state = _numLockToggle.IsChecked;
         if (state is null)
             return;
 
-        _settings.Store.Notifications.NumsLock = state.Value;
+        _settings.Store.Notifications.NumLock = state.Value;
         _settings.SynchronizeStore();
     }
 

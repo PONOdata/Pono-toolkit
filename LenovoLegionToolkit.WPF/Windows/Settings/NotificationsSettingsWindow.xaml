@@ -143,15 +143,15 @@
                         Click="CapsLockToggle_Click" />
                 </custom:CardControl>
 
-                <custom:CardControl x:Name="_numsLockCard" Margin="0,0,0,8">
+                <custom:CardControl x:Name="_numLockCard" Margin="0,0,0,8">
                     <custom:CardControl.Header>
-                        <controls:CardHeaderControl Title="{x:Static resources:Resource.NotificationsSettingsWindow_NumsLock}" />
+                        <controls:CardHeaderControl Title="{x:Static resources:Resource.NotificationsSettingsWindow_NumLock}" />
                     </custom:CardControl.Header>
                     <wpfui:ToggleSwitch
-                        x:Name="_numsLockToggle"
+                        x:Name="_numLockToggle"
                         Margin="0,0,0,8"
-                        AutomationProperties.Name="{x:Static resources:Resource.NotificationsSettingsWindow_NumsLock}"
-                        Click="NumsLockToggle_Click" />
+                        AutomationProperties.Name="{x:Static resources:Resource.NotificationsSettingsWindow_NumLock}"
+                        Click="NumLockToggle_Click" />
                 </custom:CardControl>
 
                 <custom:CardControl x:Name="_fnLockCard" Margin="0,0,0,8">

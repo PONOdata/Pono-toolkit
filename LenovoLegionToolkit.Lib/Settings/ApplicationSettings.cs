@@ -11,7 +11,7 @@ public class ApplicationSettings : AbstractSettings<ApplicationSettingsStore>
     {
         public bool UpdateAvailable { get; set; } = true;
         public bool CapsLock { get; set; }
-        public bool NumsLock { get; set; }
+        public bool NumLock { get; set; }
         public bool FnLock { get; set; }
         public bool TouchpadLock { get; set; } = true;
         public bool KeyboardBacklight { get; set; } = true;
