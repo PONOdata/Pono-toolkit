@@ -1,4 +1,4 @@
-﻿<local:BaseWindow
+<local:BaseWindow
     x:Class="LenovoLegionToolkit.WPF.Windows.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -23,6 +23,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -201,6 +202,7 @@
             Grid.Row="2"
             Padding="8,4,8,6"
             Background="Orange"
+            Cursor="Hand"
             MouseLeftButtonDown="SoftwareIndicator_MouseLeftButtonDown"
             Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
@@ -220,6 +222,7 @@
             Grid.Row="3"
             Padding="8,4,8,6"
             Background="Orange"
+            Cursor="Hand"
             MouseLeftButtonDown="SoftwareIndicator_MouseLeftButtonDown"
             Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
@@ -236,9 +239,10 @@
 
         <Border
             x:Name="_legionSpaceIndicator"
-            Grid.Row="3"
+            Grid.Row="4"
             Padding="8,4,8,6"
             Background="Orange"
+            Cursor="Hand"
             MouseLeftButtonDown="SoftwareIndicator_MouseLeftButtonDown"
             Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
@@ -255,9 +259,10 @@
 
         <Border
             x:Name="_fnKeysIndicator"
-            Grid.Row="4"
+            Grid.Row="5"
             Padding="8,4,8,6"
             Background="Orange"
+            Cursor="Hand"
             MouseLeftButtonDown="SoftwareIndicator_MouseLeftButtonDown"
             Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
@@ -274,7 +279,7 @@
 
         <Border
             x:Name="_updateIndicator"
-            Grid.Row="5"
+            Grid.Row="6"
             Padding="8,4,8,6"
             Background="{DynamicResource SystemFillColorSuccessBrush}"
             Cursor="Hand"
