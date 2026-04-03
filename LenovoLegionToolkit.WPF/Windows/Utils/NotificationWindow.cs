@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
@@ -155,10 +155,12 @@ public class NotificationWindow : UiWindow, INotificationWindow
     {
         WindowStartupLocation = WindowStartupLocation.Manual;
         ResizeMode = ResizeMode.NoResize;
+        WindowStyle = WindowStyle.None;
+        AllowsTransparency = true;
 
         Focusable = false;
         Topmost = true;
-        ExtendsContentIntoTitleBar = true;
+        ExtendsContentIntoTitleBar = false;
         ShowInTaskbar = false;
         ShowActivated = false;
 
