@@ -9138,6 +9138,24 @@ namespace LenovoLegionToolkit.WPF.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Update download failed.
+        /// </summary>
+        public static string UpdateWindow_DownloadError_Title {
+            get {
+                return ResourceManager.GetString("UpdateWindow_DownloadError_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to verify update.
+        /// </summary>
+        public static string UpdateWindow_SecurityError_Title {
+            get {
+                return ResourceManager.GetString("UpdateWindow_SecurityError_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Update available.
         /// </summary>
         public static string UpdateWindow_Title {

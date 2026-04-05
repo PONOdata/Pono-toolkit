@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -127,9 +127,12 @@ public class UpdateChecker
                 try
                 {
                     if (!forceCheck && !shouldCheck && UpdateFromServer?.Url != null)
-                        return Version.Parse(ProjectEntries.Values
-                            .Where(entry => entry.ProjectName == $"LenovoLegionToolkit{_updateSettings.Store.UpdateChannel}")
-                            .FirstOrDefault().ProjectVersion ?? "0.0.0.0");
+                    {
+                        var entry = ProjectEntries.Values
+                            .FirstOrDefault(entry => entry.ProjectName == $"LenovoLegionToolkit{_updateSettings.Store.UpdateChannel}");
+                        var versionString = entry.ProjectVersion ?? "0.0.0.0";
+                        return Version.TryParse(versionString, out var parsedVersion) ? parsedVersion : null;
+                    }
 
                     Log.Instance.Trace($"Checking Server for updates...");
                     var (currentVersion, newVersion, statusCode, projectInfo, patchNote) = await TryGetUpdateFromServer(_updateSettings.Store.UpdateChannel).ConfigureAwait(false);
@@ -182,6 +185,13 @@ public class UpdateChecker
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
+                }
+                catch (Exception ex)
+                {
+                    Log.Instance.Trace($"Error checking for updates via Server.", ex);
+
+                    Status = UpdateCheckStatus.Error;
+                    return null;
                 }
                 finally
                 {
@@ -478,8 +488,11 @@ public class UpdateChecker
                 return (StatusCode.Null, string.Empty);
             }
 
-            Version currentVersion = Version.Parse(ProjectEntries[projectName].ProjectCurrentVersion);
-            Version projectVersion = Version.Parse(ProjectEntries[projectName].ProjectVersion);
+            if (!Version.TryParse(ProjectEntries[projectName].ProjectCurrentVersion, out var currentVersion))
+                currentVersion = new Version(0, 0, 0, 0);
+            
+            if (!Version.TryParse(ProjectEntries[projectName].ProjectVersion, out var projectVersion))
+                projectVersion = new Version(0, 0, 0, 0);
 
             if (projectVersion != currentVersion && ProjectEntries[projectName].ProjectForceUpdate)
             {
@@ -527,8 +540,11 @@ public class UpdateChecker
         }
 
         projectInfo.ProjectNewVersion = newestVersion;
-        var currentVersion = Version.Parse(projectInfo.ProjectCurrentVersion);
-        var newVersion = Version.Parse(newestVersion);
+        if (!Version.TryParse(projectInfo.ProjectCurrentVersion, out var currentVersion))
+            currentVersion = new Version(0, 0, 0, 0);
+
+        if (!Version.TryParse(newestVersion, out var newVersion))
+            newVersion = new Version(0, 0, 0, 0);
         string patchNote = string.Empty;
 
         if ((statusCode != StatusCode.Update && statusCode != StatusCode.ForceUpdate) ||

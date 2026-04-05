@@ -17,6 +17,27 @@
 *.pfx
 make_release.bat
 make_debug.bat
+temp_*/
+build_installer/
+TemporarySolution/LibreHardwareMonitorLib.dll
+LenovoLegionToolkit.Plugin/
+FanCurveExtension/
+
+# AI Tooling and Agents
+.gemini/
+.cursor/
+.cursorrules
+.cline/
+.aider/
+.aider*
+.copilot/
+copilot/
+.claude/
+.claudecode/
+.devin/
+.roo/
+.sweep/
+.continue/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -580,10 +601,3 @@ obj/
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,dotnetcore,csharp
-
-build_installer
-/TemporarySolution/LibreHardwareMonitorLib.dll
-
-# LenovoLegionToolkit Module Isolation (Option B)
-/LenovoLegionToolkit.Plugin/
-FanCurveExtension

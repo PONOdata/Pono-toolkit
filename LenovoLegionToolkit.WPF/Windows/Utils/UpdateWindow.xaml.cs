@@ -1,15 +1,16 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Windows;
-using System.Windows.Input;
 using BlackSharp.Core.Extensions;
 using LenovoLegionToolkit.Lib;
 using LenovoLegionToolkit.Lib.Utils;
 using LenovoLegionToolkit.WPF.Extensions;
 using LenovoLegionToolkit.WPF.Resources;
+using LenovoLegionToolkit.WPF.Utils;
+using Wpf.Ui.Controls;
 
 namespace LenovoLegionToolkit.WPF.Windows.Utils;
 
@@ -82,14 +83,22 @@ public partial class UpdateWindow : IProgress<float>
         catch (SecurityException ex)
         {
             SetDownloading(false);
-            throw new SecurityException(ex.Message + ex.InnerException!.Message);
+            var innerMsg = ex.InnerException is not null ? "\n" + ex.InnerException.Message : string.Empty;
+            await SnackbarHelper.ShowAsync(Resource.UpdateWindow_SecurityError_Title, ex.Message + innerMsg, SnackbarType.Error);
         }
-        catch
+        catch (Exception ex)
         {
             SetDownloading(false);
 
-            Constants.LatestReleaseUri.Open();
-            Close();
+            if (_updateChecker.UpdateFromServer != null)
+            {
+                await SnackbarHelper.ShowAsync(Resource.UpdateWindow_DownloadError_Title, ex.Message, SnackbarType.Error);
+            }
+            else
+            {
+                Constants.LatestReleaseUri.Open();
+                Close();
+            }
         }
     }
 
