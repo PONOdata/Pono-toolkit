@@ -335,6 +335,8 @@ public abstract class OsdWindowBase : Window
         _fpsController.FpsDataUpdated -= OnFpsDataUpdated;
         _fpsController.Dispose();
 
+        MessagingCenter.Unsubscribe(this);
+
         App.Current.OsdWindow = null;
     }
     
@@ -509,12 +511,12 @@ public abstract class OsdWindowBase : Window
         switch (shouldMonitor)
         {
             case true when !_fpsMonitoringStarted:
-                await StartFpsMonitoringAsync();
                 _fpsMonitoringStarted = true;
+                await StartFpsMonitoringAsync();
                 break;
             case false when _fpsMonitoringStarted:
-                StopFpsMonitoring();
                 _fpsMonitoringStarted = false;
+                StopFpsMonitoring();
                 break;
         }
     }
@@ -616,7 +618,14 @@ public abstract class OsdWindowBase : Window
 
     private async Task TheRing(CancellationToken token)
     {
-        if (!await _refreshLock.WaitAsync(0, token)) return;
+        try
+        {
+            await _refreshLock.WaitAsync(-1, token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
 
         try
         {
