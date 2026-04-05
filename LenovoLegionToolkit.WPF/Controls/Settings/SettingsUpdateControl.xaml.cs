@@ -74,7 +74,7 @@ public partial class SettingsUpdateControl
             return;
 
         _updateSettings.Store.UpdateChannel = updateChannel;
-        _settings.SynchronizeStore();
+        _updateSettings.SynchronizeStore();
     }
 
     private void UpdateMethodComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -86,7 +86,7 @@ public partial class SettingsUpdateControl
             return;
 
         _updateSettings.Store.UpdateMethod = updateMethod;
-        _settings.SynchronizeStore();
+        _updateSettings.SynchronizeStore();
     }
 
     private void UpdateCheckFrequencyComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
