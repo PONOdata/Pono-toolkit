@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using LenovoLegionToolkit.Lib;
 using LenovoLegionToolkit.Lib.Controllers;
+using LenovoLegionToolkit.Lib.Extensions;
 using LenovoLegionToolkit.Lib.Settings;
 using LenovoLegionToolkit.Lib.System;
 using LenovoLegionToolkit.Lib.Utils;
@@ -54,59 +56,67 @@ public partial class DiscreteGPUManagementWindow : BaseWindow
 
     private void DiscreteGPUManagementWindow_Loaded(object sender, RoutedEventArgs e)
     {
-        RefreshAppList();
+        _ = RefreshAppListAsync();
     }
 
     private void GpuController_Refreshed(object? sender, GPUStatus e)
     {
-        Dispatcher.Invoke(RefreshAppList);
+        Dispatcher.Invoke(() => _ = RefreshAppListAsync());
     }
 
     private bool _isRefreshing;
 
-    private void RefreshAppList()
+    private async Task RefreshAppListAsync()
     {
+        if (_isRefreshing) return;
         _isRefreshing = true;
+
         try
         {
-            var activeProcesses = _gpuController.AllActiveProcesses.ToList();
-            var hasMultipleGpus = Displays.HasMultipleGpus();
-
-            var configuredApps = new List<string>();
-            try
+            var data = await Task.Run(() =>
             {
-                using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\DirectX\UserGpuPreferences", false);
-                if (key != null)
+                var activeProcesses = _gpuController.AllActiveProcesses.ToList();
+                var processInfos = activeProcesses.Select(p =>
+                    {
+                        try { return new { p.Id, Path = p.GetFileName() }; }
+                        catch { return null; }
+                    })
+                    .Where(p => !string.IsNullOrEmpty(p?.Path))
+                    .ToList();
+
+                var hasMultipleGpus = Displays.HasMultipleGpus();
+
+                var configuredApps = new List<string>();
+                try
                 {
-                    configuredApps.AddRange(key.GetValueNames());
+                    using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\DirectX\UserGpuPreferences", false);
+                    if (key != null)
+                    {
+                        configuredApps.AddRange(key.GetValueNames());
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                Log.Instance.Trace($"Failed to read registry preferences.", ex);
-            }
-
-            var allPaths = activeProcesses.Select(p =>
-            {
-                try { return p.MainModule?.FileName; } catch { return null; }
-            }).Where(path => !string.IsNullOrEmpty(path))
-            .Concat(configuredApps.Where(System.IO.Path.IsPathRooted))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToList();
-
-            foreach (var path in allPaths)
-            {
-                if (path == null) continue;
-
-                var existing = _apps.FirstOrDefault(a => a.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
-                var processIds = activeProcesses.Where(p =>
+                catch (Exception ex)
                 {
-                    try { return p.MainModule?.FileName?.Equals(path, StringComparison.OrdinalIgnoreCase) == true; } catch { return false; }
-                }).Select(p => p.Id).ToList();
+                    Log.Instance.Trace($"Failed to read registry preferences.", ex);
+                }
+
+                var allPaths = processInfos.Select(p => p!.Path!)
+                    .Concat(configuredApps.Where(Path.IsPathRooted))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+
+                return new { processInfos, hasMultipleGpus, allPaths };
+            });
+
+            foreach (var path in data.allPaths)
+            {
+                var processIds = data.processInfos.Where(p => p!.Path!.Equals(path, StringComparison.OrdinalIgnoreCase))
+                    .Select(p => p!.Id).ToList();
                 var isActive = processIds.Count > 0;
 
                 var preference = _gpuController.GetGpuPreference(path).ToString();
 
+                var existing = _apps.FirstOrDefault(a => a.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
                 if (existing != null)
                 {
                     existing.ProcessIds = processIds;
@@ -115,23 +125,27 @@ public partial class DiscreteGPUManagementWindow : BaseWindow
                 }
                 else
                 {
-                    var icon = ExtractIcon(path);
+                    var icon = await Task.Run(() => ExtractIcon(path));
                     _apps.Add(new DiscreteGPUAppViewModel
                     {
-                        Name = System.IO.Path.GetFileNameWithoutExtension(path),
+                        Name = Path.GetFileNameWithoutExtension(path),
                         Path = path,
                         IsActive = isActive,
                         ProcessIds = processIds,
                         Preference = preference,
-                        IsPreferenceEnabled = hasMultipleGpus,
+                        IsPreferenceEnabled = data.hasMultipleGpus,
                         Icon = icon
                     });
                 }
             }
 
-            var toRemove = _apps.Where(a => !allPaths.Contains(a.Path, StringComparer.OrdinalIgnoreCase)).ToList();
+            var toRemove = _apps.Where(a => !data.allPaths.Contains(a.Path, StringComparer.OrdinalIgnoreCase)).ToList();
             foreach (var app in toRemove)
                 _apps.Remove(app);
+        }
+        catch (Exception ex)
+        {
+            Log.Instance.Trace($"Failed to refresh app list.", ex);
         }
         finally
         {
@@ -190,7 +204,7 @@ public partial class DiscreteGPUManagementWindow : BaseWindow
         {
             _gpuController.SetGpuPreference(vm.Path, preference);
             SnackbarHelper.Show(Resource.DiscreteGPUControl_Title, Resource.SettingsPage_RestartRequired_Message, SnackbarType.Success);
-            RefreshAppList();
+            _ = RefreshAppListAsync();
         }
         catch (Exception ex)
         {
@@ -202,10 +216,12 @@ public partial class DiscreteGPUManagementWindow : BaseWindow
     {
         try
         {
-            if (!System.IO.File.Exists(path)) return null;
+            if (!File.Exists(path)) return null;
             using var icon = System.Drawing.Icon.ExtractAssociatedIcon(path);
             if (icon == null) return null;
-            return Imaging.CreateBitmapSourceFromHIcon(icon.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            var imageSource = Imaging.CreateBitmapSourceFromHIcon(icon.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            imageSource.Freeze();
+            return imageSource;
         }
         catch { return null; }
     }
@@ -249,7 +265,18 @@ public class DiscreteGPUAppViewModel : INotifyPropertyChanged
     public string Path { get; set; } = string.Empty;
     public bool IsPreferenceEnabled { get; set; }
 
-    public List<int> ProcessIds { get; set; } = [];
+    private List<int> _processIds = [];
+    public List<int> ProcessIds
+    {
+        get => _processIds;
+        set
+        {
+            if (_processIds == value) return;
+            _processIds = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(CanKill));
+        }
+    }
     public bool CanKill => IsActive && ProcessIds.Count > 0;
 
     private bool _isActive;
