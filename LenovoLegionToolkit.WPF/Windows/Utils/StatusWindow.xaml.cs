@@ -137,8 +137,8 @@ public partial class StatusWindow
         _cpuFanAndPowerLabel.Visibility = sensorVis;
 
         var isV5 = _cachedControllerType == typeof(SensorsControllerV5);
-        var isStandardModel = (int?)_machineInfo?.LegionSeries <= 5;
-        _systemFanGrid.Visibility = (useSensors && isV5 && isStandardModel) ? Visibility.Visible : Visibility.Collapsed;
+        var isSpecialModel = (int?)_machineInfo?.LegionSeries >= 5;
+        _systemFanGrid.Visibility = (useSensors && isV5 && !isSpecialModel) ? Visibility.Visible : Visibility.Collapsed;
 
         if (gpuStatus.HasValue)
         {
@@ -288,14 +288,14 @@ public partial class StatusWindow
 
     private void ApplySensorsData(StatusWindowData data)
     {
-        var isStandardModel = (int?)_machineInfo?.LegionSeries <= 5;
+        var isSpecialModel = (int?)_machineInfo?.LegionSeries >= 5;
 
         _cpuFreqAndTempDesc.Content = Resource.StatusWindow_Frequency_And_Temperature;
         UpdateFreqAndTemp(_cpuFreqAndTempLabel, data.CpuClock, data.CpuTemp);
 
-        if (!isStandardModel)
+        if (isSpecialModel)
         {
-            _cpuFanAndPowerDesc.Content = "Power";
+            _cpuFanAndPowerDesc.Content = Resource.SensorsControl_GPU_Power;
             UpdatePowerOnly(_cpuFanAndPowerLabel, data.CpuPower);
         }
         else
@@ -314,9 +314,9 @@ public partial class StatusWindow
             _gpuFreqAndTempDesc.Content = Resource.StatusWindow_Frequency_And_Temperature;
             UpdateFreqAndTemp(_gpuFreqAndTempLabel, data.GpuClock, data.GpuTemp);
 
-            if (!isStandardModel)
+            if (isSpecialModel)
             {
-                _gpuFanAndPowerDesc.Content = "Power";
+                _gpuFanAndPowerDesc.Content = Resource.SensorsControl_GPU_Power;
                 UpdatePowerOnly(_gpuFanAndPowerLabel, data.GpuPower);
             }
             else
