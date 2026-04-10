@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -137,7 +137,8 @@ public partial class StatusWindow
         _cpuFanAndPowerLabel.Visibility = sensorVis;
 
         var isV5 = _cachedControllerType == typeof(SensorsControllerV5);
-        _systemFanGrid.Visibility = (useSensors && isV5) ? Visibility.Visible : Visibility.Collapsed;
+        var isStandardModel = (int?)_machineInfo?.LegionSeries <= 5;
+        _systemFanGrid.Visibility = (useSensors && isV5 && isStandardModel) ? Visibility.Visible : Visibility.Collapsed;
 
         if (gpuStatus.HasValue)
         {
@@ -273,28 +274,57 @@ public partial class StatusWindow
 
         if (useSensors)
         {
-            UpdateFreqAndTemp(_cpuFreqAndTempLabel, data.CpuClock, data.CpuTemp);
-            UpdateFanAndPower(_cpuFanAndPowerLabel, data.SensorsData?.CPU.FanSpeed ?? -1, data.CpuPower);
-            
-            if (_cachedControllerType == typeof(SensorsControllerV4) ||
-                _cachedControllerType == typeof(SensorsControllerV5))
-            {
-                UpdateSystemFan(_systemFanLabel, data.SensorsData?.PCH.FanSpeed ?? -1);
-            }
+            ApplySensorsData(data);
         }
 
         if (data.GPUStatus.HasValue)
         {
             _gpuPowerStateValueLabel.Content = data.GPUStatus.Value.PerformanceState ?? "-";
-            if (useSensors && data.GPUStatus.Value.State != GPUState.PoweredOff)
-            {
-                UpdateFreqAndTemp(_gpuFreqAndTempLabel, data.GpuClock, data.GpuTemp);
-                UpdateFanAndPower(_gpuFanAndPowerLabel, data.SensorsData?.GPU.FanSpeed ?? -1, data.GpuPower);
-            }
         }
 
         RefreshBattery(data.BatteryInformation, data.BatteryState);
         RefreshUpdate(data.HasUpdate);
+    }
+
+    private void ApplySensorsData(StatusWindowData data)
+    {
+        var isStandardModel = (int?)_machineInfo?.LegionSeries <= 5;
+
+        _cpuFreqAndTempDesc.Content = Resource.StatusWindow_Frequency_And_Temperature;
+        UpdateFreqAndTemp(_cpuFreqAndTempLabel, data.CpuClock, data.CpuTemp);
+
+        if (!isStandardModel)
+        {
+            _cpuFanAndPowerDesc.Content = "Power";
+            UpdatePowerOnly(_cpuFanAndPowerLabel, data.CpuPower);
+        }
+        else
+        {
+            _cpuFanAndPowerDesc.Content = Resource.StatusWindow_Fan_And_Power;
+            UpdateFanAndPower(_cpuFanAndPowerLabel, data.SensorsData?.CPU.FanSpeed ?? -1, data.CpuPower);
+        }
+
+        if (_cachedControllerType == typeof(SensorsControllerV4) || _cachedControllerType == typeof(SensorsControllerV5))
+        {
+            UpdateSystemFan(_systemFanLabel, data.SensorsData?.PCH.FanSpeed ?? -1);
+        }
+
+        if (data.GPUStatus.HasValue && data.GPUStatus.Value.State != GPUState.PoweredOff)
+        {
+            _gpuFreqAndTempDesc.Content = Resource.StatusWindow_Frequency_And_Temperature;
+            UpdateFreqAndTemp(_gpuFreqAndTempLabel, data.GpuClock, data.GpuTemp);
+
+            if (!isStandardModel)
+            {
+                _gpuFanAndPowerDesc.Content = "Power";
+                UpdatePowerOnly(_gpuFanAndPowerLabel, data.GpuPower);
+            }
+            else
+            {
+                _gpuFanAndPowerDesc.Content = Resource.StatusWindow_Fan_And_Power;
+                UpdateFanAndPower(_gpuFanAndPowerLabel, data.SensorsData?.GPU.FanSpeed ?? -1, data.GpuPower);
+            }
+        }
     }
 
     private void RefreshPowerMode(PowerModeState? powerModeState, ITSMode? itsMode, string? godModePresetName)
@@ -334,6 +364,7 @@ public partial class StatusWindow
     private static string GetTemperatureText(double t) { var s = IoCContainer.Resolve<ApplicationSettings>(); return t <= 0 ? "-" : (s.Store.TemperatureUnit == TemperatureUnit.F ? $"{(t * 9 / 5 + 32):0}{Resource.Fahrenheit}" : $"{t:0}{Resource.Celsius}"); }
     private static void UpdateFreqAndTemp(System.Windows.Controls.Label l, double f, double t) => l.Content = (t < 0 || f < 0) ? "-" : $"{f:0}Mhz | {GetTemperatureText(t)}";
     private static void UpdateFanAndPower(System.Windows.Controls.Label l, double f, double p) => l.Content = (f < 0 || p < 0) ? "-" : $"{f:0}RPM | {p:0}W";
+    private static void UpdatePowerOnly(System.Windows.Controls.Label l, double p) => l.Content = p < 0 ? "-" : $"{p:0}W";
     private static void UpdateSystemFan(System.Windows.Controls.Label l, double f) => l.Content = f < 0 ? "-" : $"{f:0}RPM";
 
     private void MoveBottomRightEdgeOfWindowToMousePosition()
