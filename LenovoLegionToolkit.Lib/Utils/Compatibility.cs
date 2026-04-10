@@ -157,7 +157,7 @@ public static partial class Compatibility
         bool isAllowedVendor = ALLOWED_VENDORS.Contains(mi.Vendor, StringComparer.InvariantCultureIgnoreCase);
 
         bool isAllowedModel = AllowedModelsPrefix.Any(prefix =>
-            mi.Model.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase));
+            mi.Model.Contains(prefix, StringComparison.InvariantCultureIgnoreCase));
 
         bool isCompatible = isBasicCompatible || (isAllowedVendor && isAllowedModel);
 
