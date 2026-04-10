@@ -148,14 +148,28 @@ public static partial class Compatibility
 
     public static async Task<(bool isCompatible, MachineInformation machineInformation)> IsCompatibleAsync()
     {
+        await EnsureFakeMachineInformationLoadedAsync().ConfigureAwait(false);
+
         var mi = await GetMachineInformationAsync().ConfigureAwait(false);
 
         bool isBasicCompatible = await CheckBasicCompatibilityAsync().ConfigureAwait(false);
 
         bool isAllowedVendor = ALLOWED_VENDORS.Contains(mi.Vendor, StringComparer.InvariantCultureIgnoreCase);
 
-        if (!await CheckBasicCompatibilityAsync().ConfigureAwait(false) || !isAllowedVendor)
-            return (false, mi);
+        bool isAllowedModel = AllowedModelsPrefix.Any(prefix =>
+            mi.Model.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase));
+
+        bool isCompatible = isBasicCompatible || (isAllowedVendor && isAllowedModel);
+
+        return (isCompatible, mi);
+    }
+
+    private static async Task EnsureFakeMachineInformationLoadedAsync()
+    {
+        if (FakeMachineInformationMode)
+        {
+            return;
+        }
 
         if (File.Exists(FakeMachineInformationPath))
         {
@@ -163,11 +177,6 @@ public static partial class Compatibility
             _fakeMachineInformation = JsonConvert.DeserializeObject<FakeMachineInformation>(jsonString);
             FakeMachineInformationMode = true;
         }
-
-        bool isAllowedModel = AllowedModelsPrefix.Any(allowedModel =>
-            mi.Model.Contains(allowedModel, StringComparison.InvariantCultureIgnoreCase));
-
-        return (isAllowedModel, mi);
     }
 
     public static Task<FakeMachineInformation?> GetFakeMachineInformationAsync()
