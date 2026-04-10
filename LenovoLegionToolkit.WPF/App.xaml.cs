@@ -499,15 +499,33 @@ public partial class App
 
         try
         {
-            if (!await CheckBasicCompatibilityAsync())
+            var basicTask = Compatibility.CheckBasicCompatibilityAsync();
+            var fullTask = Compatibility.IsCompatibleAsync();
+
+            await Task.WhenAll(basicTask, fullTask);
+
+            bool isBasicCompatible = basicTask.Result;
+            var (isFullCompatible, mi) = fullTask.Result;
+
+            if (isBasicCompatible || isFullCompatible)
             {
+                Log.Instance.Trace($"Compatibility check passed. (Basic={isBasicCompatible}, Full={isFullCompatible}) [Vendor={mi.Vendor}, Model={mi.Model}, MachineType={mi.MachineType}, BIOS={mi.BiosVersion}]");
                 return;
             }
 
-            if (!await CheckCompatibilityAsync())
+            Log.Instance.Trace($"Incompatible system detected. [Vendor={mi.Vendor}, Model={mi.Model}, MachineType={mi.MachineType}, BIOS={mi.BiosVersion}]");
+
+            var unsupportedWindow = new UnsupportedWindow(mi);
+            unsupportedWindow.Show();
+
+            if (await unsupportedWindow.ShouldContinue)
             {
+                Log.Instance.IsTraceEnabled = true;
+                Log.Instance.Trace($"Compatibility check OVERRIDE. [Vendor={mi.Vendor}, Model={mi.Model}, MachineType={mi.MachineType}]");
                 return;
             }
+
+            Shutdown(202);
         }
         catch (Exception ex)
         {
@@ -520,44 +538,6 @@ public partial class App
             MessageBox.Show(Resource.CompatibilityCheckError_Message, Resource.AppName, MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown(200);
         }
-    }
-
-    private async Task<bool> CheckBasicCompatibilityAsync()
-    {
-        if (await Compatibility.CheckBasicCompatibilityAsync())
-        {
-            return true;
-        }
-
-        MessageBox.Show(Resource.IncompatibleDevice_Message, Resource.AppName, MessageBoxButton.OK, MessageBoxImage.Error);
-        Shutdown(201);
-        return false;
-    }
-
-    private async Task<bool> CheckCompatibilityAsync()
-    {
-        var (isCompatible, mi) = await Compatibility.IsCompatibleAsync();
-
-        if (isCompatible)
-        {
-            Log.Instance.Trace($"Compatibility check passed. [Vendor={mi.Vendor}, Model={mi.Model}, MachineType={mi.MachineType}, BIOS={mi.BiosVersion}]");
-            return true;
-        }
-
-        Log.Instance.Trace($"Incompatible system detected. [Vendor={mi.Vendor}, Model={mi.Model}, MachineType={mi.MachineType}, BIOS={mi.BiosVersion}]");
-
-        var unsupportedWindow = new UnsupportedWindow(mi);
-        unsupportedWindow.Show();
-
-        if (await unsupportedWindow.ShouldContinue)
-        {
-            Log.Instance.IsTraceEnabled = true;
-            Log.Instance.Trace($"Compatibility check OVERRIDE. [Vendor={mi.Vendor}, Model={mi.Model}, MachineType={mi.MachineType}]");
-            return true;
-        }
-
-        Shutdown(202);
-        return false;
     }
 
     #endregion
