@@ -137,7 +137,7 @@ public partial class StatusWindow
         _cpuFanAndPowerLabel.Visibility = sensorVis;
 
         var isV5 = _cachedControllerType == typeof(SensorsControllerV5);
-        var isSpecialModel = (int?)_machineInfo?.LegionSeries >= 5;
+        var isSpecialModel = (int?)_machineInfo?.LegionSeries > 5;
         _systemFanGrid.Visibility = (useSensors && isV5 && !isSpecialModel) ? Visibility.Visible : Visibility.Collapsed;
 
         if (gpuStatus.HasValue)
@@ -288,7 +288,7 @@ public partial class StatusWindow
 
     private void ApplySensorsData(StatusWindowData data)
     {
-        var isSpecialModel = (int?)_machineInfo?.LegionSeries >= 5;
+        var isSpecialModel = (int?)_machineInfo?.LegionSeries > 5;
 
         _cpuFreqAndTempDesc.Content = Resource.StatusWindow_Frequency_And_Temperature;
         UpdateFreqAndTemp(_cpuFreqAndTempLabel, data.CpuClock, data.CpuTemp);
