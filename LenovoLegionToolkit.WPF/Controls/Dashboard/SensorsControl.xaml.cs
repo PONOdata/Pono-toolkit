@@ -143,11 +143,12 @@ public partial class SensorsControl
 
     private string GetTemperatureText(double temperature)
     {
+        if (double.IsNaN(temperature) || temperature < 0) return "-";
+
         if (_applicationSettings.Store.TemperatureUnit == TemperatureUnit.F)
         {
-            temperature *= 9.0 / 5.0;
-            temperature += 32;
-            return $"{temperature:0} {Resource.Fahrenheit}";
+            var fahrenheit = temperature * 9.0 / 5.0 + 32.0;
+            return $"{fahrenheit:0} {Resource.Fahrenheit}";
         }
 
         return $"{temperature:0} {Resource.Celsius}";
@@ -155,7 +156,7 @@ public partial class SensorsControl
 
     private static void UpdateValue(RangeBase bar, ContentControl label, double max, double value, string text, string? toolTipText = null)
     {
-        if (max < 0 || value < 0)
+        if (double.IsNaN(max) || double.IsNaN(value) || max < 0 || value < 0)
         {
             bar.Minimum = 0;
             bar.Maximum = 1;

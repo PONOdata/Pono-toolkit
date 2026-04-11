@@ -178,7 +178,7 @@ public abstract class OsdWindowBase : Window
             if (screen != null)
             {
                 var workArea = screen.WpfWorkingArea;
-                
+
                 double snapThreshold = _OsdSettings.Store.SnapThreshold;
 
                 double left = this.Left;
@@ -203,16 +203,16 @@ public abstract class OsdWindowBase : Window
                 {
                     top = workArea.Bottom - height;
                 }
-                
+
                 if (left < workArea.Left) left = workArea.Left;
                 if (left + width > workArea.Right) left = workArea.Right - width;
-                
+
                 if (top < workArea.Top) top = workArea.Top;
                 if (top + height > workArea.Bottom) top = workArea.Bottom - height;
 
                 this.Left = left;
                 this.Top = top;
-                
+
                 _OsdSettings.SynchronizeStore();
             }
         }
@@ -259,7 +259,7 @@ public abstract class OsdWindowBase : Window
         SavedPositionX = null;
         SavedPositionY = null;
         _OsdSettings.SynchronizeStore();
-        
+
         SetDefaultWindowPosition();
     }
 
@@ -340,7 +340,7 @@ public abstract class OsdWindowBase : Window
 
         App.Current.OsdWindow = null;
     }
-    
+
     protected virtual void ApplyAppearanceSettings()
     {
         var converter = new BrushConverter();
@@ -489,17 +489,17 @@ public abstract class OsdWindowBase : Window
 
     protected string GetGpuVramDisplayText(SensorSnapshot data) => GetMemoryDisplayText(data.GpuVramUsage, data.GpuVramUsed, data.GpuVramTotal);
 
-    /// <summary>Returns a formatted temperature string, converting to °F when the application setting is configured.</summary>
     protected string GetTemperatureFormat(double rawCelsius)
     {
+        if (double.IsNaN(rawCelsius) || rawCelsius < 0) return "-";
+
         if (_applicationSettings.Store.TemperatureUnit == TemperatureUnit.F)
         {
-            if (rawCelsius < 0) return "-";
             var fahrenheit = rawCelsius * 9.0 / 5.0 + 32.0;
             return $"{fahrenheit:F0}{Resource.Fahrenheit}";
         }
 
-        return rawCelsius < 0 ? "-" : $"{rawCelsius:F0}{Resource.Celsius}";
+        return $"{rawCelsius:F0}{Resource.Celsius}";
     }
 
     protected void UpdateTemperatureTextBlock(TextBlock tb, double rawCelsius,
@@ -510,7 +510,7 @@ public abstract class OsdWindowBase : Window
         var text = GetTemperatureFormat(rawCelsius);
         var foreground = _valueBrush;
 
-        if (warningThreshold != double.MaxValue && rawCelsius >= 0)
+        if (warningThreshold != double.MaxValue && !double.IsNaN(rawCelsius) && rawCelsius >= 0)
             foreground = SeverityBrush(rawCelsius, warningThreshold, criticalThreshold);
 
         SetTextIfChanged(tb, text);

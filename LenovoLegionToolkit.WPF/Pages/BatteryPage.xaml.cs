@@ -161,14 +161,13 @@ public partial class BatteryPage
     {
         _batteryTemperatureCardControl.Tag = temperature;
 
-        if (temperature is null)
+        if (temperature is null || double.IsNaN(temperature.Value) || temperature.Value < 0)
             return "—";
 
         if (_settings.Store.TemperatureUnit == TemperatureUnit.F)
         {
-            temperature *= 9.0 / 5.0;
-            temperature += 32;
-            return $"{temperature:0.0} {Resource.Fahrenheit}";
+            var fahrenheit = temperature.Value * 9.0 / 5.0 + 32.0;
+            return $"{fahrenheit:0.0} {Resource.Fahrenheit}";
         }
 
         return $"{temperature:0.0} {Resource.Celsius}";
