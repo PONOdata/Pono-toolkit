@@ -8,7 +8,7 @@ namespace LenovoLegionToolkit.WPF.Windows.Settings;
 
 public partial class SensorSettingsWindow
 {
-    private readonly SensorsControlSettings _sensorsSettings = IoCContainer.Resolve<SensorsControlSettings>();
+    private readonly HardwareSensorSettings _sensorsSettings = IoCContainer.Resolve<HardwareSensorSettings>();
 
     public SensorSettingsWindow()
     {

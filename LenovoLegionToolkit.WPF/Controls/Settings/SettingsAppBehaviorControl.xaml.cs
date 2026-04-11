@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -32,6 +32,8 @@ public partial class SettingsAppBehaviorControl
     private readonly DashboardSettings _dashboardSettings = IoCContainer.Resolve<DashboardSettings>();
     private readonly AutomationProcessor _automationProcessor = IoCContainer.Resolve<AutomationProcessor>();
     private readonly OsdSettings _OsdSettings = IoCContainer.Resolve<OsdSettings>();
+    private readonly SensorsControlSettings _sensorsControlSettings = IoCContainer.Resolve<SensorsControlSettings>();
+    private readonly HardwareSensorSettings _hardwareSensorSettings = IoCContainer.Resolve<HardwareSensorSettings>();
 
     private bool _isRefreshing = true;
 
@@ -252,12 +254,17 @@ public partial class SettingsAppBehaviorControl
             {
                 App.Current.OsdWindow.Hide();
             }
+            _OsdSettings.SynchronizeStore();
         }
 
         _settings.Store.EnableHardwareSensors = state.Value;
         _settings.SynchronizeStore();
-        _OsdSettings.SynchronizeStore();
-        
+
+        if (state.Value)
+        {
+            _hardwareSensorSettings.EnsureFileExists();
+        }
+
         _useNewSensorDashboardCardControl.Visibility = state.Value ? Visibility.Visible : Visibility.Collapsed;
         _osdCardControl.Visibility = state.Value ? Visibility.Visible : Visibility.Collapsed;
         
@@ -277,7 +284,13 @@ public partial class SettingsAppBehaviorControl
 
         _settings.Store.UseNewSensorDashboard = state.Value;
         _settings.SynchronizeStore();
-        
+
+        if (state.Value)
+        {
+            _sensorsControlSettings.EnsureFileExists();
+            _hardwareSensorSettings.EnsureFileExists();
+        }
+
         MessagingCenter.Publish(new SensorDashboardSwappedMessage());
     }
 

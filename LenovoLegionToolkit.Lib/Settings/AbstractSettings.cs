@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using LenovoLegionToolkit.Lib.Utils;
 using Newtonsoft.Json;
@@ -41,6 +41,14 @@ public abstract class AbstractSettings<T> where T : class, new()
         File.WriteAllText(_settingsStorePath, settingsSerialized);
     }
 
+    public void EnsureFileExists()
+    {
+        if (!File.Exists(_settingsStorePath))
+        {
+            Save();
+        }
+    }
+
     public void Reset()
     {
         _store = null;
@@ -69,7 +77,7 @@ public abstract class AbstractSettings<T> where T : class, new()
 
     public void SynchronizeStore()
     {
-        var settingsSerialized = JsonConvert.SerializeObject(_store, JsonSerializerSettings);
+        var settingsSerialized = JsonConvert.SerializeObject(Store, JsonSerializerSettings);
         File.WriteAllText(_settingsStorePath, settingsSerialized);
     }
 

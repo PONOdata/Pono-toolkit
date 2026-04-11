@@ -28,6 +28,7 @@ public partial class SensorsControlV2
     private readonly SensorsController _controller = IoCContainer.Resolve<SensorsController>();
     private readonly SensorsGroupController _sensorsGroupControllers = IoCContainer.Resolve<SensorsGroupController>();
     private readonly SensorsControlSettings _sensorsControlSettings = IoCContainer.Resolve<SensorsControlSettings>();
+    private readonly HardwareSensorSettings _hardwareSensorSettings = IoCContainer.Resolve<HardwareSensorSettings>();
     private readonly ApplicationSettings _applicationSettings = IoCContainer.Resolve<ApplicationSettings>();
     private readonly DashboardSettings _dashboardSettings = IoCContainer.Resolve<DashboardSettings>();
     private readonly Lock _updateLock = new();
@@ -42,7 +43,7 @@ public partial class SensorsControlV2
         InitializeContextMenu();
         IsVisibleChanged += SensorsControl_IsVisibleChanged;
 
-        _sensorsGroupControllers.SelectedGpuIsIgpu = _sensorsControlSettings.Store.SelectedGpuIsIgpu;
+        _sensorsGroupControllers.SelectedGpuIsIgpu = _hardwareSensorSettings.Store.SelectedGpuIsIgpu;
 
         _cpuNameTask = GetProcessedCpuName();
         _sensorItemToControlMap = new Dictionary<SensorItem, FrameworkElement>
@@ -157,8 +158,8 @@ public partial class SensorsControlV2
     {
         if (IsVisible)
         {
-            _sensorsGroupControllers.SelectedGpuIsIgpu = _sensorsControlSettings.Store.SelectedGpuIsIgpu;
-            _sensorsGroupControllers.ShowAverageCpuFrequency = _sensorsControlSettings.Store.ShowCpuAverageFrequency;
+            _sensorsGroupControllers.SelectedGpuIsIgpu = _hardwareSensorSettings.Store.SelectedGpuIsIgpu;
+            _sensorsGroupControllers.ShowAverageCpuFrequency = _hardwareSensorSettings.Store.ShowCpuAverageFrequency;
 
             _activeSensorItems.Clear();
             if (_sensorsControlSettings.Store.VisibleItems != null)
@@ -408,7 +409,7 @@ public partial class SensorsControlV2
 
     private string GetMemoryUsageText(double memoryUsage, double memoryUsed, double memoryTotal)
     {
-        if (_sensorsControlSettings.Store.DisplayMemoryInGigabytes)
+        if (_hardwareSensorSettings.Store.DisplayMemoryInGigabytes)
         {
             if (memoryUsed >= 0 && memoryTotal > 0) return $"{memoryUsed:F1}/{memoryTotal:F1} {Resource.GB}";
             if (memoryUsed >= 0) return $"{memoryUsed:F1} {Resource.GB}";

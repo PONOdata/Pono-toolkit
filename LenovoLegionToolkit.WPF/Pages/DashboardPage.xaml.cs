@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,6 +23,8 @@ public partial class DashboardPage
 {
     private readonly ApplicationSettings _settings = IoCContainer.Resolve<ApplicationSettings>();
     private readonly DashboardSettings _dashboardSettings = IoCContainer.Resolve<DashboardSettings>();
+    private readonly SensorsControlSettings _sensorsControlSettings = IoCContainer.Resolve<SensorsControlSettings>();
+    private readonly HardwareSensorSettings _hardwareSensorSettings = IoCContainer.Resolve<HardwareSensorSettings>();
 
     private readonly List<DashboardGroupControl> _dashboardGroupControls = [];
     private FrameworkElement sensorControl = null!;
@@ -32,6 +34,7 @@ public partial class DashboardPage
         InitializeComponent();
 
         RefreshSensorControl();
+        EnsureConfigFilesExist();
 
         MessagingCenter.Subscribe<SensorDashboardSwappedMessage>(this, _ =>
         {
@@ -71,6 +74,15 @@ public partial class DashboardPage
             sensorControl.Visibility = _dashboardSettings.Store.ShowSensors
                 ? Visibility.Visible
                 : Visibility.Collapsed;
+        }
+    }
+
+    private void EnsureConfigFilesExist()
+    {
+        if (_settings.Store.EnableHardwareSensors && _settings.Store.UseNewSensorDashboard)
+        {
+            _sensorsControlSettings.EnsureFileExists();
+            _hardwareSensorSettings.EnsureFileExists();
         }
     }
 

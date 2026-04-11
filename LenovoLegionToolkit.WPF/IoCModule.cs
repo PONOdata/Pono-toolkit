@@ -1,4 +1,4 @@
-﻿using Autofac;
+using Autofac;
 using LenovoLegionToolkit.Lib.Extensions;
 using LenovoLegionToolkit.WPF.CLI;
 using LenovoLegionToolkit.WPF.Settings;
@@ -19,6 +19,7 @@ public class IoCModule : Module
 
         builder.Register<DashboardSettings>();
         builder.Register<SensorsControlSettings>();
+        builder.Register<HardwareSensorSettings>();
 
         builder.Register<IpcServer>();
     }

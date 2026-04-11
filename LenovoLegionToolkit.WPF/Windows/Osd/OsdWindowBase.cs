@@ -61,7 +61,7 @@ public abstract class OsdWindowBase : Window
     protected readonly SensorsController _controller = IoCContainer.Resolve<SensorsController>();
     protected readonly SensorsGroupController _sensorsGroupControllers = IoCContainer.Resolve<SensorsGroupController>();
     protected readonly FpsSensorController _fpsController = IoCContainer.Resolve<FpsSensorController>();
-    protected readonly SensorsControlSettings _sensorsControlSettings = IoCContainer.Resolve<SensorsControlSettings>();
+    protected readonly HardwareSensorSettings _hardwareSensorSettings = IoCContainer.Resolve<HardwareSensorSettings>();
 
     #endregion
 
@@ -302,7 +302,7 @@ public abstract class OsdWindowBase : Window
     {
         if (IsVisible)
         {
-            _sensorsGroupControllers.ShowAverageCpuFrequency = _sensorsControlSettings.Store.ShowCpuAverageFrequency;
+            _sensorsGroupControllers.ShowAverageCpuFrequency = _hardwareSensorSettings.Store.ShowCpuAverageFrequency;
 
             _cts?.Cancel();
             _cts?.Dispose();
@@ -474,7 +474,7 @@ public abstract class OsdWindowBase : Window
 
     protected string GetMemoryDisplayText(double usage, double used, double total)
     {
-        if (_sensorsControlSettings.Store.DisplayMemoryInGigabytes)
+        if (_hardwareSensorSettings.Store.DisplayMemoryInGigabytes)
         {
             if (used >= 0 && total > 0) return $"{used:F1}/{total:F1} {Resource.GB}";
             if (used >= 0) return $"{used:F1} {Resource.GB}";
