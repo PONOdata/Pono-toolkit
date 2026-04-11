@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -65,7 +65,7 @@ public partial class PackageControl : IProgress<float>
     {
         _downloadProgressRing.IsIndeterminate = !(value > 0);
         _downloadProgressRing.Progress = value * 100;
-        _downloadProgressLabel.Content = $"{value * 100:0}%";
+        _downloadProgressLabel.Content = $"{value * 100:0}{Resource.Percent}";
     });
 
     private async void CopyToClipboard_MouseRightButtonUp(object sender, MouseButtonEventArgs e)

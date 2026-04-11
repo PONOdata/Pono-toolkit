@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -97,7 +97,7 @@ public partial class BatteryPage
             _ => SymbolRegular.Battery024,
         };
 
-        _percentRemaining.Text = $"{batteryInfo.BatteryPercentage}%";
+        _percentRemaining.Text = $"{batteryInfo.BatteryPercentage}{Resource.Percent}";
         _status.Text = GetStatusText(batteryInfo);
         _lowBattery.Visibility = batteryInfo.IsLowBattery ? Visibility.Visible : Visibility.Collapsed;
         _lowWattageCharger.Visibility = powerAdapterStatus == PowerAdapterStatus.ConnectedLowWattage ? Visibility.Visible : Visibility.Collapsed;
@@ -119,13 +119,13 @@ public partial class BatteryPage
             _onBatterySinceText.Text = "-";
         }
 
-        _batteryDischargeRateText.Text = $"{batteryInfo.DischargeRate / 1000.0:+0.00;-0.00;0.00} W";
-        _batteryMinDischargeRateText.Text = $"{batteryInfo.MinDischargeRate / 1000.0:+0.00;-0.00;0.00} W";
-        _batteryMaxDischargeRateText.Text = $"{batteryInfo.MaxDischargeRate / 1000.0:+0.00;-0.00;0.00} W";
+        _batteryDischargeRateText.Text = $"{batteryInfo.DischargeRate / 1000.0:+0.00;-0.00;0.00} {Resource.Watt}";
+        _batteryMinDischargeRateText.Text = $"{batteryInfo.MinDischargeRate / 1000.0:+0.00;-0.00;0.00} {Resource.Watt}";
+        _batteryMaxDischargeRateText.Text = $"{batteryInfo.MaxDischargeRate / 1000.0:+0.00;-0.00;0.00} {Resource.Watt}";
         _batteryCapacityText.Text = $"{batteryInfo.EstimateChargeRemaining / 1000.0:0.00} Wh";
         _batteryFullChargeCapacityText.Text = $"{batteryInfo.FullChargeCapacity / 1000.0:0.00} Wh";
         _batteryDesignCapacityText.Text = $"{batteryInfo.DesignCapacity / 1000.0:0.00} Wh";
-        _batteryHealthText.Text = $"{batteryInfo.BatteryHealth:0.00} %";
+        _batteryHealthText.Text = $"{batteryInfo.BatteryHealth:0.00} {Resource.Percent}";
 
         if (batteryInfo.ManufactureDate is not null)
             _batteryManufactureDateText.Text = batteryInfo.ManufactureDate?.ToString(LocalizationHelper.ShortDateFormat) ?? "-";

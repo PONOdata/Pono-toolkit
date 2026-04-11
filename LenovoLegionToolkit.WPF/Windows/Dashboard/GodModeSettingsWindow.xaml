@@ -1,4 +1,4 @@
-﻿<local:BaseWindow
+<local:BaseWindow
     x:Class="LenovoLegionToolkit.WPF.Windows.Dashboard.GodModeSettingsWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -142,28 +142,28 @@
                         Title="{x:Static resources:Resource.GodModeSettingsWindow_CPU_LongTermPL}"
                         Margin="0,0,0,8"
                         Description="{x:Static resources:Resource.GodModeSettingsWindow_CPU_LongTermPL_Description}"
-                        Unit="W" />
+                        Unit="{x:Static resources:Resource.Watt}" />
 
                     <godMode:GodModeValueControl
                         x:Name="_cpuShortTermPowerLimitControl"
                         Title="{x:Static resources:Resource.GodModeSettingsWindow_CPU_ShortTermPL}"
                         Margin="0,0,0,8"
                         Description="{x:Static resources:Resource.GodModeSettingsWindow_CPU_ShortTermPL_Description}"
-                        Unit="W" />
+                        Unit="{x:Static resources:Resource.Watt}" />
 
                     <godMode:GodModeValueControl
                         x:Name="_cpuPeakPowerLimitControl"
                         Title="{x:Static resources:Resource.GodModeSettingsWindow_CPU_PeakPL}"
                         Margin="0,0,0,8"
                         Description="{x:Static resources:Resource.GodModeSettingsWindow_CPU_PeakPL_Description}"
-                        Unit="W" />
+                        Unit="{x:Static resources:Resource.Watt}" />
 
                     <godMode:GodModeValueControl
                         x:Name="_cpuCrossLoadingLimitControl"
                         Title="{x:Static resources:Resource.GodModeSettingsWindow_CPU_CrossLoading}"
                         Margin="0,0,0,8"
                         Description="{x:Static resources:Resource.GodModeSettingsWindow_CPU_CrossLoading_Description}"
-                        Unit="W" />
+                        Unit="{x:Static resources:Resource.Watt}" />
 
                     <godMode:GodModeValueControl
                         x:Name="_cpuPL1TauControl"
@@ -177,14 +177,14 @@
                         Title="{x:Static resources:Resource.GodModeSettingsWindow_CPU_APUsPPT_PL}"
                         Margin="0,0,0,8"
                         Description="{x:Static resources:Resource.GodModeSettingsWindow_CPU_APUsPPT_PL_Description}"
-                        Unit="W" />
+                        Unit="{x:Static resources:Resource.Watt}" />
 
                     <godMode:GodModeValueControl
                         x:Name="_cpuTemperatureLimitControl"
                         Title="{x:Static resources:Resource.GodModeSettingsWindow_CPU_TempLimit}"
                         Margin="0,0,0,8"
                         Description="{x:Static resources:Resource.GodModeSettingsWindow_CPU_TempLimit_Description}"
-                        Unit="°C" />
+                        Unit="{x:Static resources:Resource.Celsius}" />
 
                     <custom:CardControl x:Name="_toggleOcCard" Margin="0,0,0,8">
                         <custom:CardControl.Header>
@@ -209,7 +209,7 @@
                         Title="{x:Static resources:Resource.GodModeSettingsWindow_PrecisionBoostOverdriveBoostFrequency_Title}"
                         Margin="0,0,0,8"
                         Description="{x:Static resources:Resource.GodModeSettingsWindow_PrecisionBoostOverdriveBoostFrequency_Description}"
-                        Unit="MHz" />
+                        Unit="{x:Static resources:Resource.MHz}" />
 
                     <custom:CardControl x:Name="_toggleCoreCurveCard" Margin="0,0,0,8">
                         <custom:CardControl.Header>
@@ -242,35 +242,35 @@
                         Title="{x:Static resources:Resource.GodModeSettingsWindow_GPU_DynamicBoost}"
                         Margin="0,0,0,8"
                         Description="{x:Static resources:Resource.GodModeSettingsWindow_GPU_DynamicBoost_Description}"
-                        Unit="W" />
+                        Unit="{x:Static resources:Resource.Watt}" />
 
                     <godMode:GodModeValueControl
                         x:Name="_gpuConfigurableTGPControl"
                         Title="{x:Static resources:Resource.GodModeSettingsWindow_GPU_CTGP}"
                         Margin="0,0,0,8"
                         Description="{x:Static resources:Resource.GodModeSettingsWindow_GPU_CTGP_Description}"
-                        Unit="W" />
+                        Unit="{x:Static resources:Resource.Watt}" />
 
                     <godMode:GodModeValueControl
                         x:Name="_gpuTemperatureLimitControl"
                         Title="{x:Static resources:Resource.GodModeSettingsWindow_GPU_TempLimit}"
                         Margin="0,0,0,8"
                         Description="{x:Static resources:Resource.GodModeSettingsWindow_GPU_TempLimit_Description}"
-                        Unit="°C" />
+                        Unit="{x:Static resources:Resource.Celsius}" />
 
                     <godMode:GodModeValueControl
                         x:Name="_gpuTotalProcessingPowerTargetOnAcOffsetFromBaselineControl"
                         Title="{x:Static resources:Resource.GodModeSettingsWindow_GPU_TotalProcessingPowerTargetOnAcOffsetFromBaselineControl}"
                         Margin="0,0,0,8"
                         Description="{x:Static resources:Resource.GodModeSettingsWindow_GPU_TotalProcessingPowerTargetOnAcOffsetFromBaselineControl_Description}"
-                        Unit="W" />
+                        Unit="{x:Static resources:Resource.Watt}" />
 
                     <godMode:GodModeValueControl
                         x:Name="_gpuToCpuDynamicBoostControl"
                         Title="{x:Static resources:Resource.GodModeSettingsWindow_GPU_ToCpuDynamicBoostControl}"
                         Margin="0,0,0,8"
                         Description="{x:Static resources:Resource.GodModeSettingsWindow_GPU_ToCpuDynamicBoostControl_Description}"
-                        Unit="W" />
+                        Unit="{x:Static resources:Resource.Watt}" />
 
                     <TextBlock
                         x:Name="_fanSectionTitle"

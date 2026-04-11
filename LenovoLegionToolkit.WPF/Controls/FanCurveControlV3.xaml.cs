@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -16,6 +16,7 @@ using LenovoLegionToolkit.Lib;
 using LenovoLegionToolkit.Lib.Utils;
 using LenovoLegionToolkit.Lib.View;
 using LenovoLegionToolkit.WPF.Utils;
+using LenovoLegionToolkit.WPF.Resources;
 
 namespace LenovoLegionToolkit.WPF.Controls;
 
@@ -97,14 +98,14 @@ public partial class FanCurveControlV3 : UserControl, INotifyPropertyChanged, IF
     #endregion
 
     #region Monitoring Properties
-    private string _displayTemp = "-- °C";
+    private string _displayTemp = $"-- {Resource.Celsius}";
     public string DisplayTemp
     {
         get => _displayTemp;
         set { _displayTemp = value; OnPropertyChanged(); }
     }
 
-    private string _actualRpmDisplay = "0 RPM";
+    private string _actualRpmDisplay = $"0 {Resource.RPM}";
     public string ActualRpmDisplay
     {
         get => _actualRpmDisplay;
@@ -289,8 +290,8 @@ public partial class FanCurveControlV3 : UserControl, INotifyPropertyChanged, IF
 
     public void UpdateMonitoring(float temperature, int rpm, byte pwmByte)
     {
-        DisplayTemp = $"{temperature:F1} °C";
-        ActualRpmDisplay = $"{rpm} RPM";
+        DisplayTemp = $"{temperature:F1} {Resource.Celsius}";
+        ActualRpmDisplay = $"{rpm} {Resource.RPM}";
         CurrentPwmDisplay = $"{pwmByte}";
         CurrentPwmByte = pwmByte;
     }
