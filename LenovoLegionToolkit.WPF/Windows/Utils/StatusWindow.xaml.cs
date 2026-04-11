@@ -361,7 +361,7 @@ public partial class StatusWindow
     }
 
     private void RefreshUpdate(bool hasUpdate) => _updateIndicator.Visibility = hasUpdate ? Visibility.Visible : Visibility.Collapsed;
-    private string GetTemperatureText(double t) => t <= 0 ? "-" : (_settings.Store.TemperatureUnit == TemperatureUnit.F ? $"{(t * 9 / 5 + 32):0}{Resource.Fahrenheit}" : $"{t:0}{Resource.Celsius}");
+    private string GetTemperatureText(double t) => (double.IsNaN(t) || t < 0) ? "-" : (_settings.Store.TemperatureUnit == TemperatureUnit.F ? $"{(t * 9 / 5 + 32):0}{Resource.Fahrenheit}" : $"{t:0}{Resource.Celsius}");
     private void UpdateFreqAndTemp(System.Windows.Controls.Label l, double f, double t) => l.Content = (t < 0 || f < 0) ? "-" : $"{f:0}{Resource.MHz} | {GetTemperatureText(t)}";
     private static void UpdateFanAndPower(System.Windows.Controls.Label l, double f, double p) => l.Content = (f < 0 || p < 0) ? "-" : $"{f:0}{Resource.RPM} | {p:0}{Resource.Watt}";
     private static void UpdatePowerOnly(System.Windows.Controls.Label l, double p) => l.Content = p < 0 ? "-" : $"{p:0}{Resource.Watt}";

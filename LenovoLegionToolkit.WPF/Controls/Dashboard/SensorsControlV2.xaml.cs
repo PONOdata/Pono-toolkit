@@ -398,11 +398,11 @@ public partial class SensorsControlV2
 
     private string GetTemperatureText(double temperature)
     {
-        if (temperature <= 0) return "-";
+        if (double.IsNaN(temperature) || temperature < 0) return "-";
         if (_applicationSettings.Store.TemperatureUnit == TemperatureUnit.F)
         {
-            temperature = (temperature * 9 / 5) + 32;
-            return $"{temperature:0}{Resource.Fahrenheit}";
+            var fahrenheit = temperature * 9.0 / 5.0 + 32.0;
+            return $"{fahrenheit:0}{Resource.Fahrenheit}";
         }
         return $"{temperature:0}{Resource.Celsius}";
     }
