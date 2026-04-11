@@ -160,10 +160,10 @@ public partial class LampArrayRGBKeyboardPage : UiPage
             _controller.SmoothTransition = store.SmoothTransition;
 
             if (_brightnessSlider != null) _brightnessSlider.Value = store.Brightness * 100.0;
-            if (_brightnessValue != null) _brightnessValue.Text = $"{store.Brightness * 100:F0}%";
+            if (_brightnessValue != null) _brightnessValue.Text = $"{store.Brightness * 100:F0}{Resource.Percent}";
 
             if (_speedSlider != null) _speedSlider.Value = store.Speed * 100.0;
-            if (_speedValue != null) _speedValue.Text = $"{store.Speed * 100:F0}%";
+            if (_speedValue != null) _speedValue.Text = $"{store.Speed * 100:F0}{Resource.Percent}";
 
             if (_smoothTransitionCheckBox != null) _smoothTransitionCheckBox.IsChecked = store.SmoothTransition;
 
@@ -624,7 +624,7 @@ public partial class LampArrayRGBKeyboardPage : UiPage
         if (sender is Slider slider && _controller != null)
         {
             _controller.Brightness = slider.Value / 100.0;
-            if (_brightnessValue != null) _brightnessValue.Text = $"{slider.Value:F0}%";
+            if (_brightnessValue != null) _brightnessValue.Text = $"{slider.Value:F0}{Resource.Percent}";
         }
     }
 
@@ -633,7 +633,7 @@ public partial class LampArrayRGBKeyboardPage : UiPage
         if (sender is Slider slider && _controller != null)
         {
             _controller.Speed = slider.Value / 100.0;
-            if (_speedValue != null) _speedValue.Text = $"{slider.Value:F0}%";
+            if (_speedValue != null) _speedValue.Text = $"{slider.Value:F0}{Resource.Percent}";
         }
     }
 

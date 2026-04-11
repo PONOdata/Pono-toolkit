@@ -57,8 +57,9 @@
                             x:Name="_brightnessValue"
                             Grid.Column="2"
                             HorizontalAlignment="Right"
-                            VerticalAlignment="Center"
-                            Text="50%" />
+                            VerticalAlignment="Center">
+                            <Run Text="50" /><Run Text="{x:Static resources:Resource.Percent}" />
+                        </TextBlock>
                     </Grid>
 
                     <Grid Margin="0,0,0,8">
@@ -79,8 +80,9 @@
                             x:Name="_speedValue"
                             Grid.Column="2"
                             HorizontalAlignment="Right"
-                            VerticalAlignment="Center"
-                            Text="100%" />
+                            VerticalAlignment="Center">
+                            <Run Text="100" /><Run Text="{x:Static resources:Resource.Percent}" />
+                        </TextBlock>
                     </Grid>
 
                     <Grid>
