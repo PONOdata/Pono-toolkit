@@ -98,6 +98,7 @@ public partial class StatusWindow
     }
 
     private readonly DashboardSettings _dashboardSettings = IoCContainer.Resolve<DashboardSettings>();
+    private readonly SensorsControlSettings _sensorsControlSettings = IoCContainer.Resolve<SensorsControlSettings>();
 
     public StatusWindow()
     {
@@ -171,7 +172,12 @@ public partial class StatusWindow
         if (IsVisible)
         {
             _sensorsGroupController.SensorsUpdated += OnSensorsUpdated;
-            _sensorsGroupController.Start(this, TimeSpan.FromSeconds(_dashboardSettings.Store.SensorsRefreshIntervalSeconds));
+            
+            var refreshInterval = _settings.Store.UseNewSensorDashboard 
+                ? _sensorsControlSettings.Store.SensorsRefreshIntervalSeconds 
+                : _dashboardSettings.Store.SensorsRefreshIntervalSeconds;
+                
+            _sensorsGroupController.Start(this, TimeSpan.FromSeconds(refreshInterval));
         }
         else
         {
