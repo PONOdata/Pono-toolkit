@@ -1079,7 +1079,7 @@ public partial class App
             }
 
             Log.Instance.Trace($"Applying {fanSettings.Store.Entries.Count} fan curves from settings...");
-            await fanManager.LoadAndApply(fanSettings.Store.Entries).ConfigureAwait(false);
+            await fanManager.LoadAndApply(fanSettings.Store.Entries, fanSettings.Store.IsFullSpeed).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

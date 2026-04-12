@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management;
@@ -144,6 +144,7 @@ public partial class GodModeSettingsWindow
                         fanSettings.Store.Entries.Add(entry);
                     }
                 }
+                fanSettings.Store.IsFullSpeed = _fanFullSpeedToggle.IsChecked ?? false;
                 fanSettings.Save();
             }
             else
@@ -164,6 +165,7 @@ public partial class GodModeSettingsWindow
                         Log.Instance.Trace($"Entry for {ctrl.Tag} is null!");
                     }
                 }
+                fanSettings.Store.IsFullSpeed = _fanFullSpeedToggle.IsChecked ?? false;
                 fanSettings.Save();
                 Log.Instance.Trace($"Fan settings saved. Path: {System.IO.Path.Combine(Folders.AppData, "fan_curves.json")}");
 
@@ -223,6 +225,12 @@ public partial class GodModeSettingsWindow
 
             await _godModeController.SetStateAsync(newState);
             await _godModeController.ApplyStateAsync();
+
+            if (_fanCurveManager.IsEnabled)
+            {
+                await _fanCurveManager.SetFullSpeedAsync(_fanFullSpeedToggle.IsChecked ?? false).ConfigureAwait(false);
+            }
+
             return true;
         }
         catch (Exception ex)
@@ -671,9 +679,15 @@ public partial class GodModeSettingsWindow
         }
     }
 
-    private void FanFullSpeedToggle_Click(object sender, RoutedEventArgs e)
+    private async void FanFullSpeedToggle_Click(object sender, RoutedEventArgs e)
     {
-        _fanCurveCardControl.IsEnabled = !(_fanFullSpeedToggle.IsChecked ?? false);
+        bool enabled = _fanFullSpeedToggle.IsChecked ?? false;
+        _fanCurveCardControl.IsEnabled = !enabled;
+
+        if (_fanCurveManager.IsEnabled)
+        {
+            await _fanCurveManager.SetFullSpeedAsync(enabled).ConfigureAwait(false);
+        }
     }
 
     private async void OverclockingToggle_Click(object sender, RoutedEventArgs e)

@@ -10,5 +10,6 @@ public class FanCurveSettings() : AbstractSettings<FanCurveSettingsStore>("fan_c
     public class FanCurveSettingsStore
     {
         public List<FanCurveEntry> Entries { get; set; } = [];
+        public bool IsFullSpeed { get; set; }
     }
 }

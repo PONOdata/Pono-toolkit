@@ -266,7 +266,7 @@
                     <ProgressBar
                         Height="6"
                         Margin="0,8,0,0"
-                        Maximum="255"
+                        Maximum="{Binding MaxPwm}"
                         Value="{Binding CurrentPwmByte}" />
                 </StackPanel>
             </Border>
@@ -332,6 +332,21 @@
                             DataObject.Pasting="NumericTextBox_Pasting"
                             PreviewTextInput="NumericTextBox_PreviewTextInput"
                             Text="{Binding DecelerationDcrReduction}" />
+                    </Grid>
+
+                    <Grid Margin="0,4">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                            Text="{x:Static resources:Resource.CustomFanCurve_Max_Pwm}" />
+                        <TextBox
+                            Width="70"
+                            Height="32"
+                            HorizontalAlignment="Right"
+                            VerticalContentAlignment="Center"
+                            DataObject.Pasting="NumericTextBox_Pasting"
+                            PreviewTextInput="NumericTextBox_PreviewTextInput"
+                            Text="{Binding MaxPwm}" />
                     </Grid>
                 </StackPanel>
             </Border>

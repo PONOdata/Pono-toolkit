@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,6 +26,7 @@ public class FanCurveManager : IDisposable
 
     public int LogicInterval { get; set; } = 500;
     public bool IsEnabled { get; private set; }
+    public double? PluginMaxPwm => _extension?.GetData("MaxPwm") is double d ? d : (_extension?.GetData("MaxPwm") is int i ? (double)i : null);
 
     public FanCurveManager(
         SensorsGroupController sensors,
@@ -64,6 +65,18 @@ public class FanCurveManager : IDisposable
 
         _extension!.Initialize(this);
         Log.Instance.Trace($"FanCurveManager initialized with extension.");
+
+        if (PluginMaxPwm is { } pluginMax)
+        {
+            foreach (FanType fanType in Enum.GetValues(typeof(FanType)))
+            {
+                if (GetEntry(fanType) is { } entry && !entry.IsMaxPwmUserModified)
+                {
+                    entry.MaxPwm = pluginMax;
+                    entry.IsMaxPwmUserModified = false;
+                }
+            }
+        }
 
         var mi = await Compatibility.GetMachineInformationAsync().ConfigureAwait(false);
         _isThinkBook = mi.LegionSeries == LegionSeries.ThinkBook;
@@ -208,7 +221,7 @@ public class FanCurveManager : IDisposable
         }
     }
 
-    public async Task LoadAndApply(List<FanCurveEntry> entries)
+    public async Task LoadAndApply(List<FanCurveEntry> entries, bool isFullSpeed = false)
     {
         if (_extension == null) return;
 
@@ -227,6 +240,11 @@ public class FanCurveManager : IDisposable
             var currentState = await _powerModeFeature.GetStateAsync().ConfigureAwait(false);
             await ApplyStateLogicAsync(currentState).ConfigureAwait(false);
         }
+
+        if (isFullSpeed)
+        {
+            await SetFullSpeedAsync(true).ConfigureAwait(false);
+        }
     }
 
     public async Task SetRegisterAsync(bool flag = false)
@@ -240,7 +258,24 @@ public class FanCurveManager : IDisposable
 
     public FanCurveEntry? GetEntry(FanType type) => _extension?.GetData($"Entry_{type}") as FanCurveEntry;
 
-    public void AddEntry(FanCurveEntry entry) => _extension?.ExecuteAsync("AddEntry", entry);
+    public void AddEntry(FanCurveEntry entry)
+    {
+        if (!entry.IsMaxPwmUserModified && PluginMaxPwm is { } pluginMax)
+        {
+            entry.MaxPwm = pluginMax;
+            entry.IsMaxPwmUserModified = false;
+        }
+        _extension?.ExecuteAsync("AddEntry", entry);
+    }
+
+    public async Task SetFullSpeedAsync(bool enabled)
+    {
+        if (!IsEnabled) return;
+        if (_extension != null)
+        {
+            await _extension.ExecuteAsync("SetFullSpeed", enabled).ConfigureAwait(false);
+        }
+    }
 
     public void UpdateGlobalSettings(FanCurveEntry sourceEntry) => _extension?.ExecuteAsync("UpdateGlobal", sourceEntry);
 
