@@ -122,7 +122,7 @@ public partial class SensorsControlV2
     {
         ContextMenu = new ContextMenu();
         ContextMenu.Items.Add(new MenuItem { Header = Resource.SensorsControl_RefreshInterval, IsEnabled = false });
-        foreach (var interval in new[] { 1, 2, 3, 5 })
+        foreach (var interval in new double[] { 0.5, 1, 2, 3, 4, 5 })
         {
             var item = new MenuItem
             {

@@ -8,7 +8,7 @@ public class SensorsControlSettings() : AbstractSettings<SensorsControlSettings.
     public class SensorsControlSettingsStore
     {
         public bool ShowSensors { get; set; } = true;
-        public int SensorsRefreshIntervalSeconds { get; set; } = 1;
+        public double SensorsRefreshIntervalSeconds { get; set; } = 1;
         public SensorGroup[]? Groups { get; set; } = SensorGroup.DefaultGroups;
         public SensorItem[]? VisibleItems { get; set; } = SensorGroup.DefaultGroups.SelectMany(group => group.Items).ToArray();
     }
