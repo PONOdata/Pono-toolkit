@@ -85,12 +85,12 @@ public static class Autorun
 
         var ts = TaskService.Instance;
         var td = ts.NewTask();
-        td.Settings.Compatibility = TaskCompatibility.V2_1;
+        td.Settings.Compatibility = TaskCompatibility.V2_3;
         td.Data = BuildTaskData(fileVersion, launchTarget);
         td.Principal.UserId = currentUser;
-        td.Principal.RunLevel = TaskRunLevel.Highest;
+        td.Principal.RunLevel = IsUacDisabledOrBuiltInAdmin() ? TaskRunLevel.LUA : TaskRunLevel.Highest;
         td.Triggers.Add(new LogonTrigger { UserId = currentUser, Delay = new TimeSpan(0, 0, delayed ? 30 : 0) });
-        
+
         var action = new ExecAction($"\"{launchTarget}\"", "--minimized", Path.GetDirectoryName(launchTarget));
         td.Actions.Add(action);
 
@@ -122,5 +122,28 @@ public static class Autorun
     {
         var filename = Environment.ProcessPath ?? throw new InvalidOperationException("Current process path cannot be null");
         return filename;
+    }
+
+    private static bool IsUacDisabledOrBuiltInAdmin()
+    {
+        var identity = WindowsIdentity.GetCurrent();
+        if (identity.User?.IsWellKnown(WellKnownSidType.AccountAdministratorSid) == true)
+        {
+            Log.Instance.Trace($"Detected Built-in Administrator account. Downgrading Task Scheduler to LUA RunLevel.");
+            return true;
+        }
+
+        try
+        {
+            using var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System");
+            if (key?.GetValue("EnableLUA") is int enableLua && enableLua == 0)
+            {
+                Log.Instance.Trace($"Detected globally disabled UAC (EnableLUA=0). Downgrading Task Scheduler to LUA RunLevel.");
+                return true;
+            }
+        }
+        catch { /* Ignore */ }
+
+        return false;
     }
 }
