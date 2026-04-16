@@ -586,7 +586,8 @@ public abstract class OsdWindowBase : Window
         if (isSampleValid)
         {
             long elapsedTicks = currentTick - _lastFpsUiUpdateTick;
-            if (_uiUpdateThrottleMs > 0 && elapsedTicks < TimeSpan.FromMilliseconds(_uiUpdateThrottleMs).Ticks) return;
+            var intervalTicks = TimeSpan.FromSeconds(_OsdSettings.Store.OsdRefreshInterval).Ticks;
+            if (elapsedTicks < intervalTicks) return;
 
             _lastFpsUiUpdateTick = currentTick;
             _lastValidFpsTick = currentTick;
