@@ -212,7 +212,16 @@ public class SensorsGroupController : IDisposable
 
                 _computer.Open();
                 _computer.Accept(new UpdateVisitor());
-                _hardware.AddRange(_computer.Hardware);
+
+                foreach (var h in _computer.Hardware)
+                {
+                    try
+                    {
+                        h.Update();
+                        _hardware.Add(h);
+                    }
+                    catch { /* Ignore */ }
+                }
                 RefreshSensorCache();
             }
             catch (Exception ex)
@@ -531,6 +540,7 @@ public class SensorsGroupController : IDisposable
                     if (_isResetting || _computer == null || !_hardwareInitialized) return;
                     try
                     {
+                        var brokenHardware = new List<IHardware>();
                         foreach (var h in _hardware)
                         {
                             if (h == null) continue;
@@ -541,8 +551,14 @@ public class SensorsGroupController : IDisposable
                             }
                             catch (Exception ex)
                             {
-                                Log.Instance.Trace($"Failed to update hardware {h.Name}: {ex.Message}", ex);
+                                Log.Instance.Trace($"Failed to update hardware {h.Name}: {ex.Message}. It will be removed from the update list.", ex);
+                                brokenHardware.Add(h);
                             }
+                        }
+
+                        foreach (var h in brokenHardware)
+                        {
+                            _hardware.Remove(h);
                         }
 
                         float cpuTemp = _cpuTempSensor?.Value ?? INVALID_VALUE_FLOAT;
@@ -711,13 +727,29 @@ public class SensorsGroupController : IDisposable
             lock (_hardwareLock)
             {
                 _computer?.Close(); _hardware.Clear();
-                _computer?.Open(); _computer?.Accept(new UpdateVisitor()); _computer?.Reset();
+                _computer?.Open();
+                _computer?.Reset();
                 if (_computer == null)
                 {
                     return;
                 }
 
-                _hardware.AddRange(_computer.Hardware); RefreshSensorCache();
+                // 同样进行一次安全遍历
+                _computer.Accept(new UpdateVisitor());
+
+                foreach (var h in _computer.Hardware)
+                {
+                    try
+                    {
+                        h.Update();
+                        _hardware.Add(h);
+                    }
+                    catch
+                    {
+                        // 剔除重置过程中发现的故障硬件
+                    }
+                }
+                RefreshSensorCache();
             }
         }
         finally { _isResetting = false; }

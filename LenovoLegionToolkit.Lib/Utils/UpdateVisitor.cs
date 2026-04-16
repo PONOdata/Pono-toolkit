@@ -18,13 +18,15 @@ namespace LenovoLegionToolkit.Lib.Utils
             try
             {
                 hardware.Update();
+                foreach (IHardware subHardware in hardware.SubHardware)
+                {
+                    subHardware.Accept(this);
+                }
             }
             catch (Exception ex)
             {
-                Log.Instance.Trace($"Failed to update hardware {hardware.Name}: {ex.Message}", ex);
+                Log.Instance.Trace($"Safety visit failed for hardware {hardware.Name}: {ex.Message}", ex);
             }
-
-            foreach (IHardware subHardware in hardware.SubHardware) subHardware.Accept(this);
         }
         public void VisitSensor(ISensor sensor) { }
         public void VisitParameter(IParameter parameter) { }
