@@ -39,6 +39,19 @@ public abstract class OsdWindowBase : Window
     [DllImport("user32.dll")]
     private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 
+    [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+
+    [DllImport("user32.dll", EntryPoint = "GetWindowBand")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool GetWindowBand(IntPtr hWnd, out uint pdwBand);
+
+    private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
+    private const uint SWP_NOSIZE = 0x0001;
+    private const uint SWP_NOMOVE = 0x0002;
+    private const uint SWP_NOACTIVATE = 0x0010;
+
     #endregion
 
     #region Threshold Constants
@@ -166,6 +179,28 @@ public abstract class OsdWindowBase : Window
             extendedStyle &= ~WS_EX_TRANSPARENT;
 
         SetWindowLong(hwnd, GWL_EXSTYLE, extendedStyle);
+
+        ApplyZBand();
+    }
+
+    private void ApplyZBand()
+    {
+        if (PresentationSource.FromVisual(this) is not HwndSource source) return;
+
+        var hwnd = source.Handle;
+        try
+        {
+            SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+
+            if (GetWindowBand(hwnd, out uint currentBand))
+            {
+                Log.Instance.Trace($"ApplyZBand (TOPMOST) executed. Current Band: {currentBand}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Instance.Trace($"Exception in ApplyZBand for HWND {hwnd:X}", ex);
+        }
     }
 
     private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -355,6 +390,7 @@ public abstract class OsdWindowBase : Window
         _criticalBrush = (Brush)converter.ConvertFromString(_OsdSettings.Store.CriticalColor)!;
 
         UpdateClickThrough();
+        ApplyZBand();
 
         if (!SavedPositionX.HasValue || !SavedPositionY.HasValue)
         {
@@ -427,6 +463,7 @@ public abstract class OsdWindowBase : Window
         }
 
         CheckAndUpdateFpsMonitoring();
+        ApplyZBand();
     }
 
     protected virtual void OnItemVisibilityChanged(FrameworkElement element, bool visible) { }
