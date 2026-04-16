@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using LenovoLegionToolkit.Lib.Features.Hybrid.Notify;
@@ -10,6 +10,7 @@ namespace LenovoLegionToolkit.Lib.Features.Hybrid;
 public class HybridModeFeature(GSyncFeature gSyncFeature, IGPUModeFeature igpuModeFeature, DGPUNotify dgpuNotify) : IFeature<HybridModeState>
 {
     private readonly CancellationTokenSource _ensureDGPUEjectedIfNeededCancellationTokenSource = new();
+    private bool _isEnsuringEjected;
 
     public async Task<bool> IsSupportedAsync()
     {
@@ -100,9 +101,10 @@ public class HybridModeFeature(GSyncFeature gSyncFeature, IGPUModeFeature igpuMo
 
     public async Task EnsureDGPUEjectedIfNeededAsync()
     {
-        if (!await igpuModeFeature.IsSupportedAsync().ConfigureAwait(false) || !await dgpuNotify.IsSupportedAsync().ConfigureAwait(false))
+        if (_isEnsuringEjected || !await igpuModeFeature.IsSupportedAsync().ConfigureAwait(false) || !await dgpuNotify.IsSupportedAsync().ConfigureAwait(false))
             return;
 
+        _isEnsuringEjected = true;
         _ = Task.Run(async () =>
         {
             try
@@ -157,6 +159,10 @@ public class HybridModeFeature(GSyncFeature gSyncFeature, IGPUModeFeature igpuMo
             catch (Exception ex)
             {
                 Log.Instance.Trace($"Failed to ensure dGPU is ejected", ex);
+            }
+            finally
+            {
+                _isEnsuringEjected = false;
             }
         });
     }
