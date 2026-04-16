@@ -1,12 +1,13 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
+﻿using ABI.System;
 using LenovoLegionToolkit.Lib;
 using LenovoLegionToolkit.Lib.Messaging;
 using LenovoLegionToolkit.Lib.Messaging.Messages;
 using LenovoLegionToolkit.Lib.Settings;
 using Microsoft.Win32;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace LenovoLegionToolkit.Lib.Utils;
 
@@ -24,11 +25,7 @@ public static class PawnIOHelper
 
     public static void OpenPawnIODownloadPage()
     {
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = "https://pawnio.eu/",
-            UseShellExecute = true
-        });
+        Process.Start("explorer.exe", $"\"https://pawnio.eu/\"");
     }
 
     public static async Task TryShowPawnIONotFoundDialogAsync(bool disableHardwareSensors = true)
