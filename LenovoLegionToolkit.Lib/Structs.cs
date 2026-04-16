@@ -1210,7 +1210,7 @@ public readonly struct Time(int hour, int minute, int second)
     {
         return !(left == right);
     }
-    
+
     public override string ToString()
     {
         return $"{Hour}:{Minute}:{Second}";
@@ -1325,4 +1325,33 @@ public struct UpdateFromServer(ProjectInfo projectInfo, string patchNote)
     public string Description { get; set; } = patchNote;
     public DateTimeOffset Date { get; set; } = DateTimeOffset.Now;
     public string? Url = projectInfo.ProjectNewExePath;
+}
+
+public sealed record HardwareSensorSnapshot
+{
+    public float CpuTemp { get; init; } = -1;
+    public float CpuUsage { get; init; } = -1;
+    public float CpuPower { get; init; } = -1;
+    public float CpuMaxClock { get; init; } = -1;
+    public float CpuAvgClock { get; init; } = -1;
+    public float CpuPClock { get; init; } = -1;
+    public float CpuPAvgClock { get; init; } = -1;
+    public float CpuEClock { get; init; } = -1;
+    public float CpuEAvgClock { get; init; } = -1;
+
+    public float GpuUsage { get; init; } = -1;
+    public float GpuTemp { get; init; } = -1;
+    public float GpuClock { get; init; } = -1;
+    public float GpuPower { get; init; } = -1;
+    public float GpuVramTemp { get; init; } = -1;
+    public float GpuVramUtilization { get; init; } = -1;
+    public float GpuVramUsed { get; init; } = -1;
+    public float GpuVramTotal { get; init; } = -1;
+
+    public float MemUsage { get; init; } = -1;
+    public float MemUsed { get; init; } = -1;
+    public float MemTotal { get; init; } = -1;
+    public double MemMaxTemp { get; init; } = -1;
+
+    public (float, float) SsdTemps { get; init; } = (-1, -1);
 }

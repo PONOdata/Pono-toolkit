@@ -51,7 +51,6 @@ public class SensorsGroupController : IDisposable
     public LibreHardwareMonitorInitialState InitialState { get; private set; }
     public bool IsHybrid { get; private set; }
 
-    private float _lastGpuPower;
     private readonly SemaphoreSlim _initSemaphore = new(1, 1);
 
     private readonly List<IHardware> _hardware = [];
@@ -106,7 +105,7 @@ public class SensorsGroupController : IDisposable
         get => _selectedGpuIsIgpu;
         set
         {
-            lock (_dataLock)
+            lock (_configLock)
             {
                 if (_selectedGpuIsIgpu != value)
                 {
@@ -123,7 +122,7 @@ public class SensorsGroupController : IDisposable
         get => _showAverageCpuFrequency;
         set
         {
-            lock (_dataLock)
+            lock (_configLock)
             {
                 _showAverageCpuFrequency = value;
             }
@@ -136,7 +135,7 @@ public class SensorsGroupController : IDisposable
         get => _isDgpuConnected;
         set
         {
-            lock (_dataLock)
+            lock (_configLock)
             {
                 if (_isDgpuConnected != value)
                 {
@@ -159,37 +158,20 @@ public class SensorsGroupController : IDisposable
     private int _cachedCpuPowerTime;
 
     private readonly Lock _hardwareLock = new();
-    private readonly Lock _dataLock = new();
+    private readonly Lock _configLock = new();
+    public HardwareSensorSnapshot Snapshot { get; private set; } = new();
     private volatile bool _hardwareInitialized;
+
+    private long _lastUpdateTick;
+    private const int MIN_UPDATE_INTERVAL_MS = 100;
 
     private readonly Dictionary<object, TimeSpan> _subscribers = [];
     private CancellationTokenSource? _producerCts;
     private Task? _producerTask;
-    public event EventHandler? SensorsUpdated;
+    public event Action<HardwareSensorSnapshot>? SensorsUpdated;
 
     private readonly GPUController _gpuController = IoCContainer.Resolve<GPUController>();
 
-    private float _snapshotCpuTemp = INVALID_VALUE_FLOAT;
-    private float _snapshotCpuUsage = INVALID_VALUE_FLOAT;
-    private float _snapshotCpuPower = INVALID_VALUE_FLOAT;
-    private float _snapshotCpuMaxClock = INVALID_VALUE_FLOAT;
-    private float _snapshotCpuAvgClock = INVALID_VALUE_FLOAT;
-    private float _snapshotCpuPClock = INVALID_VALUE_FLOAT;
-    private float _snapshotCpuEClock = INVALID_VALUE_FLOAT;
-    private float _snapshotCpuPAvgClock = INVALID_VALUE_FLOAT;
-    private float _snapshotCpuEAvgClock = INVALID_VALUE_FLOAT;
-    private float _snapshotGpuUsage = INVALID_VALUE_FLOAT;
-    private float _snapshotGpuTemp = INVALID_VALUE_FLOAT;
-    private float _snapshotGpuClock = INVALID_VALUE_FLOAT;
-    private float _snapshotGpuPower = INVALID_VALUE_FLOAT;
-    private float _snapshotGpuVramTemp = INVALID_VALUE_FLOAT;
-    private float _snapshotGpuVramUsage = INVALID_VALUE_FLOAT;
-    private float _snapshotGpuVramUtilization = INVALID_VALUE_FLOAT;
-    private float _snapshotMemUsage = INVALID_VALUE_FLOAT;
-    private float _snapshotMemUsed = INVALID_VALUE_FLOAT;
-    private float _snapshotMemTotal = INVALID_VALUE_FLOAT;
-    private double _snapshotMemMaxTemp = INVALID_VALUE_DOUBLE;
-    private (float, float) _snapshotSsdTemps = (INVALID_VALUE_FLOAT, INVALID_VALUE_FLOAT);
 
     public async Task<LibreHardwareMonitorInitialState> IsSupportedAsync()
     {
@@ -410,34 +392,15 @@ public class SensorsGroupController : IDisposable
         }
     }
 
-    public Task<float> GetCpuTemperatureAsync()
-    {
-        lock (_dataLock) return Task.FromResult(_snapshotCpuTemp);
-    }
-
-    public Task<float> GetCpuUsageAsync()
-    {
-        lock (_dataLock) return Task.FromResult(_snapshotCpuUsage);
-    }
-
-    public Task<float> GetGpuUsageAsync()
-    {
-        lock (_dataLock) return Task.FromResult(_snapshotGpuUsage);
-    }
-
-    public Task<float> GetGpuTemperatureAsync()
-    {
-        lock (_dataLock) return Task.FromResult(_snapshotGpuTemp);
-    }
-
-    public Task<float> GetGpuCoreClockAsync()
-    {
-        lock (_dataLock) return Task.FromResult(_snapshotGpuClock);
-    }
+    public Task<float> GetCpuTemperatureAsync() => Task.FromResult(Snapshot.CpuTemp);
+    public Task<float> GetCpuUsageAsync() => Task.FromResult(Snapshot.CpuUsage);
+    public Task<float> GetGpuUsageAsync() => Task.FromResult(Snapshot.GpuUsage);
+    public Task<float> GetGpuTemperatureAsync() => Task.FromResult(Snapshot.GpuTemp);
+    public Task<float> GetGpuCoreClockAsync() => Task.FromResult(Snapshot.GpuClock);
 
     public Task<string> GetCpuNameAsync()
     {
-        lock (_dataLock)
+        lock (_configLock)
         {
             if (_isResetting || !IsLibreHardwareMonitorInitialized() || _cpuHardware == null)
                 return Task.FromResult(UNKNOWN_NAME);
@@ -452,7 +415,7 @@ public class SensorsGroupController : IDisposable
 
     public Task<string> GetGpuNameAsync()
     {
-        lock (_dataLock)
+        lock (_configLock)
         {
             if (_isResetting || !IsLibreHardwareMonitorInitialized())
                 return Task.FromResult(UNKNOWN_NAME);
@@ -469,81 +432,20 @@ public class SensorsGroupController : IDisposable
         }
     }
 
-    public Task<float> GetCpuPowerAsync()
-    {
-        lock (_dataLock) return Task.FromResult(_snapshotCpuPower);
-    }
-
-    public Task<float> GetCpuCoreClockAsync()
-    {
-        lock (_dataLock) return Task.FromResult(_showAverageCpuFrequency ? _snapshotCpuAvgClock : _snapshotCpuMaxClock);
-    }
-
-    public Task<float> GetCpuPCoreClockAsync()
-    {
-        lock (_dataLock) return Task.FromResult(_showAverageCpuFrequency ? _snapshotCpuPAvgClock : _snapshotCpuPClock);
-    }
-
-    public Task<float> GetCpuECoreClockAsync()
-    {
-        lock (_dataLock) return Task.FromResult(_showAverageCpuFrequency ? _snapshotCpuEAvgClock : _snapshotCpuEClock);
-    }
-
-    public Task<float> GetGpuPowerAsync()
-    {
-        lock (_dataLock) return Task.FromResult(_snapshotGpuPower);
-    }
-
-    public Task<float> GetGpuVramTemperatureAsync()
-    {
-        lock (_dataLock) return Task.FromResult(_snapshotGpuVramTemp);
-    }
-
-    public Task<float> GetGpuVramUtilizationAsync()
-    {
-        lock (_dataLock) return Task.FromResult(_snapshotGpuVramUtilization);
-    }
-
-    public Task<float> GetGpuVramUsedAsync()
-    {
-        lock (_dataLock) return Task.FromResult(_snapshotGpuVramUsage > 0 ? _snapshotGpuVramUsage / MB_PER_GB : _snapshotGpuVramUsage);
-    }
-
-    public Task<float> GetGpuVramTotalAsync()
-    {
-        lock (_dataLock)
-        {
-            var dGpu = _gpuHardware ?? _amdGpuHardware;
-            var forceIgpu = !SelectedGpuIsIgpu && (dGpu == null || !_isDgpuConnected);
-            float total = (SelectedGpuIsIgpu || forceIgpu) ? _cachedIGpuVramTotal : _cachedGpuVramTotal;
-            return Task.FromResult(total > 0 ? total / MB_PER_GB : INVALID_VALUE_FLOAT);
-        }
-    }
-
-    public Task<(float, float)> GetSsdTemperaturesAsync()
-    {
-        lock (_dataLock) return Task.FromResult(_snapshotSsdTemps);
-    }
-
-    public Task<float> GetMemoryUsageAsync()
-    {
-        lock (_dataLock) return Task.FromResult(_snapshotMemUsage);
-    }
-
-    public Task<float> GetMemoryUsedAsync()
-    {
-        lock (_dataLock) return Task.FromResult(_snapshotMemUsed);
-    }
-
-    public Task<float> GetMemoryTotalAsync()
-    {
-        lock (_dataLock) return Task.FromResult(_snapshotMemTotal);
-    }
-
-    public Task<double> GetHighestMemoryTemperatureAsync()
-    {
-        lock (_dataLock) return Task.FromResult(_snapshotMemMaxTemp);
-    }
+    public Task<float> GetCpuPowerAsync() => Task.FromResult(Snapshot.CpuPower);
+    public Task<float> GetCpuCoreClockAsync() => Task.FromResult(_showAverageCpuFrequency ? Snapshot.CpuAvgClock : Snapshot.CpuMaxClock);
+    public Task<float> GetCpuPCoreClockAsync() => Task.FromResult(_showAverageCpuFrequency ? Snapshot.CpuPAvgClock : Snapshot.CpuPClock);
+    public Task<float> GetCpuECoreClockAsync() => Task.FromResult(_showAverageCpuFrequency ? Snapshot.CpuEAvgClock : Snapshot.CpuEClock);
+    public Task<float> GetGpuPowerAsync() => Task.FromResult(Snapshot.GpuPower);
+    public Task<float> GetGpuVramTemperatureAsync() => Task.FromResult(Snapshot.GpuVramTemp);
+    public Task<float> GetGpuVramUtilizationAsync() => Task.FromResult(Snapshot.GpuVramUtilization);
+    public Task<float> GetGpuVramUsedAsync() => Task.FromResult(Snapshot.GpuVramUsed);
+    public Task<float> GetGpuVramTotalAsync() => Task.FromResult(Snapshot.GpuVramTotal);
+    public Task<(float, float)> GetSsdTemperaturesAsync() => Task.FromResult(Snapshot.SsdTemps);
+    public Task<float> GetMemoryUsageAsync() => Task.FromResult(Snapshot.MemUsage);
+    public Task<float> GetMemoryUsedAsync() => Task.FromResult(Snapshot.MemUsed);
+    public Task<float> GetMemoryTotalAsync() => Task.FromResult(Snapshot.MemTotal);
+    public Task<double> GetHighestMemoryTemperatureAsync() => Task.FromResult(Snapshot.MemMaxTemp);
 
     private async Task<LibreHardwareMonitorInitialState> InitializeAsync()
     {
@@ -588,76 +490,107 @@ public class SensorsGroupController : IDisposable
         }
     }
 
-    public async Task UpdateAsync()
+    private Task? _activeUpdateTask;
+    private readonly Lock _updateTaskLock = new();
+
+    public async Task UpdateAsync(bool force = false)
     {
         if (_isResetting || !IsLibreHardwareMonitorInitialized()) return;
 
-        var gpuState = await _gpuController.GetLastKnownStateAsync().ConfigureAwait(false);
-        bool gpuInactive = IsGpuInActive(gpuState);
+        var now = Environment.TickCount64;
+        if (!force && now - _lastUpdateTick < MIN_UPDATE_INTERVAL_MS) return;
 
-        await Task.Run(() =>
+        Task? updateTask;
+        lock (_updateTaskLock)
         {
-            lock (_hardwareLock)
+            if (_activeUpdateTask == null)
             {
-                if (_isResetting || _computer == null || !_hardwareInitialized) return;
-                try
-                {
-                    foreach (var h in _hardware)
-                    {
-                        if (h == null) continue;
+                _activeUpdateTask = PerformUpdateInternal(force);
+            }
+            updateTask = _activeUpdateTask;
+        }
 
-                        if (gpuInactive && h.HardwareType == HardwareType.GpuNvidia)
+        if (updateTask != null)
+            await updateTask.ConfigureAwait(false);
+    }
+
+    private async Task PerformUpdateInternal(bool force)
+    {
+        try
+        {
+            var now = Environment.TickCount64;
+            var gpuState = await _gpuController.GetLastKnownStateAsync().ConfigureAwait(false);
+            bool gpuInactive = IsGpuInActive(gpuState);
+
+            _lastUpdateTick = now;
+
+            await Task.Run(() =>
+            {
+                lock (_hardwareLock)
+                {
+                    if (_isResetting || _computer == null || !_hardwareInitialized) return;
+                    try
+                    {
+                        foreach (var h in _hardware)
                         {
-                            continue;
+                            if (h == null) continue;
+                            if (gpuInactive && h.HardwareType == HardwareType.GpuNvidia) continue;
+                            h.Update();
                         }
 
-                        h.Update();
-                    }
+                        float cpuTemp = _cpuTempSensor?.Value ?? INVALID_VALUE_FLOAT;
+                        float cpuUsage = _cpuUsageSensor?.Value ?? INVALID_VALUE_FLOAT;
 
-                    lock (_dataLock)
-                    {
-                        _snapshotCpuTemp = _cpuTempSensor?.Value ?? INVALID_VALUE_FLOAT;
-                        _snapshotCpuUsage = _cpuUsageSensor?.Value ?? INVALID_VALUE_FLOAT;
-
+                        float cpuMaxClock = INVALID_VALUE_FLOAT;
+                        float cpuAvgClock = INVALID_VALUE_FLOAT;
                         if (_cpuCoreClockSensors.Count > 0)
                         {
-                            _snapshotCpuMaxClock = _cpuCoreClockSensors.Max(s => s.Value) ?? INVALID_VALUE_FLOAT;
-                            _snapshotCpuAvgClock = _cpuCoreClockSensors.Average(s => s.Value) ?? INVALID_VALUE_FLOAT;
-                        }
-                        else
-                        {
-                            _snapshotCpuMaxClock = INVALID_VALUE_FLOAT;
-                            _snapshotCpuAvgClock = INVALID_VALUE_FLOAT;
+                            cpuMaxClock = _cpuCoreClockSensors.Max(s => s.Value) ?? INVALID_VALUE_FLOAT;
+                            cpuAvgClock = _cpuCoreClockSensors.Average(s => s.Value) ?? INVALID_VALUE_FLOAT;
                         }
 
+                        float pClock = INVALID_VALUE_FLOAT;
+                        float pAvgClock = INVALID_VALUE_FLOAT;
+                        float eClock = INVALID_VALUE_FLOAT;
+                        float eAvgClock = INVALID_VALUE_FLOAT;
                         if (IsHybrid)
                         {
                             float pMax = _pCoreClockSensors.Count > 0 ? (_pCoreClockSensors.Max(s => s.Value) ?? INVALID_VALUE_FLOAT) : INVALID_VALUE_FLOAT;
                             float eMax = _eCoreClockSensors.Count > 0 ? (_eCoreClockSensors.Max(s => s.Value) ?? INVALID_VALUE_FLOAT) : INVALID_VALUE_FLOAT;
-                            _snapshotCpuPClock = pMax > 0 ? (float)Math.Round(pMax) : pMax;
-                            _snapshotCpuEClock = eMax > 0 ? (float)Math.Round(eMax) : eMax;
+                            pClock = pMax > 0 ? (float)Math.Round(pMax) : pMax;
+                            eClock = eMax > 0 ? (float)Math.Round(eMax) : eMax;
 
                             float pAvg = _pCoreClockSensors.Count > 0 ? (_pCoreClockSensors.Average(s => s.Value) ?? INVALID_VALUE_FLOAT) : INVALID_VALUE_FLOAT;
                             float eAvg = _eCoreClockSensors.Count > 0 ? (_eCoreClockSensors.Average(s => s.Value) ?? INVALID_VALUE_FLOAT) : INVALID_VALUE_FLOAT;
-                            _snapshotCpuPAvgClock = pAvg > 0 ? (float)Math.Round(pAvg) : pAvg;
-                            _snapshotCpuEAvgClock = eAvg > 0 ? (float)Math.Round(eAvg) : eAvg;
+                            pAvgClock = pAvg > 0 ? (float)Math.Round(pAvg) : pAvg;
+                            eAvgClock = eAvg > 0 ? (float)Math.Round(eAvg) : eAvg;
                         }
 
+                        float cpuPower = INVALID_VALUE_FLOAT;
                         if (_cpuPackagePowerSensor != null)
                         {
                             float pVal = _cpuPackagePowerSensor.Value ?? INVALID_VALUE_FLOAT;
-                            if (pVal > MAX_VALID_CPU_POWER) { Task.Run(ResetSensors); _snapshotCpuPower = INVALID_VALUE_FLOAT; }
-                            else if (pVal <= MIN_VALID_POWER_READING) { _snapshotCpuPower = INVALID_VALUE_FLOAT; }
+                            if (pVal > MAX_VALID_CPU_POWER) { Task.Run(ResetSensors); }
+                            else if (pVal <= MIN_VALID_POWER_READING) { }
                             else
                             {
                                 if (Math.Abs(pVal - _cachedCpuPower) < float.Epsilon)
                                 {
-                                    if (++_cachedCpuPowerTime >= MAX_CPU_POWER_STUCK_RETRIES) { Task.Run(ResetSensors); _snapshotCpuPower = INVALID_VALUE_FLOAT; }
-                                    else _snapshotCpuPower = pVal;
+                                    if (++_cachedCpuPowerTime >= MAX_CPU_POWER_STUCK_RETRIES) { Task.Run(ResetSensors); }
+                                    else cpuPower = pVal;
                                 }
-                                else { _cachedCpuPower = pVal; _cachedCpuPowerTime = 0; _snapshotCpuPower = pVal; }
+                                else { _cachedCpuPower = pVal; _cachedCpuPowerTime = 0; cpuPower = pVal; }
                             }
                         }
+
+                        float gpuUsage = INVALID_VALUE_FLOAT;
+                        float gpuTemp = INVALID_VALUE_FLOAT;
+                        float gpuClock = INVALID_VALUE_FLOAT;
+                        float gpuPower = INVALID_VALUE_FLOAT;
+                        float gpuVramTemp = INVALID_VALUE_FLOAT;
+                        float gpuVramUtilization = INVALID_VALUE_FLOAT;
+                        float gpuVramUsed = INVALID_VALUE_FLOAT;
+                        float gpuVramTotal = INVALID_VALUE_FLOAT;
 
                         var dGpu = _gpuHardware ?? _amdGpuHardware;
                         var forceIgpu = !SelectedGpuIsIgpu && (dGpu == null || !_isDgpuConnected);
@@ -667,95 +600,100 @@ public class SensorsGroupController : IDisposable
                             if (_cachedIGpuVramTotal <= 0 && _iGpuVramTotalSensor != null)
                                 _cachedIGpuVramTotal = _iGpuVramTotalSensor.Value ?? INVALID_VALUE_FLOAT;
 
-                            _snapshotGpuVramUsage = _iGpuD3DVramUsedSensor?.Value ?? INVALID_VALUE_FLOAT;
+                            float igpuVramUsageRaw = _iGpuD3DVramUsedSensor?.Value ?? INVALID_VALUE_FLOAT;
+                            gpuVramUsed = igpuVramUsageRaw > 0 ? igpuVramUsageRaw / MB_PER_GB : igpuVramUsageRaw;
+                            gpuVramTotal = _cachedIGpuVramTotal > 0 ? _cachedIGpuVramTotal / MB_PER_GB : INVALID_VALUE_FLOAT;
 
-                            if (_snapshotGpuVramUsage != INVALID_VALUE_FLOAT && _cachedIGpuVramTotal > 0)
-                            {
-                                _snapshotGpuVramUtilization = (_snapshotGpuVramUsage / _cachedIGpuVramTotal) * 100f;
-                            }
-                            else
-                            {
-                                _snapshotGpuVramUtilization = INVALID_VALUE_FLOAT;
-                            }
+                            if (igpuVramUsageRaw != INVALID_VALUE_FLOAT && _cachedIGpuVramTotal > 0)
+                                gpuVramUtilization = (igpuVramUsageRaw / _cachedIGpuVramTotal) * 100f;
 
-                            _snapshotGpuPower = _iGpuPowerSensor?.Value ?? INVALID_VALUE_FLOAT;
-                            _snapshotGpuUsage = _iGpuUsageSensor?.Value ?? INVALID_VALUE_FLOAT;
-                            _snapshotGpuTemp = _iGpuTempSensor?.Value ?? INVALID_VALUE_FLOAT;
-                            _snapshotGpuVramTemp = INVALID_VALUE_FLOAT;
-                            _snapshotGpuClock = _iGpuClockSensor?.Value ?? INVALID_VALUE_FLOAT;
+                            gpuPower = _iGpuPowerSensor?.Value ?? INVALID_VALUE_FLOAT;
+                            gpuUsage = _iGpuUsageSensor?.Value ?? INVALID_VALUE_FLOAT;
+                            gpuTemp = _iGpuTempSensor?.Value ?? INVALID_VALUE_FLOAT;
+                            gpuClock = _iGpuClockSensor?.Value ?? INVALID_VALUE_FLOAT;
                         }
-                        else if (gpuInactive)
-                        {
-                            _snapshotGpuVramUtilization = INVALID_VALUE_FLOAT;
-                            _snapshotGpuVramUsage = INVALID_VALUE_FLOAT;
-                            _snapshotGpuPower = INVALID_VALUE_FLOAT;
-                            _snapshotGpuVramTemp = INVALID_VALUE_FLOAT;
-                            _snapshotGpuUsage = INVALID_VALUE_FLOAT;
-                            _snapshotGpuTemp = INVALID_VALUE_FLOAT;
-                            _snapshotGpuClock = INVALID_VALUE_FLOAT;
-                        }
-                        else
+                        else if (!gpuInactive)
                         {
                             if (_cachedGpuVramTotal <= 0 && _gpuVramTotalSensor != null)
                                 _cachedGpuVramTotal = _gpuVramTotalSensor.Value ?? INVALID_VALUE_FLOAT;
 
-                            _snapshotGpuVramUsage = _gpuD3DVramUsedSensor?.Value ?? INVALID_VALUE_FLOAT;
+                            float dgpuVramUsageRaw = _gpuD3DVramUsedSensor?.Value ?? INVALID_VALUE_FLOAT;
+                            gpuVramUsed = dgpuVramUsageRaw > 0 ? dgpuVramUsageRaw / MB_PER_GB : dgpuVramUsageRaw;
+                            gpuVramTotal = _cachedGpuVramTotal > 0 ? _cachedGpuVramTotal / MB_PER_GB : INVALID_VALUE_FLOAT;
 
-                            if (_snapshotGpuVramUsage != INVALID_VALUE_FLOAT && _cachedGpuVramTotal > 0)
-                            {
-                                _snapshotGpuVramUtilization = (_snapshotGpuVramUsage / _cachedGpuVramTotal) * 100f;
-                            }
-                            else
-                            {
-                                _snapshotGpuVramUtilization = INVALID_VALUE_FLOAT;
-                            }
+                            if (dgpuVramUsageRaw != INVALID_VALUE_FLOAT && _cachedGpuVramTotal > 0)
+                                gpuVramUtilization = (dgpuVramUsageRaw / _cachedGpuVramTotal) * 100f;
 
-                            float gPower = _gpuPowerSensor?.Value ?? INVALID_VALUE_FLOAT;
-                            _lastGpuPower = gPower;
-                            _snapshotGpuPower = _lastGpuPower > MIN_ACTIVE_GPU_POWER ? _lastGpuPower : INVALID_VALUE_FLOAT;
-                            _snapshotGpuVramTemp = _gpuHotspotSensor?.Value ?? INVALID_VALUE_FLOAT;
-                            _snapshotGpuUsage = _gpuUsageSensor?.Value ?? INVALID_VALUE_FLOAT;
-                            _snapshotGpuTemp = _gpuTempSensor?.Value ?? INVALID_VALUE_FLOAT;
-                            _snapshotGpuClock = _gpuClockSensor?.Value ?? INVALID_VALUE_FLOAT;
+                            float gPowerRaw = _gpuPowerSensor?.Value ?? INVALID_VALUE_FLOAT;
+                            gpuPower = gPowerRaw > MIN_ACTIVE_GPU_POWER ? gPowerRaw : INVALID_VALUE_FLOAT;
+                            gpuVramTemp = _gpuHotspotSensor?.Value ?? INVALID_VALUE_FLOAT;
+                            gpuUsage = _gpuUsageSensor?.Value ?? INVALID_VALUE_FLOAT;
+                            gpuTemp = _gpuTempSensor?.Value ?? INVALID_VALUE_FLOAT;
+                            gpuClock = _gpuClockSensor?.Value ?? INVALID_VALUE_FLOAT;
                         }
 
-                        _snapshotMemUsage = _memoryLoadSensor?.Value ?? INVALID_VALUE_FLOAT;
+                        float memUsage = _memoryLoadSensor?.Value ?? INVALID_VALUE_FLOAT;
+                        float memUsed = _memoryUsedSensor?.Value ?? INVALID_VALUE_FLOAT;
+                        float memTotal = (_memoryUsedSensor?.Value ?? 0) + (_memoryAvailableSensor?.Value ?? 0);
+                        if (memTotal <= 0) memTotal = INVALID_VALUE_FLOAT;
 
-                        float memoryUsed = _memoryUsedSensor?.Value ?? INVALID_VALUE_FLOAT;
-                        float memoryAvailable = _memoryAvailableSensor?.Value ?? INVALID_VALUE_FLOAT;
-
-                        if (memoryUsed >= 0 && memoryAvailable >= 0)
+                        if (memUsed >= 0 && memTotal > 0)
                         {
-                            _snapshotMemUsed = memoryUsed;
-                            _snapshotMemTotal = memoryUsed + memoryAvailable;
-                            _cachedMemoryTotal = _snapshotMemTotal;
-
-                            if (_snapshotMemUsage < 0 && _snapshotMemTotal > 0)
-                            {
-                                _snapshotMemUsage = (_snapshotMemUsed / _snapshotMemTotal) * 100f;
-                            }
+                            if (memUsage < 0) memUsage = (memUsed / memTotal) * 100f;
                         }
-                        else if (_cachedMemoryTotal > 0 && _snapshotMemUsage >= 0)
+                        else if (_cachedMemoryTotal > 0 && memUsage >= 0)
                         {
-                            _snapshotMemTotal = _cachedMemoryTotal;
-                            _snapshotMemUsed = (_snapshotMemUsage / 100f) * _snapshotMemTotal;
-                        }
-                        else
-                        {
-                            _snapshotMemUsed = INVALID_VALUE_FLOAT;
-                            _snapshotMemTotal = INVALID_VALUE_FLOAT;
+                            memTotal = _cachedMemoryTotal;
+                            memUsed = (memUsage / 100f) * memTotal;
                         }
 
-                        _snapshotMemMaxTemp = _memoryTempSensors.Count > 0 ? (double)(_memoryTempSensors.Max(s => s.Value) ?? 0) : INVALID_VALUE_DOUBLE;
-
+                        double memMaxTemp = _memoryTempSensors.Count > 0 ? (double)(_memoryTempSensors.Max(s => s.Value) ?? 0) : INVALID_VALUE_DOUBLE;
                         float t1 = _storageTempSensors.Count > 0 ? _storageTempSensors[0].Value ?? INVALID_VALUE_FLOAT : INVALID_VALUE_FLOAT;
                         float t2 = _storageTempSensors.Count > 1 ? _storageTempSensors[1].Value ?? INVALID_VALUE_FLOAT : INVALID_VALUE_FLOAT;
-                        _snapshotSsdTemps = (t1, t2);
+
+                        Snapshot = new HardwareSensorSnapshot
+                        {
+                            CpuTemp = cpuTemp,
+                            CpuUsage = cpuUsage,
+                            CpuPower = cpuPower,
+                            CpuMaxClock = cpuMaxClock,
+                            CpuAvgClock = cpuAvgClock,
+                            CpuPClock = pClock,
+                            CpuPAvgClock = pAvgClock,
+                            CpuEClock = eClock,
+                            CpuEAvgClock = eAvgClock,
+                            GpuUsage = gpuUsage,
+                            GpuTemp = gpuTemp,
+                            GpuClock = gpuClock,
+                            GpuPower = gpuPower,
+                            GpuVramTemp = gpuVramTemp,
+                            GpuVramUtilization = gpuVramUtilization,
+                            GpuVramUsed = gpuVramUsed,
+                            GpuVramTotal = gpuVramTotal,
+                            MemUsage = memUsage,
+                            MemUsed = memUsed,
+                            MemTotal = memTotal,
+                            MemMaxTemp = memMaxTemp,
+                            SsdTemps = (t1, t2)
+                        };
+
+                        SensorsUpdated?.Invoke(Snapshot);
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex is IndexOutOfRangeException) Task.Run(ResetSensors);
                     }
                 }
-                catch (Exception ex) { if (ex is IndexOutOfRangeException) Task.Run(ResetSensors); }
+            }).ConfigureAwait(false);
+        }
+        finally
+        {
+            lock (_updateTaskLock)
+            {
+                _activeUpdateTask = null;
             }
-        }).ConfigureAwait(false);
+            SensorsUpdated?.Invoke(Snapshot);
+        }
     }
 
     private void ResetSensors()
@@ -851,8 +789,7 @@ public class SensorsGroupController : IDisposable
 
             try
             {
-                await UpdateAsync().ConfigureAwait(false);
-                SensorsUpdated?.Invoke(this, EventArgs.Empty);
+                await UpdateAsync(true).ConfigureAwait(false);
 
                 await Task.Delay(minInterval, token).ConfigureAwait(false);
             }
