@@ -312,11 +312,14 @@ public abstract class OsdWindowBase : Window
             CheckAndUpdateFpsMonitoring();
             UpdateMeasurementControlsVisibility();
 
+            _sensorsGroupControllers.Start(this, TimeSpan.FromSeconds(_OsdSettings.Store.OsdRefreshInterval));
+
             await TheRing(_cts.Token);
         }
         else
         {
             _cts?.Cancel();
+            _sensorsGroupControllers.Stop(this);
             CheckAndUpdateFpsMonitoring();
         }
     }
@@ -689,26 +692,9 @@ public abstract class OsdWindowBase : Window
 
     private async Task RefreshSensorsDataAsync(CancellationToken token)
     {
-        await _sensorsGroupControllers.UpdateAsync();
-
         var dataTask = _controller.GetDataAsync();
-        var cpuPowerTask = _sensorsGroupControllers.GetCpuPowerAsync();
-        var gpuPowerTask = _sensorsGroupControllers.GetGpuPowerAsync();
-        var gpuVramUsageTask = _sensorsGroupControllers.GetGpuVramUtilizationAsync();
-        var gpuVramUsedTask = _sensorsGroupControllers.GetGpuVramUsedAsync();
-        var gpuVramTotalTask = _sensorsGroupControllers.GetGpuVramTotalAsync();
-        var gpuVramTempTask = _sensorsGroupControllers.GetGpuVramTemperatureAsync();
-        var memUsageTask = _sensorsGroupControllers.GetMemoryUsageAsync();
-        var memUsedTask = _sensorsGroupControllers.GetMemoryUsedAsync();
-        var memTotalTask = _sensorsGroupControllers.GetMemoryTotalAsync();
-        var memTempTask = _sensorsGroupControllers.GetHighestMemoryTemperatureAsync();
-        var diskTempsTask = _sensorsGroupControllers.GetSsdTemperaturesAsync();
 
-        var cpuClockTask = !_sensorsGroupControllers.IsHybrid ? _sensorsGroupControllers.GetCpuCoreClockAsync() : Task.FromResult(float.NaN);
-        var cpuPClockTask = _sensorsGroupControllers.IsHybrid ? _sensorsGroupControllers.GetCpuPCoreClockAsync() : Task.FromResult(float.NaN);
-        var cpuEClockTask = _sensorsGroupControllers.IsHybrid ? _sensorsGroupControllers.GetCpuECoreClockAsync() : Task.FromResult(float.NaN);
-
-        await Task.WhenAll(dataTask, cpuPowerTask, gpuPowerTask, gpuVramUsageTask, gpuVramUsedTask, gpuVramTotalTask, gpuVramTempTask, memUsageTask, memUsedTask, memTotalTask, memTempTask, diskTempsTask, cpuPClockTask, cpuEClockTask);
+        await Task.WhenAll(dataTask).ConfigureAwait(false);
 
         if (token.IsCancellationRequested) return;
 
@@ -716,39 +702,39 @@ public abstract class OsdWindowBase : Window
 
         _lastUpdate = DateTime.Now;
 
-        var mainData = await dataTask;
-        var diskData = await diskTempsTask;
+        var mainData = dataTask.Result;
 
+        var gs = _sensorsGroupControllers.Snapshot;
         var snapshot = new SensorSnapshot
         {
             CpuUsage = mainData.CPU.Utilization,
-            CpuFrequency = await cpuClockTask,
-            CpuPClock = await cpuPClockTask,
-            CpuEClock = await cpuEClockTask,
+            CpuFrequency = _sensorsGroupControllers.ShowAverageCpuFrequency ? gs.CpuAvgClock : gs.CpuMaxClock,
+            CpuPClock = _sensorsGroupControllers.ShowAverageCpuFrequency ? gs.CpuPAvgClock : gs.CpuPClock,
+            CpuEClock = _sensorsGroupControllers.ShowAverageCpuFrequency ? gs.CpuEAvgClock : gs.CpuEClock,
             CpuTemp = mainData.CPU.Temperature,
-            CpuPower = await cpuPowerTask,
+            CpuPower = gs.CpuPower,
             CpuFanSpeed = mainData.CPU.FanSpeed,
 
             GpuUsage = mainData.GPU.Utilization,
             GpuFrequency = mainData.GPU.CoreClock,
             GpuTemp = mainData.GPU.Temperature,
-            GpuVramUsage = await gpuVramUsageTask,
-            GpuVramUsed = await gpuVramUsedTask,
-            GpuVramTotal = await gpuVramTotalTask,
-            GpuVramTemp = await gpuVramTempTask,
-            GpuPower = await gpuPowerTask,
+            GpuVramUsage = gs.GpuVramUtilization,
+            GpuVramUsed = gs.GpuVramUsed,
+            GpuVramTotal = gs.GpuVramTotal,
+            GpuVramTemp = gs.GpuVramTemp,
+            GpuPower = gs.GpuPower,
             GpuFanSpeed = mainData.GPU.FanSpeed,
 
-            MemUsage = await memUsageTask,
-            MemUsed = await memUsedTask,
-            MemTotal = await memTotalTask,
-            MemTemp = await memTempTask,
+            MemUsage = gs.MemUsage,
+            MemUsed = gs.MemUsed,
+            MemTotal = gs.MemTotal,
+            MemTemp = (float)gs.MemMaxTemp,
 
             PchTemp = mainData.PCH.Temperature,
             PchFanSpeed = mainData.PCH.FanSpeed,
 
-            Disk1Temp = diskData.Item1,
-            Disk2Temp = diskData.Item2
+            Disk1Temp = gs.SsdTemps.Item1,
+            Disk2Temp = gs.SsdTemps.Item2
         };
 
         await Dispatcher.BeginInvoke(() => UpdateSensorData(snapshot), DispatcherPriority.Normal);

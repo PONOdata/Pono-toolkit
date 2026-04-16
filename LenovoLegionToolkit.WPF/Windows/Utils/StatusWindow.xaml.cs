@@ -42,6 +42,7 @@ public partial class StatusWindow
     private readonly UpdateSettings _updateSettings = IoCContainer.Resolve<UpdateSettings>();
     private readonly SensorsController _sensorsController = IoCContainer.Resolve<SensorsController>();
     private readonly SensorsGroupController _sensorsGroupController = IoCContainer.Resolve<SensorsGroupController>();
+    private readonly HardwareSensorSettings _hardwareSensorSettings = IoCContainer.Resolve<HardwareSensorSettings>();
 
     private MachineInformation? _machineInfo;
     private Type? _cachedControllerType;
@@ -172,11 +173,11 @@ public partial class StatusWindow
         if (IsVisible)
         {
             _sensorsGroupController.SensorsUpdated += OnSensorsUpdated;
-            
-            var refreshInterval = _settings.Store.UseNewSensorDashboard 
-                ? _sensorsControlSettings.Store.SensorsRefreshIntervalSeconds 
+
+            var refreshInterval = _settings.Store.UseNewSensorDashboard
+                ? _sensorsControlSettings.Store.SensorsRefreshIntervalSeconds
                 : _dashboardSettings.Store.SensorsRefreshIntervalSeconds;
-                
+
             _sensorsGroupController.Start(this, TimeSpan.FromSeconds(refreshInterval));
         }
         else
@@ -187,12 +188,12 @@ public partial class StatusWindow
         }
     }
 
-    private async void OnSensorsUpdated(object? sender, EventArgs e)
+    private async void OnSensorsUpdated(HardwareSensorSnapshot snapshot)
     {
         var token = _cancellationTokenSource.Token;
         try
         {
-            var data = await GetStatusWindowDataAsync(token);
+            var data = await GetStatusWindowDataAsync(token, snapshot: snapshot);
             if (token.IsCancellationRequested) return;
 
             if ((DateTime.Now - _lastUpdate).TotalMilliseconds >= UI_UPDATE_THROTTLE_MS)
@@ -203,11 +204,11 @@ public partial class StatusWindow
         }
         catch (Exception ex)
         {
-             Log.Instance.Trace($"StatusWindow update failed: {ex}");
+            Log.Instance.Trace($"StatusWindow update failed: {ex}");
         }
     }
 
-    private async Task<StatusWindowData> GetStatusWindowDataAsync(CancellationToken token, bool skipRetry = false)
+    private async Task<StatusWindowData> GetStatusWindowDataAsync(CancellationToken token, bool skipRetry = false, HardwareSensorSnapshot? snapshot = null)
     {
         _machineInfo ??= await Compatibility.GetMachineInformationAsync().ConfigureAwait(false);
 
@@ -230,7 +231,7 @@ public partial class StatusWindow
                 }
                 else if (await _itsModeFeature.IsSupportedAsync().WaitAsync(token))
                 {
-                     mode = await _itsModeFeature.GetStateAsync().WaitAsync(token);
+                    mode = await _itsModeFeature.GetStateAsync().WaitAsync(token);
                 }
             }
             catch { /* Ignore */ }
@@ -251,17 +252,19 @@ public partial class StatusWindow
             {
                 var controller = await _sensorsController.GetControllerAsync().WaitAsync(token);
                 _cachedControllerType = controller?.GetType();
-                
+
                 sensorsData = await _sensorsController.GetDataAsync().WaitAsync(token);
             }
-            if (await _sensorsGroupController.IsSupportedAsync().WaitAsync(token) is LibreHardwareMonitorInitialState.Success or LibreHardwareMonitorInitialState.Initialized)
-            {    
-                cpuPower = await _sensorsGroupController.GetCpuPowerAsync().WaitAsync(token);
-                gpuPower = await _sensorsGroupController.GetGpuPowerAsync().WaitAsync(token);
-                cpuClock = await _sensorsGroupController.GetCpuCoreClockAsync().WaitAsync(token);
-                cpuTemp = await _sensorsGroupController.GetCpuTemperatureAsync().WaitAsync(token);
-                gpuClock = await _sensorsGroupController.GetGpuCoreClockAsync().WaitAsync(token);
-                gpuTemp = await _sensorsGroupController.GetGpuTemperatureAsync().WaitAsync(token);
+
+            if (_sensorsGroupController.IsLibreHardwareMonitorInitialized())
+            {
+                var gs = snapshot ?? _sensorsGroupController.Snapshot;
+                cpuPower = gs.CpuPower;
+                gpuPower = gs.GpuPower;
+                cpuClock = _hardwareSensorSettings.Store.ShowCpuAverageFrequency ? gs.CpuAvgClock : gs.CpuMaxClock;
+                cpuTemp = gs.CpuTemp;
+                gpuClock = gs.GpuClock;
+                gpuTemp = gs.GpuTemp;
             }
         }
         catch { /* Ignore */ }

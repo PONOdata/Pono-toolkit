@@ -180,7 +180,7 @@ public partial class SensorsControlV2
         }
     }
 
-    private async void OnSensorsUpdated(object? sender, EventArgs e)
+    private async void OnSensorsUpdated(HardwareSensorSnapshot snapshot)
     {
         try
         {
@@ -190,46 +190,16 @@ public partial class SensorsControlV2
                 catch { return default(SensorsData); }
             });
 
-            var gpuNameTask = GetProcessedGpuName();
-            var cpuUsageTask = _sensorsGroupControllers.GetCpuUsageAsync();
-            var cpuTempTask = _sensorsGroupControllers.GetCpuTemperatureAsync();
-            var cpuClockTask = _sensorsGroupControllers.IsHybrid
-                ? _sensorsGroupControllers.GetCpuPCoreClockAsync()
-                : _sensorsGroupControllers.GetCpuCoreClockAsync();
-            var cpuPowerTask = _sensorsGroupControllers.GetCpuPowerAsync();
-
-            var gpuUsageTask = _sensorsGroupControllers.GetGpuUsageAsync();
-            var gpuVramUsageTask = _sensorsGroupControllers.GetGpuVramUtilizationAsync();
-            var gpuVramUsedTask = _sensorsGroupControllers.GetGpuVramUsedAsync();
-            var gpuVramTotalTask = _sensorsGroupControllers.GetGpuVramTotalAsync();
-            var gpuTempTask = _sensorsGroupControllers.GetGpuTemperatureAsync();
-            var gpuClockTask = _sensorsGroupControllers.GetGpuCoreClockAsync();
-            var gpuPowerTask = _sensorsGroupControllers.GetGpuPowerAsync();
-            var gpuVramTask = _sensorsGroupControllers.GetGpuVramTemperatureAsync();
-
-            var diskTemperaturesTask = _sensorsGroupControllers.GetSsdTemperaturesAsync();
-            var memoryUsageTask = _sensorsGroupControllers.GetMemoryUsageAsync();
-            var memoryUsedTask = _sensorsGroupControllers.GetMemoryUsedAsync();
-            var memoryTotalTask = _sensorsGroupControllers.GetMemoryTotalAsync();
-            var memoryTemperaturesTask = _sensorsGroupControllers.GetHighestMemoryTemperatureAsync();
-
             var batteryInfoTask = Task.Run(Battery.GetBatteryInformation);
+            var gpuNameTask = GetProcessedGpuName();
 
-            await Task.WhenAll(
-                dataTask,
-                cpuUsageTask, gpuNameTask, cpuTempTask, cpuClockTask, cpuPowerTask,
-                gpuUsageTask, gpuVramUsageTask, gpuVramUsedTask, gpuVramTotalTask, gpuTempTask, gpuClockTask, gpuPowerTask, gpuVramTask,
-                diskTemperaturesTask, memoryUsageTask, memoryUsedTask, memoryTotalTask, memoryTemperaturesTask,
-                batteryInfoTask
-            ).ConfigureAwait(false);
+            await Task.WhenAll(dataTask, batteryInfoTask, gpuNameTask).ConfigureAwait(false);
 
             _gpuNameTask = gpuNameTask;
 
             await Dispatcher.BeginInvoke(() => UpdateAllSensorValuesV2(
                 dataTask.Result,
-                cpuUsageTask.Result, cpuTempTask.Result, cpuClockTask.Result, cpuPowerTask.Result,
-                gpuUsageTask.Result, gpuVramUsageTask.Result, gpuVramUsedTask.Result, gpuVramTotalTask.Result, gpuTempTask.Result, gpuClockTask.Result, gpuPowerTask.Result, gpuVramTask.Result,
-                diskTemperaturesTask.Result, memoryUsageTask.Result, memoryUsedTask.Result, memoryTotalTask.Result, memoryTemperaturesTask.Result,
+                snapshot,
                 batteryInfoTask.Result
             ), DispatcherPriority.Background);
         }
@@ -274,11 +244,33 @@ public partial class SensorsControlV2
 
     private void UpdateAllSensorValuesV2(
         SensorsData data,
-        float cpuUsage, float cpuTemp, float cpuClock, float cpuPower,
-        float gpuUsage, float gpuVramUsage, float gpuVramUsed, float gpuVramTotal, float gpuTemp, float gpuClock, float gpuPower, float gpuVramTemp,
-        (float, float) diskTemps, float memoryUsage, float memoryUsed, float memoryTotal, double memoryTemp,
+        HardwareSensorSnapshot snapshot,
         BatteryInformation? batteryInfo)
     {
+        var cpuUsage = snapshot.CpuUsage;
+        var cpuTemp = snapshot.CpuTemp;
+        var cpuClock = _sensorsGroupControllers.ShowAverageCpuFrequency ? snapshot.CpuAvgClock : snapshot.CpuMaxClock;
+        if (_sensorsGroupControllers.IsHybrid)
+        {
+            cpuClock = _sensorsGroupControllers.ShowAverageCpuFrequency ? snapshot.CpuPAvgClock : snapshot.CpuPClock;
+        }
+        var cpuPower = snapshot.CpuPower;
+
+        var gpuUsage = snapshot.GpuUsage;
+        var gpuVramUsage = snapshot.GpuVramUtilization;
+        var gpuVramUsed = snapshot.GpuVramUsed;
+        var gpuVramTotal = snapshot.GpuVramTotal;
+        var gpuTemp = snapshot.GpuTemp;
+        var gpuClock = snapshot.GpuClock;
+        var gpuPower = snapshot.GpuPower;
+        var gpuVramTemp = snapshot.GpuVramTemp;
+
+        var diskTemps = snapshot.SsdTemps;
+        var memoryUsage = snapshot.MemUsage;
+        var memoryUsed = snapshot.MemUsed;
+        var memoryTotal = snapshot.MemTotal;
+        var memoryTemp = snapshot.MemMaxTemp;
+
         lock (_updateLock)
         {
             foreach (var kv in _sensorItemToControlMap)
