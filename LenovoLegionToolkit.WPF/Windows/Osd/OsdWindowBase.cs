@@ -179,11 +179,9 @@ public abstract class OsdWindowBase : Window
             extendedStyle &= ~WS_EX_TRANSPARENT;
 
         SetWindowLong(hwnd, GWL_EXSTYLE, extendedStyle);
-
-        ApplyZBand();
     }
 
-    private void ApplyZBand()
+    private void EscalateZBand()
     {
         if (PresentationSource.FromVisual(this) is not HwndSource source) return;
 
@@ -194,12 +192,12 @@ public abstract class OsdWindowBase : Window
 
             if (GetWindowBand(hwnd, out uint currentBand))
             {
-                Log.Instance.Trace($"ApplyZBand (TOPMOST) executed. Current Band: {currentBand}");
+                Log.Instance.Trace($"EscalateZBand (TOPMOST) executed. Current Band: {currentBand}");
             }
         }
         catch (Exception ex)
         {
-            Log.Instance.Trace($"Exception in ApplyZBand for HWND {hwnd:X}", ex);
+            Log.Instance.Trace($"Exception in EscalateZBand for HWND {hwnd:X}", ex);
         }
     }
 
@@ -390,7 +388,6 @@ public abstract class OsdWindowBase : Window
         _criticalBrush = (Brush)converter.ConvertFromString(_OsdSettings.Store.CriticalColor)!;
 
         UpdateClickThrough();
-        ApplyZBand();
 
         if (!SavedPositionX.HasValue || !SavedPositionY.HasValue)
         {
@@ -463,7 +460,7 @@ public abstract class OsdWindowBase : Window
         }
 
         CheckAndUpdateFpsMonitoring();
-        ApplyZBand();
+        EscalateZBand();
     }
 
     protected virtual void OnItemVisibilityChanged(FrameworkElement element, bool visible) { }
