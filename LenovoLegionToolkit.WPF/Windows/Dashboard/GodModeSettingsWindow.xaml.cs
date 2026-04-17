@@ -52,9 +52,7 @@ public partial class GodModeSettingsWindow
         }
 
         int contentIndex = _fanCurveControlStackPanel.Children.IndexOf(_fanCurveButton);
-        Control ctrl = mi.Properties.SupportsGodModeV2
-            ? new Controls.FanCurveControlV2()
-            : new Controls.FanCurveControl();
+        Control ctrl = mi.Properties.SupportsGodModeV4 ? new Controls.FanCurveControlV2() : new Controls.FanCurveControl();
         _fanCurveControlStackPanel.Children.Insert(contentIndex, ctrl);
     }
 
