@@ -1,17 +1,28 @@
-﻿using System;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using LenovoLegionToolkit.Lib.Extensions;
+﻿using LenovoLegionToolkit.Lib.Extensions;
 using LenovoLegionToolkit.Lib.Messaging;
 using LenovoLegionToolkit.Lib.Messaging.Messages;
 using LenovoLegionToolkit.Lib.Utils;
+using Microsoft.Win32;
+using System;
+using System.Linq;
+using System.Management;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.ServiceProcess;
+using System.Threading.Tasks;
 
 namespace LenovoLegionToolkit.Lib.Features;
 
 public partial class ITSModeFeature : IFeature<ITSMode>
 {
+    #region Magic Constants
+    private const string REG_KEY_PATH = @"SYSTEM\CurrentControlSet\Services\LenovoProcessManagement\Performance\PowerSlider";
+    private const string REG_VALUE_VERSION = "Version";
+
+    private const string DISPATCHER_SERVICE_NAME = "LenovoProcessManagement";
+    private const string ITS_SERVICE_NAME = "LITSSVC";
+    #endregion
+
     #region Constants and Imports
     private const uint ITS_VERSION_3 = 16384U;
     private const uint ITS_VERSION_4 = 20480U;
@@ -268,4 +279,73 @@ public partial class ITSModeFeature : IFeature<ITSMode>
                 break;
         }
     }
+
+    #region ITS Mode Remastered
+    public static void ControlService(string serviceName, ITSModeServiceControlMessage message)
+    {
+        try
+        {
+            ServiceController serviceController = new ServiceController(serviceName);
+
+            Log.Instance.Trace($"Service {serviceName} status: {serviceController.Status}");
+
+            serviceController.ExecuteCommand((int)message);
+
+            Log.Instance.Trace($"Service {serviceName} successfully executed command: {message}");
+        }
+        catch (Exception ex)
+        {
+            Log.Instance.Trace($"{ex.Message + ex.StackTrace}");
+            throw;
+        }
+    }
+
+    public static int GetDispatcherVersion()
+    {
+        try
+        {
+            RegistryKey? key = Registry.LocalMachine.OpenSubKey(REG_KEY_PATH, false);
+            if (key != null)
+            {
+                object value = key.GetValue(REG_VALUE_VERSION, 0);
+                if (value is int intValue)
+                {
+                    return intValue;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Instance.Trace($"GetDispatcherVersion failed on reading registry: {ex.Message}");
+        }
+        return 0;
+    }
+
+    public static bool HasDispatcherDeviceNode()
+    {
+        try
+        {
+            string targetDeviceId = @"ACPI\\IDEA200C";
+
+            string query = $"SELECT PNPDeviceID FROM Win32_PnPEntity WHERE PNPDeviceID LIKE '%{targetDeviceId}%'";
+
+            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(query))
+            {
+                using (ManagementObjectCollection collection = searcher.Get())
+                {
+                    if (collection.Count > 0)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Instance.Trace($"HasDispatcherDeviceNode failed to execute: {ex.Message}");
+        }
+
+        return false;
+    }
+    #endregion
 }
