@@ -13,6 +13,7 @@ using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
 using LenovoLegionToolkit.Lib;
+using LenovoLegionToolkit.WPF.Extensions;
 using LenovoLegionToolkit.WPF.Utils;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Common;
@@ -145,7 +146,7 @@ public class NotificationWindow : UiWindow, INotificationWindow
         AllowsTransparency = true;
 
         Focusable = false;
-        Topmost = true;
+        // Topmost = true;
         ExtendsContentIntoTitleBar = false;
         ShowInTaskbar = false;
         ShowActivated = false;
