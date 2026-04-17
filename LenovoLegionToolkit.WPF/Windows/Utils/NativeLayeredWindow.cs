@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
@@ -157,7 +157,7 @@ public class NativeLayeredWindow : NativeWindow, IDisposable
         var hdcDst = PInvoke.GetDC(HWND.Null);
         var hdcSrc = PInvoke.CreateCompatibleDC(hdcDst);
         var hbitmap = bitmap.GetHbitmap(Color.FromArgb(0));
-        var hObject = SelectObject(hdcSrc, hbitmap);
+        var hObject = PInvoke.SelectObject(hdcSrc, (HGDIOBJ)hbitmap);
         SIZE size = new(Size.Width, Size.Height);
         Point ptDst = new(Position.X, Position.Y);
         Point ptSrc = new(0, 0);
@@ -170,7 +170,7 @@ public class NativeLayeredWindow : NativeWindow, IDisposable
             AlphaFormat = (byte)PInvoke.AC_SRC_ALPHA
         };
         PInvoke.UpdateLayeredWindow((HWND)Handle, hdcDst, ptDst, size, hdcSrc, ptSrc, colorRef, blend, UPDATE_LAYERED_WINDOW_FLAGS.ULW_ALPHA);
-        SelectObject(hdcSrc, hObject);
+        PInvoke.SelectObject(hdcSrc, (HGDIOBJ)hObject);
         _ = PInvoke.ReleaseDC(HWND.Null, hdcDst);
         PInvoke.DeleteObject((HGDIOBJ)hbitmap);
         PInvoke.DeleteDC(hdcSrc);
@@ -214,6 +214,4 @@ public class NativeLayeredWindow : NativeWindow, IDisposable
         Dispose();
     }
 
-    [DllImport("gdi32.dll", CharSet = CharSet.Auto)]
-    private static extern nint SelectObject(nint hDc, nint hObject);
 }
