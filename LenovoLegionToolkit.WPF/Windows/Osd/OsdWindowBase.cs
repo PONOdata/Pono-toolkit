@@ -20,27 +20,13 @@ using LenovoLegionToolkit.Lib.Settings;
 using LenovoLegionToolkit.Lib.Utils;
 using LenovoLegionToolkit.WPF.Resources;
 using LenovoLegionToolkit.WPF.Settings;
+using LenovoLegionToolkit.WPF.Extensions;
 using WpfScreenHelper;
 
 namespace LenovoLegionToolkit.WPF.Windows.Osd;
 
 public abstract class OsdWindowBase : Window
 {
-    #region Win32
-
-    private const int GWL_EXSTYLE = -20;
-    private const int WS_EX_TRANSPARENT = 0x00000020;
-    private const int WS_EX_TOOLWINDOW = 0x00000080;
-    private const int WS_EX_NOACTIVATE = 0x08000000;
-
-    [DllImport("user32.dll")]
-    private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
-
-    [DllImport("user32.dll")]
-    private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
-
-    #endregion
-
     #region Threshold Constants
 
     protected int _uiUpdateThrottleMs = 0;
@@ -148,24 +134,7 @@ public abstract class OsdWindowBase : Window
 
     private void OnSourceInitialized(object? sender, EventArgs e)
     {
-        UpdateClickThrough();
-    }
-
-    private void UpdateClickThrough()
-    {
-        if (PresentationSource.FromVisual(this) is not HwndSource source) return;
-
-        var hwnd = source.Handle;
-        var extendedStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
-
-        extendedStyle |= WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE;
-
-        if (_OsdSettings.Store.IsLocked)
-            extendedStyle |= WS_EX_TRANSPARENT;
-        else
-            extendedStyle &= ~WS_EX_TRANSPARENT;
-
-        SetWindowLong(hwnd, GWL_EXSTYLE, extendedStyle);
+        this.SetClickThrough(_OsdSettings.Store.IsLocked);
     }
 
     private void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -218,13 +187,14 @@ public abstract class OsdWindowBase : Window
         }
     }
 
-    private void OnLoaded(object? sender, RoutedEventArgs e)
-        => Dispatcher.BeginInvoke(new Action(SetWindowPosition), DispatcherPriority.Loaded);
+    private void OnLoaded(object? sender, RoutedEventArgs e) => Dispatcher.BeginInvoke(new Action(SetWindowPosition), DispatcherPriority.Loaded);
 
     private void OnContentRendered(object? sender, EventArgs e)
     {
         if (!_positionSet)
+        {
             Dispatcher.BeginInvoke(new Action(SetWindowPosition), DispatcherPriority.Render);
+        }
     }
 
     protected virtual void SetWindowPosition()
@@ -295,7 +265,9 @@ public abstract class OsdWindowBase : Window
         Dispatcher.BeginInvoke(() =>
         {
             if (!IsPositionOnScreen(Left, Top))
+            {
                 SetDefaultWindowPosition();
+            }
         });
     }
 
@@ -354,7 +326,7 @@ public abstract class OsdWindowBase : Window
         _warningBrush = (Brush)converter.ConvertFromString(_OsdSettings.Store.WarningColor)!;
         _criticalBrush = (Brush)converter.ConvertFromString(_OsdSettings.Store.CriticalColor)!;
 
-        UpdateClickThrough();
+        this.SetClickThrough(_OsdSettings.Store.IsLocked);
 
         if (!SavedPositionX.HasValue || !SavedPositionY.HasValue)
         {
@@ -427,6 +399,7 @@ public abstract class OsdWindowBase : Window
         }
 
         CheckAndUpdateFpsMonitoring();
+        this.EscalateZBand();
     }
 
     protected virtual void OnItemVisibilityChanged(FrameworkElement element, bool visible) { }
