@@ -257,17 +257,6 @@ public class NotificationsManager
                 var nw = new NotificationWindow(symbol, overlaySymbol, symbolTransform, text, clickAction, screen, _settings.Store.NotificationPosition);
                 if (_settings.Store.NotificationAlwaysOnTop)
                 {
-                    // var bitmap = nw.GetBitmapView();
-                    // var nwaot = new NotificationAoTWindow(bitmap, screen, _settings.Store.NotificationPosition);
-                    // nwaot.Show(_settings.Store.NotificationDuration switch
-                    // {
-                    //     NotificationDuration.Short => 500,
-                    //     NotificationDuration.Long => 2500,
-                    //     NotificationDuration.Normal => 1000,
-                    //     _ => throw new ArgumentException(nameof(_settings.Store.NotificationDuration))
-                    // });
-                    // _windows.Add(nwaot);
-                    
                     nw.SourceInitialized += (_, _) => nw.EscalateZBand();
                 }
 
@@ -290,17 +279,6 @@ public class NotificationsManager
             var nw = new NotificationWindow(symbol, overlaySymbol, symbolTransform, text, clickAction, primaryScreen.Value, _settings.Store.NotificationPosition);
             if (_settings.Store.NotificationAlwaysOnTop)
             {
-                // var bitmap = nw.GetBitmapView();
-                // var nwaot = new NotificationAoTWindow(bitmap, primaryScreen.Value, _settings.Store.NotificationPosition);
-                // nwaot.Show(_settings.Store.NotificationDuration switch
-                // {
-                //     NotificationDuration.Short => 500,
-                //     NotificationDuration.Long => 2500,
-                //     NotificationDuration.Normal => 1000,
-                //     _ => throw new ArgumentException(nameof(_settings.Store.NotificationDuration))
-                // });
-                // _windows.Add(nwaot);
-
                 nw.SourceInitialized += (_, _) => nw.EscalateZBand();
             }
 
