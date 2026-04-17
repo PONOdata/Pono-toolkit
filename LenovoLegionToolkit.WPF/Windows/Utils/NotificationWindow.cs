@@ -174,7 +174,7 @@ public class NotificationWindow : UiWindow, INotificationWindow
                 nativeTop = nativeWorkArea.Top + (nativeWorkArea.Height - nativeHeight) / 2;
                 break;
             default:
-                throw new ArgumentException(nameof(position));
+                throw new ArgumentOutOfRangeException(nameof(position), position, "Unexpected notification position.");
         }
 
         var windowInteropHandler = new WindowInteropHelper(this);
