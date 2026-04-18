@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -250,69 +250,40 @@ public class NotificationsManager
         }
 
         ScreenHelper.UpdateScreenInfos();
+
         if (_settings.Store.NotificationOnAllScreens)
         {
             foreach (var screen in ScreenHelper.Screens)
             {
-                var nw = new NotificationWindow(symbol, overlaySymbol, symbolTransform, text, clickAction, screen, _settings.Store.NotificationPosition) { Owner = mainWindow };
-                if (_settings.Store.NotificationAlwaysOnTop)
-                {
-                    var bitmap = nw.GetBitmapView();
-                    var nwaot = new NotificationAoTWindow(bitmap, screen, _settings.Store.NotificationPosition);
-                    nwaot.Show(_settings.Store.NotificationDuration switch
-                    {
-                        NotificationDuration.Short => 500,
-                        NotificationDuration.Long => 2500,
-                        NotificationDuration.Normal => 1000,
-                        _ => throw new ArgumentException(nameof(_settings.Store.NotificationDuration))
-                    });
-                    _windows.Add(nwaot);
-                }
-                else
-                {
-                    nw.Show(_settings.Store.NotificationDuration switch
-                    {
-                        NotificationDuration.Short => 500,
-                        NotificationDuration.Long => 2500,
-                        NotificationDuration.Normal => 1000,
-                        _ => throw new ArgumentException(nameof(_settings.Store.NotificationDuration))
-                    });
-                    _windows.Add(nw);
-                }
+                ShowOnScreen(screen, symbol, overlaySymbol, symbolTransform, text, clickAction);
             }
         }
         else
         {
             var primaryScreen = ScreenHelper.PrimaryScreen;
-            if (!primaryScreen.HasValue)
-                return;
-
-            var nw = new NotificationWindow(symbol, overlaySymbol, symbolTransform, text, clickAction, primaryScreen.Value, _settings.Store.NotificationPosition) { Owner = mainWindow };
-            if (_settings.Store.NotificationAlwaysOnTop)
+            if (primaryScreen.HasValue)
             {
-                var bitmap = nw.GetBitmapView();
-                var nwaot = new NotificationAoTWindow(bitmap, primaryScreen.Value, _settings.Store.NotificationPosition);
-                nwaot.Show(_settings.Store.NotificationDuration switch
-                {
-                    NotificationDuration.Short => 500,
-                    NotificationDuration.Long => 2500,
-                    NotificationDuration.Normal => 1000,
-                    _ => throw new ArgumentException(nameof(_settings.Store.NotificationDuration))
-                });
-                _windows.Add(nwaot);
-            }
-            else
-            {
-                nw.Show(_settings.Store.NotificationDuration switch
-                {
-                    NotificationDuration.Short => 500,
-                    NotificationDuration.Long => 2500,
-                    NotificationDuration.Normal => 1000,
-                    _ => throw new ArgumentException(nameof(_settings.Store.NotificationDuration))
-                });
-                _windows.Add(nw);
+                ShowOnScreen(primaryScreen.Value, symbol, overlaySymbol, symbolTransform, text, clickAction);
             }
         }
+    }
+
+    private void ShowOnScreen(ScreenInfo screen, SymbolRegular symbol, SymbolRegular? overlaySymbol, Action<SymbolIcon>? symbolTransform, string text, Action? clickAction)
+    {
+        var nw = new NotificationWindow(symbol, overlaySymbol, symbolTransform, text, clickAction, screen, _settings.Store.NotificationPosition);
+        if (_settings.Store.NotificationAlwaysOnTop)
+        {
+            nw.SourceInitialized += (_, _) => nw.EscalateZBand();
+        }
+
+        nw.Show(_settings.Store.NotificationDuration switch
+        {
+            NotificationDuration.Short => 500,
+            NotificationDuration.Long => 2500,
+            NotificationDuration.Normal => 1000,
+            _ => throw new ArgumentException(nameof(_settings.Store.NotificationDuration))
+        });
+        _windows.Add(nw);
     }
 
     private static void UpdateAvailableAction()
