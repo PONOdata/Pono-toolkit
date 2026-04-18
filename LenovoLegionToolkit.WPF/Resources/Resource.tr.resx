@@ -1349,12 +1349,6 @@ GPU hiç yanıt vermiyorsa, lütfen dizüstü bilgisayarınızı yeniden başlat
   <data name="ITSModeAutomationStepControl_Title" xml:space="preserve">
     <value>IdeaPad Güç Modu</value>
   </data>
-  <data name="ITSModeControl_Dialog_Message" xml:space="preserve">
-    <value>PowerBattery.dll eksik. ITSMode özelliğini kullanmak için lütfen dosyayı manuel olarak yerleştirin.</value>
-  </data>
-  <data name="ITSModeControl_Dialog_Title" xml:space="preserve">
-    <value>Eksik Bileşen</value>
-  </data>
   <data name="ITSModeControl_Message" xml:space="preserve">
     <value>IdeaPad Güç Modunu Değiştir</value>
   </data>

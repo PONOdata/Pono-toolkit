@@ -1350,12 +1350,6 @@ Si la dGPU no responde del todo, reinicie su portátil.</value>
   <data name="ITSModeAutomationStepControl_Title" xml:space="preserve">
     <value>Modo de energía del IdeaPad</value>
   </data>
-  <data name="ITSModeControl_Dialog_Message" xml:space="preserve">
-    <value>Falta el archivo PowerBattery.dll. Por favor, colóquelo manualmente para utilizar la función ITSMode.</value>
-  </data>
-  <data name="ITSModeControl_Dialog_Title" xml:space="preserve">
-    <value>Componente faltante</value>
-  </data>
   <data name="ITSModeControl_Message" xml:space="preserve">
     <value>Cambiar el modo de energía del IdeaPad</value>
   </data>

@@ -287,6 +287,18 @@ public enum ITSMode
     MmcGeek
 }
 
+public enum ITSModeServiceControlMessage
+{
+    IntelligentCoolingDisable = 134,
+    IntelligentCoolingEnable = 135,
+    IntelligentCoolingCool = 146,
+    IntelligentCoolingHighPerformance = 148,
+    IntelligentCoolingIntelligent = 163,
+    IntelligentCoolingBsm = 164,
+    IntelligentCoolingEpm = 165,
+    IntelligentCoolingGeek = 172
+}
+
 public enum InstantBootState
 {
     [Display(ResourceType = typeof(Resource), Name = "InstantBootState_Off")]
