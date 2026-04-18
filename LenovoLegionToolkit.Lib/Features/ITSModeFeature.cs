@@ -14,6 +14,7 @@ using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Storage.FileSystem;
 using LenovoLegionToolkit.Lib.Settings;
+using System.Threading;
 
 namespace LenovoLegionToolkit.Lib.Features;
 
@@ -42,7 +43,7 @@ public partial class ITSModeFeature : IFeature<ITSMode>
 
     public ITSMode LastItsMode { get; set; } = ITSMode.None;
 
-    public void SaveCurrentStateToSettings(ITSMode state)
+    private void SaveCurrentStateToSettings(ITSMode state)
     {
         _itsModeSettings.Store.LastState = state;
         _itsModeSettings.SynchronizeStore();
@@ -100,7 +101,7 @@ public partial class ITSModeFeature : IFeature<ITSMode>
         {
             await SetITSModeExAsync(state).ConfigureAwait(false);
 
-            if (!await WaitForITSModeAsync(state).ConfigureAwait(false))
+            if (!await WaitForITSModeAsync(state, CancellationToken.None).ConfigureAwait(false))
             {
                 throw new InvalidOperationException($"ITS mode did not change to {state}.");
             }
@@ -214,6 +215,7 @@ public partial class ITSModeFeature : IFeature<ITSMode>
                     {
                         if (currentSetting == 1) return ITSMode.MmcCool;
                         if (currentSetting == 3) return ITSMode.MmcPerformance;
+                        if (currentSetting == 4) return ITSMode.MmcGeek;
                     }
                 }
             }
@@ -389,7 +391,7 @@ public partial class ITSModeFeature : IFeature<ITSMode>
         }
     }
 
-    private static async Task<bool> WaitForITSModeAsync(ITSMode expected)
+    private static async Task<bool> WaitForITSModeAsync(ITSMode expected, CancellationToken token)
     {
         var deadline = DateTimeOffset.UtcNow.AddSeconds(3);
 
@@ -400,9 +402,9 @@ public partial class ITSModeFeature : IFeature<ITSMode>
                 return true;
             }
 
-            await Task.Delay(500).ConfigureAwait(false);
+            await Task.Delay(200, token).ConfigureAwait(false);
         }
-        while (DateTimeOffset.UtcNow < deadline);
+        while (DateTimeOffset.UtcNow < deadline && !token.IsCancellationRequested);
 
         return false;
     }

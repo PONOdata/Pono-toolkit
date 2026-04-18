@@ -49,6 +49,15 @@ public partial class StatusWindow
 
     private MachineInformation? _machineInfo;
     private Type? _cachedControllerType;
+    private bool _isSpecialModel;
+
+    private bool IsSpecialModel => _isSpecialModel;
+
+    private void SetMachineInformation(MachineInformation info)
+    {
+        _machineInfo = info;
+        _isSpecialModel = info.LegionSeries is > LegionSeries.Legion_9 and not LegionSeries.Unknown;
+    }
 
     private readonly struct StatusWindowData(
         PowerModeState? powerModeState,
@@ -91,7 +100,10 @@ public partial class StatusWindow
 
     private async Task InitializeAsync()
     {
-        _machineInfo ??= await Compatibility.GetMachineInformationAsync().ConfigureAwait(false);
+        if (!_machineInfo.HasValue)
+        {
+            SetMachineInformation(await Compatibility.GetMachineInformationAsync().ConfigureAwait(false));
+        }
         var token = _cancellationTokenSource.Token;
         try
         {
@@ -139,8 +151,7 @@ public partial class StatusWindow
         _cpuFanAndPowerLabel.Visibility = sensorVis;
 
         var isV5 = _cachedControllerType == typeof(SensorsControllerV5);
-        var isSpecialModel = (int?)_machineInfo?.LegionSeries > 5;
-        _systemFanGrid.Visibility = (useSensors && isV5 && !isSpecialModel) ? Visibility.Visible : Visibility.Collapsed;
+        _systemFanGrid.Visibility = (useSensors && isV5 && !IsSpecialModel) ? Visibility.Visible : Visibility.Collapsed;
 
         if (gpuStatus.HasValue)
         {
@@ -165,7 +176,10 @@ public partial class StatusWindow
     private async void StatusWindow_Loaded(object sender, RoutedEventArgs e)
     {
         MoveBottomRightEdgeOfWindowToMousePosition();
-        _machineInfo ??= await Compatibility.GetMachineInformationAsync().ConfigureAwait(false);
+        if (!_machineInfo.HasValue)
+        {
+            SetMachineInformation(await Compatibility.GetMachineInformationAsync().ConfigureAwait(false));
+        }
     }
 
     private void StatusWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -210,9 +224,10 @@ public partial class StatusWindow
 
     private async Task<StatusWindowData> GetStatusWindowDataAsync(CancellationToken token, bool skipRetry = false, HardwareSensorSnapshot? snapshot = null)
     {
-        _machineInfo ??= await Compatibility.GetMachineInformationAsync().ConfigureAwait(false);
-
-        var isSpecialModel = (int?)_machineInfo?.LegionSeries > 5;
+        if (!_machineInfo.HasValue)
+        {
+            SetMachineInformation(await Compatibility.GetMachineInformationAsync().ConfigureAwait(false));
+        }
 
         PowerModeState? state = null;
         ITSMode? mode = null;
@@ -249,11 +264,11 @@ public partial class StatusWindow
 
         await Task.WhenAll(tasks).ConfigureAwait(false);
 
-        if (isSpecialModel || _settings.Store.EnableHardwareSensors)
+        if (_settings.Store.EnableHardwareSensors)
         {
             try
             {
-                if (!isSpecialModel && await _sensorsController.IsSupportedAsync().WaitAsync(token))
+                if (!IsSpecialModel && await _sensorsController.IsSupportedAsync().WaitAsync(token))
                 {
                     var controller = await _sensorsController.GetControllerAsync().WaitAsync(token);
                     _cachedControllerType = controller?.GetType();
@@ -313,12 +328,11 @@ public partial class StatusWindow
 
     private void ApplySensorsData(StatusWindowData data)
     {
-        var isSpecialModel = (int?)_machineInfo?.LegionSeries > 5;
 
         _cpuFreqAndTempDesc.Content = Resource.StatusWindow_Frequency_And_Temperature;
         UpdateFreqAndTemp(_cpuFreqAndTempLabel, data.CpuClock, data.CpuTemp);
 
-        if (isSpecialModel)
+        if (IsSpecialModel)
         {
             _cpuFanAndPowerDesc.Content = Resource.SensorsControl_CPU_Power;
             UpdatePowerOnly(_cpuFanAndPowerLabel, data.CpuPower);
@@ -339,7 +353,7 @@ public partial class StatusWindow
             _gpuFreqAndTempDesc.Content = Resource.StatusWindow_Frequency_And_Temperature;
             UpdateFreqAndTemp(_gpuFreqAndTempLabel, data.GpuClock, data.GpuTemp);
 
-            if (isSpecialModel)
+            if (IsSpecialModel)
             {
                 _gpuFanAndPowerDesc.Content = Resource.SensorsControl_GPU_Power;
                 UpdatePowerOnly(_gpuFanAndPowerLabel, data.GpuPower);
