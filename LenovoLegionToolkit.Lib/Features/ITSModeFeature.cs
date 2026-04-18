@@ -90,6 +90,12 @@ public partial class ITSModeFeature : IFeature<ITSMode>
         try
         {
             await SetITSModeExAsync(state).ConfigureAwait(false);
+
+            if (!await WaitForITSModeAsync(state).ConfigureAwait(false))
+            {
+                throw new InvalidOperationException($"ITS mode did not change to {state}.");
+            }
+
             LastItsMode = state;
 
             Log.Instance.Trace($"ITS mode set successfully to: {state}");
@@ -369,5 +375,23 @@ public partial class ITSModeFeature : IFeature<ITSMode>
             Log.Instance.Trace($"Unexpected type for registry value {valueName}: {value?.GetType().Name ?? "null"}", ex);
             return defaultValue;
         }
+    }
+
+    private static async Task<bool> WaitForITSModeAsync(ITSMode expected)
+    {
+        var deadline = DateTimeOffset.UtcNow.AddSeconds(3);
+
+        do
+        {
+            if (await GetITSModeEx().ConfigureAwait(false) == expected)
+            {
+                return true;
+            }
+
+            await Task.Delay(500).ConfigureAwait(false);
+        }
+        while (DateTimeOffset.UtcNow < deadline);
+
+        return false;
     }
 }
