@@ -289,14 +289,14 @@ public enum ITSMode
 
 public enum ITSModeServiceControlMessage
 {
-    INTELLIGENT_COOLING_DISCABLE = 134,
-    INTELLIGENT_COOLING_ENABLE = 135,
-    INTELLIGENT_COOLING_COOL = 146,
-    INTELLIGENT_COOLING_HIGH_PERFORMANCE = 148,
-    INTELLIGENT_COOLING_INTELLIGENT = 163,
-    INTELLIGENT_COOLING_BSM = 164,
-    INTELLIGENT_COOLING_EPM = 165,
-    INTELLIGENT_COOLING_GEEK = 172
+    IntelligentCoolingDisable = 134,
+    IntelligentCoolingEnable = 135,
+    IntelligentCoolingCool = 146,
+    IntelligentCoolingHighPerformance = 148,
+    IntelligentCoolingIntelligent = 163,
+    IntelligentCoolingBsm = 164,
+    IntelligentCoolingEpm = 165,
+    IntelligentCoolingGeek = 172
 }
 
 public enum InstantBootState
