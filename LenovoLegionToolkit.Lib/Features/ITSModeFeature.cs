@@ -164,11 +164,12 @@ public partial class ITSModeFeature : IFeature<ITSMode>
             }
 
             var dispatcherVersion = GetDispatcherVersionEx();
-            var machineInfo = await Compatibility.GetMachineInformationAsync().ConfigureAwait(false);
-            var isThinkBook = machineInfo.LegionSeries == LegionSeries.ThinkBook;
 
             if (dispatcherVersion >= DISPATCHER_VERSION_3)
             {
+                var machineInfo = await Compatibility.GetMachineInformationAsync().ConfigureAwait(false);
+                var isThinkBook = machineInfo.LegionSeries == LegionSeries.ThinkBook;
+
                 using RegistryKey? key = Registry.LocalMachine.OpenSubKey(REG_KEY_DISPATCHER, false);
                 if (key != null)
                 {
@@ -219,7 +220,7 @@ public partial class ITSModeFeature : IFeature<ITSMode>
         }
         catch (Exception ex)
         {
-            Log.Instance.Trace($"GetITSModeEx failed: {ex.Message}");
+            Log.Instance.Trace($"GetITSModeEx failed", ex);
         }
 
         return ITSMode.None;
@@ -265,7 +266,7 @@ public partial class ITSModeFeature : IFeature<ITSMode>
         }
         catch (Exception ex)
         {
-            Log.Instance.Trace($"{nameof(SetITSModeExAsync)} failed: {ex.Message}");
+            Log.Instance.Trace($"{nameof(SetITSModeExAsync)} failed", ex);
             throw;
         }
     }
@@ -286,7 +287,7 @@ public partial class ITSModeFeature : IFeature<ITSMode>
         }
         catch (Exception ex)
         {
-            Log.Instance.Trace($"HasDispatcherDeviceNodeEx failed: {ex.Message}");
+            Log.Instance.Trace($"HasDispatcherDeviceNodeEx failed", ex);
         }
         return false;
     }
