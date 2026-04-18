@@ -88,7 +88,7 @@ public partial class ITSModeFeature : IFeature<ITSMode>
 
         try
         {
-            SetITSModeEx(state);
+            await SetITSModeExAsync(state).ConfigureAwait(false);
             LastItsMode = state;
 
             Log.Instance.Trace($"ITS mode set successfully to: {state}");
@@ -135,83 +135,125 @@ public partial class ITSModeFeature : IFeature<ITSMode>
         }
     }
 
-    private static void PublishNotification(ITSMode value)
-    {
-        switch (value)
-        {
-            case ITSMode.ItsAuto:
-                MessagingCenter.Publish(new NotificationMessage(NotificationType.ITSModeAuto, value.GetDisplayName()));
-                break;
-            case ITSMode.MmcCool:
-                MessagingCenter.Publish(new NotificationMessage(NotificationType.ITSModeCool, value.GetDisplayName()));
-                break;
-            case ITSMode.MmcPerformance:
-                MessagingCenter.Publish(new NotificationMessage(NotificationType.ITSModePerformance, value.GetDisplayName()));
-                break;
-            case ITSMode.MmcGeek:
-                MessagingCenter.Publish(new NotificationMessage(NotificationType.ITSModeGeek, value.GetDisplayName()));
-                break;
-        }
-    }
-
-    public static void ControlService(string serviceName, ITSModeServiceControlMessage message)
+    public static async Task<ITSMode> GetITSModeEx()
     {
         try
         {
-            using ServiceController serviceController = new ServiceController(serviceName);
-            Log.Instance.Trace($"Service {serviceName} status: {serviceController.Status}");
+            if (!IsEnergyDriverPresentEx())
+            {
+                Log.Instance.Trace($"EnergyDrv not found, returning None.");
+                return ITSMode.None;
+            }
 
-            serviceController.ExecuteCommand((int)message);
-            Log.Instance.Trace($"Service {serviceName} successfully executed command: {message}");
+            var dispatcherVersion = GetDispatcherVersionEx();
+            var machineInfo = await Compatibility.GetMachineInformationAsync().ConfigureAwait(false);
+            var isThinkBook = machineInfo.LegionSeries == LegionSeries.ThinkBook;
+
+            if (dispatcherVersion >= DISPATCHER_VERSION_3)
+            {
+                using RegistryKey? key = Registry.LocalMachine.OpenSubKey(REG_KEY_DISPATCHER, false);
+                if (key != null)
+                {
+                    int capability = ReadRegistryInt(key, VAL_ITS_FN_CAP, 0);
+
+                    if (!isThinkBook)
+                    {
+                        capability &= ~0x10;
+                    }
+
+                    bool useVersioned = (capability & 0x10) != 0;
+                    string settingKey = useVersioned ? VAL_ITS_CUR_SET_V : VAL_ITS_CUR_SET;
+
+                    int currentSetting = ReadRegistryInt(key, settingKey, -1);
+                    Log.Instance.Trace($"ITS mode check: {settingKey}={currentSetting}");
+
+                    return currentSetting switch
+                    {
+                        0 => ITSMode.ItsAuto,
+                        1 => ITSMode.MmcCool,
+                        3 => ITSMode.MmcPerformance,
+                        4 => ITSMode.MmcGeek,
+                        _ => ITSMode.None
+                    };
+                }
+            }
+            else
+            {
+                using RegistryKey? key = Registry.LocalMachine.OpenSubKey(REG_KEY_LITSSVC_MMC, false);
+                if (key != null)
+                {
+                    int autoSetting = ReadRegistryInt(key, VAL_AUTO_SETTING, -1);
+                    int currentSetting = ReadRegistryInt(key, VAL_CURRENT_SETTING, -1);
+
+                    Log.Instance.Trace($"ITS mode check: Legacy Auto={autoSetting}, Current={currentSetting}");
+
+                    if (autoSetting == 2 && currentSetting == 0)
+                    {
+                        return ITSMode.ItsAuto;
+                    }
+                    else if (autoSetting == 1)
+                    {
+                        if (currentSetting == 1) return ITSMode.MmcCool;
+                        if (currentSetting == 3) return ITSMode.MmcPerformance;
+                    }
+                }
+            }
         }
         catch (Exception ex)
         {
-            Log.Instance.Trace($"Failed to control service", ex);
+            Log.Instance.Trace($"GetITSModeEx failed: {ex.Message}");
+        }
+
+        return ITSMode.None;
+    }
+
+    public async Task SetITSModeExAsync(ITSMode mode)
+    {
+        try
+        {
+            var dispatcherVersion = GetDispatcherVersionEx();
+
+            string targetServiceName;
+            ITSModeServiceControlMessage targetMessage;
+
+            if (dispatcherVersion >= DISPATCHER_VERSION_3)
+            {
+                targetServiceName = DISPATCHER_SERVICE_NAME;
+                targetMessage = mode switch
+                {
+                    ITSMode.ItsAuto => ITSModeServiceControlMessage.IntelligentCoolingIntelligent,
+                    ITSMode.MmcCool => ITSModeServiceControlMessage.IntelligentCoolingBsm,
+                    ITSMode.MmcPerformance => ITSModeServiceControlMessage.IntelligentCoolingEpm,
+                    ITSMode.MmcGeek => ITSModeServiceControlMessage.IntelligentCoolingGeek,
+                    _ => throw new ArgumentOutOfRangeException(nameof(mode))
+                };
+            }
+            else
+            {
+                targetServiceName = ITS_SERVICE_NAME;
+                targetMessage = mode switch
+                {
+                    ITSMode.ItsAuto => ITSModeServiceControlMessage.IntelligentCoolingIntelligent,
+                    ITSMode.MmcCool => ITSModeServiceControlMessage.IntelligentCoolingCool,
+                    ITSMode.MmcPerformance => ITSModeServiceControlMessage.IntelligentCoolingHighPerformance,
+                    ITSMode.MmcGeek => ITSModeServiceControlMessage.IntelligentCoolingGeek,
+                    _ => throw new ArgumentOutOfRangeException(nameof(mode))
+                };
+            }
+
+            Log.Instance.Trace($"Setting ITS mode via service: {targetServiceName} ({targetMessage})");
+            ControlService(targetServiceName, targetMessage);
+        }
+        catch (Exception ex)
+        {
+            Log.Instance.Trace($"SetITSModeExAsync failed: {ex.Message}");
             throw;
         }
     }
 
-    public static int GetDispatcherVersionEx()
-    {
-        try
-        {
-            using RegistryKey? key = Registry.LocalMachine.OpenSubKey(REG_KEY_DISPATCHER, false);
-            if (key != null)
-            {
-                object value = key.GetValue(VAL_VERSION, 0);
-                if (value is int intValue)
-                {
-                    return intValue;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Instance.Trace($"GetDispatcherVersionEx failed: {ex.Message}");
-        }
-        return 0;
-    }
+    public static int GetDispatcherVersionEx() => ReadRegistryVersion(REG_KEY_DISPATCHER, nameof(GetDispatcherVersionEx));
 
-    public static int GetITSVersionEx()
-    {
-        try
-        {
-            using RegistryKey? key = Registry.LocalMachine.OpenSubKey(REG_KEY_LITSSVC_BASE, false);
-            if (key != null)
-            {
-                object value = key.GetValue(VAL_VERSION, 0);
-                if (value is int intValue)
-                {
-                    return intValue;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Instance.Trace($"GetITSVersionEx failed: {ex.Message}");
-        }
-        return 0;
-    }
+    public static int GetITSVersionEx() => ReadRegistryVersion(REG_KEY_LITSSVC_BASE, nameof(GetITSVersionEx));
 
     public static bool HasDispatcherDeviceNodeEx()
     {
@@ -253,121 +295,72 @@ public partial class ITSModeFeature : IFeature<ITSMode>
         }
     }
 
-    public static async Task<ITSMode> GetITSModeEx()
+    public static void ControlService(string serviceName, ITSModeServiceControlMessage message)
     {
         try
         {
-            if (!IsEnergyDriverPresentEx())
-            {
-                Log.Instance.Trace($"EnergyDrv not found, returning None.");
-                return ITSMode.None;
-            }
+            using ServiceController serviceController = new ServiceController(serviceName);
+            Log.Instance.Trace($"Service {serviceName} status: {serviceController.Status}");
 
-            var dispatcherVersion = GetDispatcherVersionEx();
-            var machineInfo = await Compatibility.GetMachineInformationAsync().ConfigureAwait(false);
-            var isThinkBook = machineInfo.LegionSeries == LegionSeries.ThinkBook;
-
-            if (dispatcherVersion >= DISPATCHER_VERSION_3)
-            {
-                using RegistryKey? key = Registry.LocalMachine.OpenSubKey(REG_KEY_DISPATCHER, false);
-                if (key != null)
-                {
-                    int capability = (int)key.GetValue(VAL_ITS_FN_CAP, 0);
-
-                    if (!isThinkBook)
-                    {
-                        capability &= ~0x10;
-                    }
-
-                    bool useVersioned = (capability & 0x10) != 0;
-                    string settingKey = useVersioned ? VAL_ITS_CUR_SET_V : VAL_ITS_CUR_SET;
-
-                    int currentSetting = (int)key.GetValue(settingKey, -1);
-                    Log.Instance.Trace($"ITS mode check: {settingKey}={currentSetting}");
-
-                    return currentSetting switch
-                    {
-                        0 => ITSMode.ItsAuto,
-                        1 => ITSMode.MmcCool,
-                        3 => ITSMode.MmcPerformance,
-                        4 => ITSMode.MmcGeek,
-                        _ => ITSMode.None
-                    };
-                }
-            }
-            else
-            {
-                using RegistryKey? key = Registry.LocalMachine.OpenSubKey(REG_KEY_LITSSVC_MMC, false);
-                if (key != null)
-                {
-                    int autoSetting = (int)key.GetValue(VAL_AUTO_SETTING, -1);
-                    int currentSetting = (int)key.GetValue(VAL_CURRENT_SETTING, -1);
-
-                    Log.Instance.Trace($"ITS mode check: Legacy Auto={autoSetting}, Current={currentSetting}");
-
-                    if (autoSetting == 2 && currentSetting == 0)
-                    {
-                        return ITSMode.ItsAuto;
-                    }
-                    else if (autoSetting == 1)
-                    {
-                        if (currentSetting == 1) return ITSMode.MmcCool;
-                        if (currentSetting == 3) return ITSMode.MmcPerformance;
-                    }
-                }
-            }
+            serviceController.ExecuteCommand((int)message);
+            Log.Instance.Trace($"Service {serviceName} successfully executed command: {message}");
         }
         catch (Exception ex)
         {
-            Log.Instance.Trace($"GetITSModeEx failed: {ex.Message}");
+            Log.Instance.Trace($"Failed to control service", ex);
+            throw;
         }
-
-        return ITSMode.None;
     }
 
-    public void SetITSModeEx(ITSMode mode)
+    private static void PublishNotification(ITSMode value)
+    {
+        switch (value)
+        {
+            case ITSMode.ItsAuto:
+                MessagingCenter.Publish(new NotificationMessage(NotificationType.ITSModeAuto, value.GetDisplayName()));
+                break;
+            case ITSMode.MmcCool:
+                MessagingCenter.Publish(new NotificationMessage(NotificationType.ITSModeCool, value.GetDisplayName()));
+                break;
+            case ITSMode.MmcPerformance:
+                MessagingCenter.Publish(new NotificationMessage(NotificationType.ITSModePerformance, value.GetDisplayName()));
+                break;
+            case ITSMode.MmcGeek:
+                MessagingCenter.Publish(new NotificationMessage(NotificationType.ITSModeGeek, value.GetDisplayName()));
+                break;
+        }
+    }
+
+    private static int ReadRegistryVersion(string subKey, string caller)
     {
         try
         {
-            var dispatcherVersion = GetDispatcherVersionEx();
-            var machineInfo = Compatibility.GetMachineInformationAsync().Result;
-            var isThinkBook = machineInfo.LegionSeries == LegionSeries.ThinkBook;
-
-            string targetServiceName;
-            ITSModeServiceControlMessage targetMessage;
-
-            if (dispatcherVersion >= DISPATCHER_VERSION_3)
-            {
-                targetServiceName = DISPATCHER_SERVICE_NAME;
-                targetMessage = mode switch
-                {
-                    ITSMode.ItsAuto => ITSModeServiceControlMessage.IntelligentCoolingIntelligent,
-                    ITSMode.MmcCool => ITSModeServiceControlMessage.IntelligentCoolingBsm,
-                    ITSMode.MmcPerformance => ITSModeServiceControlMessage.IntelligentCoolingEpm,
-                    ITSMode.MmcGeek => ITSModeServiceControlMessage.IntelligentCoolingGeek,
-                    _ => throw new ArgumentOutOfRangeException(nameof(mode))
-                };
-            }
-            else
-            {
-                targetServiceName = ITS_SERVICE_NAME;
-                targetMessage = mode switch
-                {
-                    ITSMode.ItsAuto => ITSModeServiceControlMessage.IntelligentCoolingIntelligent,
-                    ITSMode.MmcCool => ITSModeServiceControlMessage.IntelligentCoolingCool,
-                    ITSMode.MmcPerformance => ITSModeServiceControlMessage.IntelligentCoolingHighPerformance,
-                    ITSMode.MmcGeek => ITSModeServiceControlMessage.IntelligentCoolingGeek,
-                    _ => throw new ArgumentOutOfRangeException(nameof(mode))
-                };
-            }
-
-            Log.Instance.Trace($"Setting ITS mode via service: {targetServiceName} ({targetMessage})");
-            ControlService(targetServiceName, targetMessage);
+            using var key = Registry.LocalMachine.OpenSubKey(subKey, writable: false);
+            return key != null ? ReadRegistryInt(key, VAL_VERSION, 0) : 0;
         }
         catch (Exception ex)
         {
-            Log.Instance.Trace($"SetITSModeEx failed: {ex.Message}");
-            throw;
+            Log.Instance.Trace($"{caller} failed on reading registry", ex);
+            return 0;
+        }
+    }
+
+    private static int ReadRegistryInt(RegistryKey key, string valueName, int defaultValue)
+    {
+        var value = key.GetValue(valueName, defaultValue);
+
+        if (value is int i) return i;
+        if (value is long l) return (int)l;
+        if (value is uint u) return (int)u;
+
+        try
+        {
+            return Convert.ToInt32(value);
+        }
+        catch (Exception ex)
+        {
+            Log.Instance.Trace($"Unexpected type for registry value {valueName}: {value?.GetType().Name ?? "null"}", ex);
+            return defaultValue;
         }
     }
 }
