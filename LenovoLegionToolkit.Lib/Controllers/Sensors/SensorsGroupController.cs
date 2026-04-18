@@ -715,7 +715,6 @@ public class SensorsGroupController : IDisposable
             {
                 _activeUpdateTask = null;
             }
-            SensorsUpdated?.Invoke(Snapshot);
         }
     }
 
@@ -733,8 +732,6 @@ public class SensorsGroupController : IDisposable
                 {
                     return;
                 }
-
-                // 同样进行一次安全遍历
                 _computer.Accept(new UpdateVisitor());
 
                 foreach (var h in _computer.Hardware)
@@ -746,7 +743,6 @@ public class SensorsGroupController : IDisposable
                     }
                     catch
                     {
-                        // 剔除重置过程中发现的故障硬件
                     }
                 }
                 RefreshSensorCache();

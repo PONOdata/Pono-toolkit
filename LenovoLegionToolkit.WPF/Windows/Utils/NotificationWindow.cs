@@ -22,6 +22,10 @@ namespace LenovoLegionToolkit.WPF.Windows.Utils;
 
 public class NotificationWindow : UiWindow, INotificationWindow
 {
+    private const double MeasureHeight = 80;
+    private const double DefaultMinWidth = 300;
+    private const int PositionMargin = 16;
+
     private readonly ScreenInfo _screenInfo;
 
     private readonly Grid _mainGrid = new()
@@ -116,21 +120,20 @@ public class NotificationWindow : UiWindow, INotificationWindow
 
     private void InitializePosition(Rect workArea, uint dpiX, uint dpiY, NotificationPosition position)
     {
-        _mainGrid.Measure(new System.Windows.Size(double.PositiveInfinity, 80));
+        _mainGrid.Measure(new System.Windows.Size(double.PositiveInfinity, MeasureHeight));
 
         var multiplierX = dpiX / 96d;
         var multiplierY = dpiY / 96d;
         Rect nativeWorkArea = new(workArea.Left, workArea.Top, workArea.Width * multiplierX, workArea.Height * multiplierY);
 
-        Width = MaxWidth = MinWidth = Math.Max(_mainGrid.DesiredSize.Width, 300);
+        Width = MaxWidth = MinWidth = Math.Max(_mainGrid.DesiredSize.Width, DefaultMinWidth);
         Height = MaxHeight = MinHeight = _mainGrid.DesiredSize.Height;
 
         var nativeWidth = Width * multiplierX;
         var nativeHeight = Height * multiplierY;
 
-        const int margin = 16;
-        var nativeMarginX = margin * multiplierX;
-        var nativeMarginY = margin * multiplierY;
+        var nativeMarginX = PositionMargin * multiplierX;
+        var nativeMarginY = PositionMargin * multiplierY;
 
         double nativeLeft;
         double nativeTop;
