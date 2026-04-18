@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using System.Threading.Tasks;
 using Windows.Win32;
+using Windows.Win32.Foundation;
 using Windows.Win32.Storage.FileSystem;
 
 namespace LenovoLegionToolkit.Lib.Features;
@@ -207,7 +208,7 @@ public partial class ITSModeFeature : IFeature<ITSMode>
         return ITSMode.None;
     }
 
-    public async Task SetITSModeExAsync(ITSMode mode)
+    public Task SetITSModeExAsync(ITSMode mode)
     {
         try
         {
@@ -243,10 +244,11 @@ public partial class ITSModeFeature : IFeature<ITSMode>
 
             Log.Instance.Trace($"Setting ITS mode via service: {targetServiceName} ({targetMessage})");
             ControlService(targetServiceName, targetMessage);
+            return Task.CompletedTask;
         }
         catch (Exception ex)
         {
-            Log.Instance.Trace($"SetITSModeExAsync failed: {ex.Message}");
+            Log.Instance.Trace($"{nameof(SetITSModeExAsync)} failed: {ex.Message}");
             throw;
         }
     }
@@ -259,8 +261,7 @@ public partial class ITSModeFeature : IFeature<ITSMode>
     {
         try
         {
-            string targetDeviceId = @"ACPI\\IDEA200C";
-            string query = $"SELECT PNPDeviceID FROM Win32_PnPEntity WHERE PNPDeviceID LIKE '%{targetDeviceId}%'";
+            string query = "SELECT PNPDeviceID FROM Win32_PnPEntity WHERE PNPDeviceID LIKE 'ACPI\\IDEA200C%'";
 
             using ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
             using ManagementObjectCollection collection = searcher.Get();
@@ -279,14 +280,20 @@ public partial class ITSModeFeature : IFeature<ITSMode>
         {
             using var handle = PInvoke.CreateFile(
                 @"\\.\EnergyDrv",
-                (uint)FILE_ACCESS_RIGHTS.FILE_READ_DATA | (uint)FILE_ACCESS_RIGHTS.FILE_WRITE_DATA,
+                0,
                 FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
                 null,
                 FILE_CREATION_DISPOSITION.OPEN_EXISTING,
                 FILE_FLAGS_AND_ATTRIBUTES.FILE_ATTRIBUTE_NORMAL,
                 null);
 
-            return !handle.IsInvalid;
+            if (!handle.IsInvalid)
+            {
+                return true;
+            }
+
+            var error = Marshal.GetLastWin32Error();
+            return error == (int)WIN32_ERROR.ERROR_ACCESS_DENIED;
         }
         catch (Exception ex)
         {
