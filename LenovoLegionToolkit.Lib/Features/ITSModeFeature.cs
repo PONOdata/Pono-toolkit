@@ -13,11 +13,14 @@ using System.Threading.Tasks;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Storage.FileSystem;
+using LenovoLegionToolkit.Lib.Settings;
 
 namespace LenovoLegionToolkit.Lib.Features;
 
 public partial class ITSModeFeature : IFeature<ITSMode>
 {
+    private readonly ITSModeSettings _itsModeSettings = IoCContainer.Resolve<ITSModeSettings>();
+
     #region Magic Constants
     private const string REG_KEY_LITSSVC_BASE = @"SYSTEM\CurrentControlSet\Services\LITSSVC\LNBITS\IC";
     private const string REG_KEY_LITSSVC_MMC = @"SYSTEM\CurrentControlSet\Services\LITSSVC\LNBITS\IC\MMC";
@@ -38,6 +41,12 @@ public partial class ITSModeFeature : IFeature<ITSMode>
     #endregion
 
     public ITSMode LastItsMode { get; set; } = ITSMode.None;
+
+    public void SaveCurrentStateToSettings(ITSMode state)
+    {
+        _itsModeSettings.Store.LastState = state;
+        _itsModeSettings.SynchronizeStore();
+    }
 
     public async Task<bool> IsSupportedAsync()
     {
@@ -99,6 +108,8 @@ public partial class ITSModeFeature : IFeature<ITSMode>
             LastItsMode = state;
 
             Log.Instance.Trace($"ITS mode set successfully to: {state}");
+
+            SaveCurrentStateToSettings(state);
 
             PublishNotification(state);
         }

@@ -47,6 +47,7 @@ public class IoCModule : Module
         builder.Register<SunriseSunsetSettings>();
         builder.Register<UpdateSettings>();
         builder.Register<LampArraySettings>();
+        builder.Register<ITSModeSettings>();
         builder.Register<FanCurveSettings>().SingleInstance();
 
         builder.Register<AlwaysOnUSBFeature>();

@@ -782,10 +782,28 @@ public partial class App
         try
         {
             var feature = IoCContainer.Resolve<ITSModeFeature>();
+            var settings = IoCContainer.Resolve<ITSModeSettings>();
 
             if (await feature.IsSupportedAsync())
             {
-                await feature.SetStateAsync(await feature.GetStateAsync());
+                var currentState = await feature.GetStateAsync();
+                var savedState = settings.Store.LastState;
+
+                if (savedState != ITSMode.None && savedState != currentState)
+                {
+                    Log.Instance.Trace($"Restoring saved ITS mode: {savedState}");
+                    await feature.SetStateAsync(savedState);
+                }
+                else
+                {
+                    await feature.SetStateAsync(currentState);
+                    
+                    if (savedState != currentState)
+                    {
+                        settings.Store.LastState = currentState;
+                        settings.SynchronizeStore();
+                    }
+                }
             }
         }
         catch (Exception ex)
