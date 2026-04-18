@@ -69,19 +69,8 @@ public class ITSModeControl : AbstractComboBoxFeatureCardControl<ITSMode>
 
         if (newValue.Value != oldValue.Value)
         {
-            try
-            {
-                await _itsModeFeature.SetStateAsync(newValue.Value);
-                _itsModeFeature.LastItsMode = newValue.Value;
-            }
-            catch (DllNotFoundException)
-            {
-                await MessageBoxHelper.ShowAsync(
-                    this,
-                    Resource.ITSModeControl_Dialog_Title,
-                    Resource.ITSModeControl_Dialog_Message,
-                    Resource.OK).ConfigureAwait(false);
-            }
+            await _itsModeFeature.SetStateAsync(newValue.Value);
+            _itsModeFeature.LastItsMode = newValue.Value;
         }
 
         await base.OnStateChangeAsync(comboBox, feature, newValue, oldValue);
