@@ -25,7 +25,10 @@ namespace LenovoLegionToolkit.WPF.Windows.Utils;
 public partial class StatusWindow
 {
     private readonly ApplicationSettings _settings = IoCContainer.Resolve<ApplicationSettings>();
+    private readonly DashboardSettings _dashboardSettings = IoCContainer.Resolve<DashboardSettings>();
+    private readonly SensorsControlSettings _sensorsControlSettings = IoCContainer.Resolve<SensorsControlSettings>();
     private readonly SemaphoreSlim _refreshLock = new(1, 1);
+
     private readonly CancellationTokenSource _cancellationTokenSource = new();
 
     private DateTime _lastUpdate = DateTime.MinValue;
@@ -97,9 +100,6 @@ public partial class StatusWindow
         }
         catch { }
     }
-
-    private readonly DashboardSettings _dashboardSettings = IoCContainer.Resolve<DashboardSettings>();
-    private readonly SensorsControlSettings _sensorsControlSettings = IoCContainer.Resolve<SensorsControlSettings>();
 
     public StatusWindow()
     {
@@ -266,10 +266,22 @@ public partial class StatusWindow
                     var gs = snapshot ?? _sensorsGroupController.Snapshot;
                     cpuPower = gs.CpuPower;
                     gpuPower = gs.GpuPower;
-                    cpuClock = _hardwareSensorSettings.Store.ShowCpuAverageFrequency ? gs.CpuAvgClock : gs.CpuMaxClock;
                     cpuTemp = gs.CpuTemp;
                     gpuClock = gs.GpuClock;
                     gpuTemp = gs.GpuTemp;
+
+                    if (_sensorsGroupController.IsHybrid)
+                    {
+                        cpuClock = _hardwareSensorSettings.Store.ShowCpuAverageFrequency
+                            ? gs.CpuPAvgClock
+                            : gs.CpuPClock;
+                    }
+                    else
+                    {
+                        cpuClock = _hardwareSensorSettings.Store.ShowCpuAverageFrequency
+                            ? gs.CpuAvgClock
+                            : gs.CpuMaxClock;
+                    }
                 }
             }
             catch { /* Ignore */ }
@@ -277,8 +289,6 @@ public partial class StatusWindow
 
         return new(state, mode, godModePresetName, gpuStatus, batteryInfo, batteryState, hasUpdate, sensorsData, cpuPower, gpuPower, cpuClock, cpuTemp, gpuClock, gpuTemp);
     }
-
-
 
     private void ApplyDataToUI(StatusWindowData data)
     {

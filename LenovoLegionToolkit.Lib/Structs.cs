@@ -1354,4 +1354,17 @@ public sealed record HardwareSensorSnapshot
     public double MemMaxTemp { get; init; } = -1;
 
     public (float, float) SsdTemps { get; init; } = (-1, -1);
+
+    public override string ToString()
+    {
+        return $"HardwareSensorSnapshot Detail:\n" +
+               $"  [CPU] Temp: {CpuTemp:F1}°C, Usage: {CpuUsage:F1}%, Power: {CpuPower:F1}W\n" +
+               $"        Clock (Max/Avg): {CpuMaxClock:F0}/{CpuAvgClock:F0}MHz\n" +
+               $"        P-Core (Clock/Avg): {CpuPClock:F0}/{CpuPAvgClock:F0}MHz\n" +
+               $"        E-Core (Clock/Avg): {CpuEClock:F0}/{CpuEAvgClock:F0}MHz\n" +
+               $"  [GPU] Temp: {GpuTemp:F1}°C, Usage: {GpuUsage:F1}%, Power: {GpuPower:F1}W, Clock: {GpuClock:F0}MHz\n" +
+               $"        VRAM Temp: {GpuVramTemp:F1}°C, Util: {GpuVramUtilization:F1}%, Used: {GpuVramUsed:F1}/{GpuVramTotal:F1}GB\n" +
+               $"  [MEM] Usage: {MemUsage:F1}%, Used: {MemUsed:F1}/{MemTotal:F1}GB, Temp: {MemMaxTemp:F1}°C\n" +
+               $"  [SSD] Temps: {SsdTemps.Item1:F1}°C, {SsdTemps.Item2:F1}°C";
+    }
 }
