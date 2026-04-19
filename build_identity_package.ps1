@@ -219,6 +219,18 @@ if ($UseManifest -or -not $makeAppx -or -not $signTool) {
     }
 
     Write-Host "Prepared fallback identity registration files in: $resolvedOutputDir"
+
+    $exePath = Join-Path $resolvedOutputDir "Lenovo Legion Toolkit.exe"
+    if ((Test-Path $PfxPath) -and -not [string]::IsNullOrWhiteSpace($Password) -and (Test-Path $exePath)) {
+        Write-Host "Signing executable for UIAccess (RAW manifest path)..."
+        & $signTool sign /fd SHA256 /f $PfxPath /p $Password $exePath
+        if ($LASTEXITCODE -ne 0) {
+            Write-Warning "SignTool failed to sign executable (exit code $LASTEXITCODE). UIAccess may not function."
+        }
+    } else {
+        Write-Warning "Skipping EXE signing in RAW manifest path (PFX or password not available)."
+    }
+
     return
 }
 
@@ -265,6 +277,14 @@ if ($LASTEXITCODE -ne 0) {
 & $signTool sign /fd SHA256 /f $PfxPath /p $Password $msixPath
 if ($LASTEXITCODE -ne 0) {
     throw "SignTool failed with exit code $LASTEXITCODE"
+}
+
+$exePath = Join-Path $resolvedOutputDir "Lenovo Legion Toolkit.exe"
+if (Test-Path $exePath) {
+    & $signTool sign /fd SHA256 /f $PfxPath /p $Password $exePath
+    if ($LASTEXITCODE -ne 0) {
+        throw "SignTool failed to sign executable with exit code $LASTEXITCODE"
+    }
 }
 
 if (-not (Test-Path "LenovoLegionToolkit.cer")) {

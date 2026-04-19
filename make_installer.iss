@@ -20,6 +20,7 @@
 #endif
 
 [Setup]
+UsePreviousAppDir=no
 UsedUserAreasWarning=false
 AppId={{0C37B9AC-9C3D-4302-8ABB-125C7C7D83D5}
 AppMutex=LenovoLegionToolkit_Mutex_6efcc882-924c-4cbc-8fec-f45c25696f98
@@ -62,10 +63,20 @@ begin
   begin
     // Unregister Package
     Exec('powershell.exe', '-NoProfile -ExecutionPolicy Bypass -Command "Get-AppxPackage -Name ''eef45acd-2cf3-4d7d-9d33-92f37c74cc31'' | Remove-AppxPackage"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-    // Remove Certificate from LocalMachine
+    // Remove Certificate from LocalMachine Root (Required for UIAccess)
+    Exec('powershell.exe', '-NoProfile -ExecutionPolicy Bypass -Command "Get-ChildItem Cert:\LocalMachine\Root | Where-Object { $_.Subject -match ''LenovoLegionToolkit'' } | Remove-Item -Force -ErrorAction SilentlyContinue"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    // Remove Certificate from LocalMachine TrustedPeople (Required for MSIX)
     Exec('powershell.exe', '-NoProfile -ExecutionPolicy Bypass -Command "Get-ChildItem Cert:\LocalMachine\TrustedPeople | Where-Object { $_.Subject -match ''LenovoLegionToolkit'' } | Remove-Item -Force -ErrorAction SilentlyContinue"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-    // Remove Certificate from CurrentUser (just in case)
+    // Remove Certificate from CurrentUser (just in case, covers dev BAT installs)
     Exec('powershell.exe', '-NoProfile -ExecutionPolicy Bypass -Command "Get-ChildItem Cert:\CurrentUser\TrustedPeople | Where-Object { $_.Subject -match ''LenovoLegionToolkit'' } | Remove-Item -Force -ErrorAction SilentlyContinue"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Exec('powershell.exe', '-NoProfile -ExecutionPolicy Bypass -Command "Get-ChildItem Cert:\CurrentUser\Root | Where-Object { $_.Subject -match ''LenovoLegionToolkit'' } | Remove-Item -Force -ErrorAction SilentlyContinue"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  end
+  else if CurUninstallStep = usPostUninstall then
+  begin
+    if SuppressibleMsgBox(ExpandConstant('{cm:UninstallKeepSettings}'), mbConfirmation, MB_YESNO, idNo) = idYes then
+    begin
+        DelTree(ExpandConstant('{localappdata}\{#MyAppNameCompact}'), True, True, True);
+    end;
   end;
 end;
 
@@ -154,6 +165,7 @@ VisitGitHub=Visit GitHub Repository
 JoinOfficialDiscord=Join Official Discord Community
 JoinLegionDiscord=Join Legion Series Discord Community
 JoinLOQDiscord=Join LOQ Series Discord Community
+UninstallKeepSettings=Do you want to delete all Lenovo Legion Toolkit settings, customizations, and configurations?
 
 [Languages]
 Name: "en";      MessagesFile: "compiler:Default.isl"
@@ -192,6 +204,10 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "build\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 
+[InstallDelete]
+; Safely remove legacy installation from %LOCALAPPDATA%\Programs without touching user settings
+Type: filesandordirs; Name: "{userpf}\{#MyAppNameCompact}"
+
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; AppUserModelID: "eef45acd-2cf3-4d7d-9d33-92f37c74cc31_6qs7aha96dxnt!App"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; AppUserModelID: "eef45acd-2cf3-4d7d-9d33-92f37c74cc31_6qs7aha96dxnt!App"
@@ -199,15 +215,14 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 [Run]
 ; Unregister existing package identity (required for upgrades)
 Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -Command ""Get-AppxPackage -Name 'eef45acd-2cf3-4d7d-9d33-92f37c74cc31' | Remove-AppxPackage -ErrorAction SilentlyContinue"""; Flags: runhidden; StatusMsg: "Removing previous identity..."
-; Trust the self-signed certificate (required for registration)
+; Trust the self-signed certificate in Trusted People (required for registration)
 Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -Command ""Import-Certificate -FilePath '{app}\LenovoLegionToolkit.cer' -CertStoreLocation 'Cert:\LocalMachine\TrustedPeople'"""; Flags: runhidden; StatusMsg: "Trusting application identity..."
+; Trust the self-signed certificate in Root (required for UIAccess check)
+Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -Command ""Import-Certificate -FilePath '{app}\LenovoLegionToolkit.cer' -CertStoreLocation 'Cert:\LocalMachine\Root'"""; Flags: runhidden; StatusMsg: "Trusting application root certificate..."
 ; Register the Sparse Package identity (conditional: use .msix if present, else raw manifest)
 Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -Command ""if (Test-Path '{app}\LenovoLegionToolkit.LampArray.msix') {{ Add-AppxPackage -Path '{app}\LenovoLegionToolkit.LampArray.msix' -ExternalLocation '{app}' } else {{ Add-AppxPackage -Register '{app}\AppxManifest.xml' -ExternalLocation '{app}' }"""; Flags: runhidden; StatusMsg: "Registering application identity..."
 
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: runascurrentuser nowait postinstall
-
-[UninstallDelete]
-Type: filesandordirs; Name: "{localappdata}\{#MyAppNameCompact}"
 
 [UninstallRun]
 RunOnceId: "DelAutorun"; Filename: "schtasks"; Parameters: "/Delete /TN ""LenovoLegionToolkit_Autorun_6efcc882-924c-4cbc-8fec-f45c25696f98"" /F"; Flags: runhidden
