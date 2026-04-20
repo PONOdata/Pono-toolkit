@@ -345,8 +345,10 @@
                             HorizontalAlignment="Right"
                             VerticalContentAlignment="Center"
                             DataObject.Pasting="NumericTextBox_Pasting"
+                            MaxLength="3"
                             PreviewTextInput="NumericTextBox_PreviewTextInput"
-                            Text="{Binding MaxPwm}" />
+                            Text="{Binding MaxPwm, UpdateSourceTrigger=PropertyChanged}"
+                            TextChanged="MaxPwmTextBox_TextChanged" />
                     </Grid>
                 </StackPanel>
             </Border>
