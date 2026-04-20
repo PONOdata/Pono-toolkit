@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using LenovoLegionToolkit.Lib;
 using LenovoLegionToolkit.Lib.Extensions;
-using LenovoLegionToolkit.Lib.Settings;
 using LenovoLegionToolkit.Lib.Utils;
 using LenovoLegionToolkit.WPF.Controls;
 using Wpf.Ui.Controls;
@@ -102,13 +101,7 @@ public partial class StandaloneFanCurvePage : UiPage
 
     private FanCurveControlV3 CreateFanControl(FanTableData data, FanType fanType)
     {
-        var entry = _fanCurveManager.GetEntry(fanType);
-        if (entry == null)
-        {
-            var info = new FanTableInfo(new[] { data }, default);
-            entry = FanCurveEntry.FromFanTableInfo(info, (ushort)fanType);
-            _fanCurveManager.AddEntry(entry);
-        }
+        var entry = _fanCurveManager.EnsureEntry(fanType, new FanTableInfo(new[] { data }, default));
 
         var ctrl = new FanCurveControlV3
         {
@@ -125,16 +118,16 @@ public partial class StandaloneFanCurvePage : UiPage
             _fanCurveManager.UpdateConfig(fanType, entry);
             _fanCurveManager.UpdateGlobalSettings(entry);
 
-            var fanSettings = IoCContainer.Resolve<FanCurveSettings>();
-            fanSettings.Store.Entries.Clear();
+            var entries = new List<FanCurveEntry>();
             foreach (var control in _fanCurveControls)
             {
                 if (control.GetCurveEntry() is { } currentEntry)
                 {
-                    fanSettings.Store.Entries.Add(currentEntry);
+                    entries.Add(currentEntry);
                 }
             }
-            fanSettings.Save();
+
+            _fanCurveManager.SaveEntries(entries);
         };
 
         _fanCurveManager.RegisterViewModel(fanType, ctrl);

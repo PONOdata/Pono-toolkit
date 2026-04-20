@@ -290,6 +290,12 @@ public partial class FanCurveControlV3 : UserControl, INotifyPropertyChanged, IF
 
     public void UpdateMonitoring(float temperature, int rpm, byte pwmByte)
     {
+        if (!Dispatcher.CheckAccess())
+        {
+            _ = Dispatcher.InvokeAsync(() => UpdateMonitoring(temperature, rpm, pwmByte), DispatcherPriority.DataBind);
+            return;
+        }
+
         DisplayTemp = $"{temperature:F1} {Resource.Celsius}";
         ActualRpmDisplay = $"{rpm} {Resource.RPM}";
         CurrentPwmDisplay = $"{pwmByte}";

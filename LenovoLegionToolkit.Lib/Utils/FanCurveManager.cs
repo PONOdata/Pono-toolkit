@@ -4,39 +4,42 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using LenovoLegionToolkit.Lib.Controllers.Sensors;
 using LenovoLegionToolkit.Lib.Features;
 using LenovoLegionToolkit.Lib.Listeners;
+using LenovoLegionToolkit.Lib.Settings;
 using LenovoLegionToolkit.Lib.View;
 
 namespace LenovoLegionToolkit.Lib.Utils;
 
 public class FanCurveManager : IDisposable
 {
-    public SensorsGroupController Sensors { get; }
     private readonly PowerModeListener _powerModeListener;
     private readonly PowerModeFeature _powerModeFeature;
+    private readonly FanCurveSettings _fanCurveSettings;
 
     private IExtensionProvider? _extension;
     private bool _pluginLoaded;
     private bool _isThinkBook;
     private bool _isInitialized;
+    private bool _isFullSpeedActive;
+
 
     private readonly Dictionary<FanType, IFanControlView> _activeViewModels = new();
 
-    public int LogicInterval { get; set; } = 500;
     public bool IsEnabled { get; private set; }
+    public bool IsFanCurveManagerActive { get; private set; }
+    public bool IsInGodMode { get; private set; }
     public double? PluginMaxPwm => _extension?.GetData("MaxPwm") is double d ? d : (_extension?.GetData("MaxPwm") is int i ? (double)i : null);
 
     public FanCurveManager(
-        SensorsGroupController sensors,
         PowerModeListener powerModeListener,
-        PowerModeFeature powerModeFeature)
+        PowerModeFeature powerModeFeature,
+        FanCurveSettings fanCurveSettings)
     {
         Log.Instance.Trace($"FanCurveManager instance created.");
-        Sensors = sensors;
         _powerModeListener = powerModeListener;
         _powerModeFeature = powerModeFeature;
+        _fanCurveSettings = fanCurveSettings;
     }
 
     public async Task<bool> IsSupportedAsync()
@@ -78,6 +81,13 @@ public class FanCurveManager : IDisposable
             }
         }
 
+        var entries = await EnsureEntriesAsync().ConfigureAwait(false);
+        foreach (var entry in entries)
+        {
+            AddEntry(entry);
+            UpdateConfig(entry.Type, entry);
+        }
+
         var mi = await Compatibility.GetMachineInformationAsync().ConfigureAwait(false);
         _isThinkBook = mi.LegionSeries == LegionSeries.ThinkBook;
 
@@ -89,6 +99,29 @@ public class FanCurveManager : IDisposable
         }
 
         _isInitialized = true;
+    }
+
+    private Task<List<FanCurveEntry>> EnsureEntriesAsync()
+    {
+        var entries = _fanCurveSettings.Store.Entries;
+        if (entries.Count > 0)
+        {
+            Log.Instance.Trace($"Using {entries.Count} existing fan curve entr{(entries.Count == 1 ? "y" : "ies")} from settings and filling missing fan types with defaults if needed.");
+        }
+
+        foreach (FanType fanType in Enum.GetValues(typeof(FanType)))
+        {
+            try
+            {
+                EnsureEntryEx(fanType, fanTableInfo: null, syncExtension: false);
+            }
+            catch (Exception ex)
+            {
+                Log.Instance.Trace($"Failed to ensure fan curve entry for {fanType}: {ex}");
+            }
+        }
+
+        return Task.FromResult(entries);
     }
 
     private async void OnPowerModeChanged(object? sender, PowerModeListener.ChangedEventArgs e)
@@ -107,7 +140,10 @@ public class FanCurveManager : IDisposable
 
     private async Task ApplyStateLogicAsync(PowerModeState state)
     {
-        if (state == PowerModeState.GodMode)
+        IsInGodMode = state == PowerModeState.GodMode;
+        Log.Instance.Trace($"FanCurveManager power mode state changed. [IsInGodMode={IsInGodMode}, IsFanCurveManagerActive={IsFanCurveManagerActive}, powerMode={state}]");
+
+        if (IsInGodMode)
         {
             Log.Instance.Trace($"PowerMode is GodMode. Enabling custom fan control.");
             await SetRegisterAsync(true).ConfigureAwait(false);
@@ -249,6 +285,9 @@ public class FanCurveManager : IDisposable
 
     public async Task SetRegisterAsync(bool flag = false)
     {
+        IsFanCurveManagerActive = flag;
+        Log.Instance.Trace($"FanCurveManager register state update. [IsFanCurveManagerActive={IsFanCurveManagerActive}, IsInGodMode={IsInGodMode}, requested={flag}]");
+
         if (!IsEnabled) return;
         if (_extension != null)
         {
@@ -256,7 +295,78 @@ public class FanCurveManager : IDisposable
         }
     }
 
+
     public FanCurveEntry? GetEntry(FanType type) => _extension?.GetData($"Entry_{type}") as FanCurveEntry;
+
+    public FanCurveEntry EnsureEntry(FanType type, FanTableInfo fanTableInfo) => EnsureEntryEx(type, fanTableInfo, syncExtension: true);
+
+    private FanCurveEntry EnsureEntryEx(FanType type, FanTableInfo? fanTableInfo, bool syncExtension)
+    {
+        if (_fanCurveSettings.Store.Entries.FirstOrDefault(e => e.Type == type) is { } storedEntry)
+        {
+            if (syncExtension)
+            {
+                AddEntry(storedEntry);
+                UpdateConfig(type, storedEntry);
+            }
+
+            return storedEntry;
+        }
+
+        if (GetEntry(type) is { } existingEntry)
+        {
+            _fanCurveSettings.Store.Entries.RemoveAll(e => e.Type == type);
+            _fanCurveSettings.Store.Entries.Add(existingEntry);
+            _fanCurveSettings.SynchronizeStore();
+
+            if (syncExtension)
+            {
+                AddEntry(existingEntry);
+                UpdateConfig(type, existingEntry);
+            }
+
+            Log.Instance.Trace($"Recovered missing fan curve entry for {type} from plugin state.");
+            return existingEntry;
+        }
+
+        FanCurveEntry entry;
+        if (fanTableInfo is { Data: { Length: > 0 } })
+        {
+            entry = FanCurveEntry.FromFanTableInfo(fanTableInfo.Value, (ushort)type);
+            Log.Instance.Trace($"Created missing fan curve entry for {type} from provided FanTableInfo.");
+        }
+        else
+        {
+            entry = new FanCurveEntry { Type = type };
+            Log.Instance.Trace($"Created missing fan curve entry for {type} from default fan_curve settings template.");
+        }
+
+        _fanCurveSettings.Store.Entries.RemoveAll(e => e.Type == type);
+        _fanCurveSettings.Store.Entries.Add(entry);
+        _fanCurveSettings.SynchronizeStore();
+
+        if (syncExtension)
+        {
+            AddEntry(entry);
+            UpdateConfig(type, entry);
+        }
+
+        return entry;
+    }
+
+
+    public void SaveEntries(IEnumerable<FanCurveEntry> entries, bool? isFullSpeed = null)
+    {
+        _fanCurveSettings.Store.Entries.Clear();
+        _fanCurveSettings.Store.Entries.AddRange(entries);
+
+        if (isFullSpeed.HasValue)
+        {
+            _fanCurveSettings.Store.IsFullSpeed = isFullSpeed.Value;
+        }
+
+        _fanCurveSettings.Save();
+    }
 
     public void AddEntry(FanCurveEntry entry)
     {
@@ -270,6 +380,8 @@ public class FanCurveManager : IDisposable
 
     public async Task SetFullSpeedAsync(bool enabled)
     {
+        _isFullSpeedActive = enabled;
+
         if (!IsEnabled) return;
         if (_extension != null)
         {
@@ -279,6 +391,7 @@ public class FanCurveManager : IDisposable
 
     public void UpdateGlobalSettings(FanCurveEntry sourceEntry) => _extension?.ExecuteAsync("UpdateGlobal", sourceEntry);
 
+
     public void UpdateConfig(FanType type, FanCurveEntry entry) => _extension?.ExecuteAsync("UpdateConfig", type, entry);
 
     public void Dispose()
@@ -286,4 +399,5 @@ public class FanCurveManager : IDisposable
         _extension?.Dispose();
         _powerModeListener.Changed -= OnPowerModeChanged;
     }
+
 }
