@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using LenovoLegionToolkit.Lib;
+using LenovoLegionToolkit.Lib.Settings;
 using LenovoLegionToolkit.Lib.Utils;
 using LenovoLegionToolkit.Lib.View;
 using LenovoLegionToolkit.WPF.Utils;
@@ -25,10 +26,13 @@ public partial class FanCurveControlV3 : UserControl, INotifyPropertyChanged, IF
     public event PropertyChangedEventHandler? PropertyChanged;
     public event EventHandler? SettingsChanged;
 
+    private readonly FanCurveManager _fanCurveManager = IoCContainer.Resolve<FanCurveManager>();
+    private const int MaxPwmFallback = byte.MaxValue;
+    private const string MaxPwmSettingKey = "MaxPwm";
+
     private FanCurveEntry? _curveEntry;
     private FanTableData[]? _tableData;
     private bool _drawRequested;
-    private double _maxPwm = 255;
 
     public FanType FanType { get; private set; }
     public int FanId { get; private set; }
@@ -80,18 +84,19 @@ public partial class FanCurveControlV3 : UserControl, INotifyPropertyChanged, IF
 
     public double MaxPwm
     {
-        get => _maxPwm;
+        get => _fanCurveManager.GetFanSetting(MaxPwmSettingKey, MaxPwmFallback);
         set
         {
-            if (value != _maxPwm)
+            var maxPwm = Math.Clamp((int)Math.Round(value), 0, MaxPwmFallback);
+            if (_fanCurveManager.GetFanSetting(MaxPwmSettingKey, MaxPwmFallback) == maxPwm)
             {
-                _maxPwm = value;
+                return;
+            }
+
+            if (_fanCurveManager.SetFanSetting(MaxPwmSettingKey, maxPwm))
+            {
                 OnPropertyChanged();
-                if (_curveEntry != null)
-                {
-                    _curveEntry.MaxPwm = value;
-                    NotifySettingsChanged();
-                }
+                NotifySettingsChanged();
             }
         }
     }
@@ -152,9 +157,6 @@ public partial class FanCurveControlV3 : UserControl, INotifyPropertyChanged, IF
         _tableData = tableData;
         FanType = fanType;
         FanId = fanId;
-
-        _maxPwm = _curveEntry.MaxPwm;
-        OnPropertyChanged(nameof(MaxPwm));
 
         DataContext = this;
 
@@ -252,6 +254,35 @@ public partial class FanCurveControlV3 : UserControl, INotifyPropertyChanged, IF
         }
     }
 
+    private void MaxPwmTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (sender is not TextBox textBox)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(textBox.Text))
+        {
+            return;
+        }
+
+        if (!int.TryParse(textBox.Text, out var value))
+        {
+            return;
+        }
+
+        var clampedValue = Math.Clamp(value, 0, MaxPwmFallback);
+        var clampedText = clampedValue.ToString();
+        if (textBox.Text == clampedText)
+        {
+            return;
+        }
+
+        var caretIndex = textBox.CaretIndex;
+        textBox.Text = clampedText;
+        textBox.CaretIndex = Math.Min(caretIndex, textBox.Text.Length);
+    }
+
     private void AddPoint()
     {
         if (_curveEntry?.CurveNodes == null) return;
@@ -326,7 +357,6 @@ public partial class FanCurveControlV3 : UserControl, INotifyPropertyChanged, IF
         CriticalTemp = defaultEntry.CriticalTemp;
         AccelerationDcrReduction = defaultEntry.AccelerationDcrReduction;
         DecelerationDcrReduction = defaultEntry.DecelerationDcrReduction;
-        MaxPwm = defaultEntry.MaxPwm;
 
         _curveEntry.CurveNodes.Clear();
         foreach (var node in defaultEntry.CurveNodes)

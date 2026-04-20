@@ -62,23 +62,6 @@ public class FanCurveEntry : INotifyPropertyChanged
     public int AccelerationDcrReduction { get; set; } = 1;
     public int DecelerationDcrReduction { get; set; } = 2;
 
-    private double _maxPwm = 255.0;
-    public double MaxPwm
-    {
-        get => _maxPwm;
-        set
-        {
-            if (_maxPwm != value)
-            {
-                _maxPwm = value;
-                IsMaxPwmUserModified = true;
-                OnPropertyChanged();
-            }
-        }
-    }
-
-    public bool IsMaxPwmUserModified { get; set; }
-
     public FanCurveEntry()
     {
         InitializeDefaultCurve();
@@ -168,9 +151,7 @@ public class FanCurveEntry : INotifyPropertyChanged
             RampDownThresholds,
             CriticalTemp,
             AccelerationDcrReduction,
-            DecelerationDcrReduction,
-            MaxPwm,
-            IsMaxPwmUserModified
+            DecelerationDcrReduction
         };
 
         return JsonConvert.SerializeObject(exportData, Formatting.Indented);
@@ -209,8 +190,6 @@ public class FanCurveEntry : INotifyPropertyChanged
         if (data.CriticalTemp != null) entry.CriticalTemp = data.CriticalTemp;
         if (data.AccelerationDcrReduction != null) entry.AccelerationDcrReduction = data.AccelerationDcrReduction;
         if (data.DecelerationDcrReduction != null) entry.DecelerationDcrReduction = data.DecelerationDcrReduction;
-        if (data.MaxPwm != null) entry.MaxPwm = data.MaxPwm;
-        if (data.IsMaxPwmUserModified != null) entry.IsMaxPwmUserModified = data.IsMaxPwmUserModified;
 
         return entry;
     }
@@ -220,7 +199,7 @@ public class FanCurveEntry : INotifyPropertyChanged
         return new FanCurveConfig
         {
             CriticalTemp = CriticalTemp,
-            MaxPwm = MaxPwm,
+            MaxPwm = byte.MaxValue,
             KickstartPwm = 50.0,
             AccelerationDcrReduction = AccelerationDcrReduction,
             DecelerationDcrReduction = DecelerationDcrReduction,

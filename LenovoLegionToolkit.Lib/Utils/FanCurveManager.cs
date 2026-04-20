@@ -29,7 +29,6 @@ public class FanCurveManager : IDisposable
     public bool IsEnabled { get; private set; }
     public bool IsFanCurveManagerActive { get; private set; }
     public bool IsInGodMode { get; private set; }
-    public double? PluginMaxPwm => _extension?.GetData("MaxPwm") is double d ? d : (_extension?.GetData("MaxPwm") is int i ? (double)i : null);
 
     public FanCurveManager(
         PowerModeListener powerModeListener,
@@ -68,18 +67,6 @@ public class FanCurveManager : IDisposable
 
         _extension!.Initialize(this);
         Log.Instance.Trace($"FanCurveManager initialized with extension.");
-
-        if (PluginMaxPwm is { } pluginMax)
-        {
-            foreach (FanType fanType in Enum.GetValues(typeof(FanType)))
-            {
-                if (GetEntry(fanType) is { } entry && !entry.IsMaxPwmUserModified)
-                {
-                    entry.MaxPwm = pluginMax;
-                    entry.IsMaxPwmUserModified = false;
-                }
-            }
-        }
 
         var entries = await EnsureEntriesAsync().ConfigureAwait(false);
         foreach (var entry in entries)
@@ -298,6 +285,36 @@ public class FanCurveManager : IDisposable
 
     public FanCurveEntry? GetEntry(FanType type) => _extension?.GetData($"Entry_{type}") as FanCurveEntry;
 
+    public T GetFanSetting<T>(string key, T fallback = default!)
+    {
+        try
+        {
+            var value = _extension?.GetData(key) ?? _fanCurveSettings.Read(key);
+            return value is T typedValue ? typedValue : _fanCurveSettings.ReadOrDefault(key, fallback);
+        }
+        catch (Exception ex)
+        {
+            Log.Instance.Trace($"FanCurveManager: GetFanSetting error. Key: {key}, Error: {ex}");
+            return fallback;
+        }
+    }
+
+    public bool SetFanSetting(string key, object? value)
+    {
+        try
+        {
+            var updated = _fanCurveSettings.Write(key, value);
+            _extension?.SetData(key, value!);
+            NotifyGlobalSettingsChanged();
+            return updated;
+        }
+        catch (Exception ex)
+        {
+            Log.Instance.Trace($"FanCurveManager: SetFanSetting error. Key: {key}, Error: {ex}");
+            return false;
+        }
+    }
+
     public FanCurveEntry EnsureEntry(FanType type, FanTableInfo fanTableInfo) => EnsureEntryEx(type, fanTableInfo, syncExtension: true);
 
     private FanCurveEntry EnsureEntryEx(FanType type, FanTableInfo? fanTableInfo, bool syncExtension)
@@ -370,11 +387,6 @@ public class FanCurveManager : IDisposable
 
     public void AddEntry(FanCurveEntry entry)
     {
-        if (!entry.IsMaxPwmUserModified && PluginMaxPwm is { } pluginMax)
-        {
-            entry.MaxPwm = pluginMax;
-            entry.IsMaxPwmUserModified = false;
-        }
         _extension?.ExecuteAsync("AddEntry", entry);
     }
 
@@ -389,10 +401,24 @@ public class FanCurveManager : IDisposable
         }
     }
 
-    public void UpdateGlobalSettings(FanCurveEntry sourceEntry) => _extension?.ExecuteAsync("UpdateGlobal", sourceEntry);
-
+    public void UpdateGlobalSettings(FanCurveEntry sourceEntry)
+    {
+        _extension?.ExecuteAsync("UpdateGlobal", sourceEntry);
+        NotifyGlobalSettingsChanged();
+    }
 
     public void UpdateConfig(FanType type, FanCurveEntry entry) => _extension?.ExecuteAsync("UpdateConfig", type, entry);
+
+    private void NotifyGlobalSettingsChanged()
+    {
+        lock (_activeViewModels)
+        {
+            foreach (var vm in _activeViewModels.Values)
+            {
+                vm.NotifyGlobalSettingsChanged();
+            }
+        }
+    }
 
     public void Dispose()
     {
