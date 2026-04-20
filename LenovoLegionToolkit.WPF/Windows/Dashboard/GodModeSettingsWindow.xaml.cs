@@ -10,7 +10,6 @@ using LenovoLegionToolkit.Lib;
 using LenovoLegionToolkit.Lib.Controllers.GodMode;
 using LenovoLegionToolkit.Lib.Extensions;
 using LenovoLegionToolkit.Lib.Features;
-using LenovoLegionToolkit.Lib.Settings;
 using LenovoLegionToolkit.Lib.SoftwareDisabler;
 using LenovoLegionToolkit.Lib.System.Management;
 using LenovoLegionToolkit.Lib.Utils;
@@ -132,39 +131,38 @@ public partial class GodModeSettingsWindow
             if (_fanCurveManager.IsEnabled)
             {
                 fanInfo = preset.FanTableInfo is not null ? (_fanCurveControls.Count > 0 ? _fanCurveControls[0].GetFanTableInfo() : null) : null;
-                
-                var fanSettings = IoCContainer.Resolve<FanCurveSettings>();
-                fanSettings.Store.Entries.Clear();
+
+                var entries = new List<FanCurveEntry>();
                 foreach (var ctrl in _fanCurveControls)
                 {
                     if (ctrl.GetCurveEntry() is { } entry)
                     {
-                        fanSettings.Store.Entries.Add(entry);
+                        entries.Add(entry);
                     }
                 }
-                fanSettings.Store.IsFullSpeed = _fanFullSpeedToggle.IsChecked ?? false;
-                fanSettings.Save();
+
+                _fanCurveManager.SaveEntries(entries, _fanFullSpeedToggle.IsChecked ?? false);
             }
             else
             {
-                var fanSettings = IoCContainer.Resolve<FanCurveSettings>();
                 Log.Instance.Trace($"About to save fan curves. Controls count: {_fanCurveControls.Count}");
-                fanSettings.Store.Entries.Clear();
+
+                var entries = new List<FanCurveEntry>();
                 foreach (var ctrl in _fanCurveControls)
                 {
                     var entry = ctrl.GetCurveEntry();
                     if (entry != null)
                     {
                         Log.Instance.Trace($"Adding entry: {entry.Type}");
-                        fanSettings.Store.Entries.Add(entry);
+                        entries.Add(entry);
                     }
                     else
                     {
                         Log.Instance.Trace($"Entry for {ctrl.Tag} is null!");
                     }
                 }
-                fanSettings.Store.IsFullSpeed = _fanFullSpeedToggle.IsChecked ?? false;
-                fanSettings.Save();
+
+                _fanCurveManager.SaveEntries(entries, _fanFullSpeedToggle.IsChecked ?? false);
                 Log.Instance.Trace($"Fan settings saved. Path: {System.IO.Path.Combine(Folders.AppData, "fan_curves.json")}");
 
                 var fanControl = _fanCurveControlStackPanel.Children.OfType<Control>().FirstOrDefault(c => c is Controls.FanCurveControl or Controls.FanCurveControlV2);
@@ -388,12 +386,7 @@ public partial class GodModeSettingsWindow
             _ => FanType.System
         };
 
-        var entry = _fanCurveManager.GetEntry(fanType);
-        if (entry == null)
-        {
-            entry = FanCurveEntry.FromFanTableInfo(info, (ushort)fanType);
-            _fanCurveManager.AddEntry(entry);
-        }
+        var entry = _fanCurveManager.EnsureEntry(fanType, info);
 
         var ctrl = new Controls.FanCurveControlV3
         {

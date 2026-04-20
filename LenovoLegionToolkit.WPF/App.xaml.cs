@@ -1069,6 +1069,11 @@ public partial class App
         try
         {
             Log.Instance.Trace($"Resolving and initializing FanCurveManager...");
+
+            var sensorsGroupController = IoCContainer.Resolve<SensorsGroupController>();
+            var sensorsState = await sensorsGroupController.IsSupportedAsync().ConfigureAwait(false);
+            Log.Instance.Trace($"Fan Manager: SensorsGroupController state before plugin init: {sensorsState}");
+
             var fanManager = IoCContainer.Resolve<FanCurveManager>();
 
             if (!await fanManager.IsSupportedAsync().ConfigureAwait(false))
@@ -1078,6 +1083,8 @@ public partial class App
             }
 
             await fanManager.InitializeAsync().ConfigureAwait(false);
+
+            var fanSettings = IoCContainer.Resolve<FanCurveSettings>();
 
             var mi = await Compatibility.GetMachineInformationAsync().ConfigureAwait(false);
             if (mi.LegionSeries <= LegionSeries.Legion_Legacy)
@@ -1089,11 +1096,10 @@ public partial class App
                 }
             }
 
-            var fanSettings = IoCContainer.Resolve<FanCurveSettings>();
-
             if (fanSettings.Store.Entries.Count == 0)
             {
-                fanSettings.Save();
+                Log.Instance.Trace($"No fan curves found after initialization, skipping apply.");
+                return;
             }
 
             Log.Instance.Trace($"Applying {fanSettings.Store.Entries.Count} fan curves from settings...");
