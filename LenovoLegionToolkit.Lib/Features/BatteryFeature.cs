@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using LenovoLegionToolkit.Lib.Extensions;
 using LenovoLegionToolkit.Lib.System;
+using LenovoLegionToolkit.Lib.Utils;
 
 namespace LenovoLegionToolkit.Lib.Features;
 
@@ -30,15 +31,25 @@ public class BatteryFeature() : AbstractDriverFeature<BatteryState>(Drivers.GetE
 
     protected override Task<BatteryState> FromInternalAsync(uint state)
     {
-        state = state.ReverseEndianness();
+        var raw = state;
+        var reversed = state.ReverseEndianness();
 
-        if (state.GetNthBit(17)) // Is charging?
-            return Task.FromResult(state.GetNthBit(26) ? BatteryState.RapidCharge : BatteryState.Normal);
-
-        if (state.GetNthBit(29))
+        // 0x20 -> Conservation/Storage, 0x04 -> Rapid/Express.
+        if ((raw & 0x20) != 0)
             return Task.FromResult(BatteryState.Conservation);
 
-        throw new InvalidOperationException($"Unknown battery state: {state} [bits={Convert.ToString(state, 2)}]");
+        if ((raw & 0x04) != 0)
+            return Task.FromResult(BatteryState.RapidCharge);
+
+        // For Legacy
+        if (reversed.GetNthBit(17)) // Is charging?
+            return Task.FromResult(reversed.GetNthBit(26) ? BatteryState.RapidCharge : BatteryState.Normal);
+
+        if (reversed.GetNthBit(29))
+            return Task.FromResult(BatteryState.Conservation);
+
+        Log.Instance.Trace($"Unknown battery state, falling back to Normal. [raw={raw}, rawHex=0x{raw:X8}, rawBits={Convert.ToString(raw, 2)}, reversedHex=0x{reversed:X8}, reversedBits={Convert.ToString(reversed, 2)}]");
+        return Task.FromResult(BatteryState.Normal);
     }
 
     public override async Task SetStateAsync(BatteryState state)
