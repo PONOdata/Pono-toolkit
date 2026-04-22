@@ -4981,6 +4981,24 @@ namespace LenovoLegionToolkit.WPF.Resources {
         }
         
         /// <summary>
+        ///   查找类似 Duration using by refresh rate notifications, which may help on devices where the screen stays black for a few seconds during refresh rate switching. 的本地化字符串。
+        /// </summary>
+        public static string NotificationsSettingsWindow_RefreshRateNotificationDuration_Message {
+            get {
+                return ResourceManager.GetString("NotificationsSettingsWindow_RefreshRateNotificationDuration_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Refresh Rate Duration 的本地化字符串。
+        /// </summary>
+        public static string NotificationsSettingsWindow_RefreshRateNotificationDuration_Title {
+            get {
+                return ResourceManager.GetString("NotificationsSettingsWindow_RefreshRateNotificationDuration_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Smart Key 的本地化字符串。
         /// </summary>
         public static string NotificationsSettingsWindow_SmartKey {
