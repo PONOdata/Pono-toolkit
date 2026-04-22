@@ -1702,6 +1702,12 @@ Nebude to mít vliv na ostatní celoobrazovková okna, ale nebudete moci kliknou
   <data name="NotificationsSettingsWindow_RefreshRate" xml:space="preserve">
     <value>Obnovovací frekvence</value>
   </data>
+  <data name="NotificationsSettingsWindow_RefreshRateNotificationDuration_Message" xml:space="preserve">
+    <value>Duration using by refresh rate notifications, which may help on devices where the screen stays black for a few seconds during refresh rate switching.</value>
+  </data>
+  <data name="NotificationsSettingsWindow_RefreshRateNotificationDuration_Title" xml:space="preserve">
+    <value>Refresh Rate Duration</value>
+  </data>
   <data name="NotificationsSettingsWindow_SmartKey" xml:space="preserve">
     <value>Chytré tlačitko</value>
   </data>

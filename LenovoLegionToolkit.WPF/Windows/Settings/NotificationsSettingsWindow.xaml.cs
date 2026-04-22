@@ -7,6 +7,7 @@ using LenovoLegionToolkit.Lib;
 using LenovoLegionToolkit.Lib.Extensions;
 using LenovoLegionToolkit.Lib.Settings;
 using LenovoLegionToolkit.WPF.Extensions;
+using LenovoLegionToolkit.WPF.Resources;
 using Wpf.Ui.Controls;
 
 namespace LenovoLegionToolkit.WPF.Windows.Settings;
@@ -44,6 +45,7 @@ public partial class NotificationsSettingsWindow
 
         _notificationPositionComboBox.SetItems(Enum.GetValues<NotificationPosition>(), _settings.Store.NotificationPosition, v => v.GetDisplayName());
         _notificationDurationComboBox.SetItems(Enum.GetValues<NotificationDuration>(), _settings.Store.NotificationDuration, v => v.GetDisplayName());
+        _refreshRateNotificationDurationComboBox.SetItems([0, 1, 2, 3, 4, 5], _settings.Store.RefreshRateNotificationDuration, v => $"{string.Format(Resource.Seconds, v)}");
 
         _updateAvailableToggle.IsChecked = _settings.Store.Notifications.UpdateAvailable;
         _capsLockToggle.IsChecked = _settings.Store.Notifications.CapsLock;
@@ -117,6 +119,15 @@ public partial class NotificationsSettingsWindow
             return;
 
         _settings.Store.NotificationDuration = state;
+        _settings.SynchronizeStore();
+    }
+
+    private void RefreshRateNotificationDurationComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (!_refreshRateNotificationDurationComboBox.TryGetSelectedItem(out int state))
+            return;
+
+        _settings.Store.RefreshRateNotificationDuration = state;
         _settings.SynchronizeStore();
     }
 
