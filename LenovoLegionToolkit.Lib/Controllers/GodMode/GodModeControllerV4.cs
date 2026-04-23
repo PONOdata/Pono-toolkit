@@ -128,21 +128,6 @@ public class GodModeControllerV4(
 
     private async Task HandleFanSettings(FanTable fanTable, bool fanFullSpeed)
     {
-        var fanCurveManager = IoCContainer.TryResolve<FanCurveManager>();
-        if (fanCurveManager?.IsFanCurveManagerActive == true)
-        {
-            Log.Instance.Trace($"FanCurveManager is active. Synchronizing fan settings with plugin. [fanFullSpeed={fanFullSpeed}]");
-
-            await fanCurveManager.SetFullSpeedAsync(fanFullSpeed).ConfigureAwait(false);
-
-            if (!fanFullSpeed)
-            {
-                Log.Instance.Trace($"FanCurveManager is active and full speed is disabled. Fan table remains managed by plugin curve state.");
-            }
-
-            return;
-        }
-
         if (fanFullSpeed)
         {
             try

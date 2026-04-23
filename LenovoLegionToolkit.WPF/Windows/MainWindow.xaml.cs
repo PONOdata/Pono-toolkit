@@ -15,24 +15,25 @@ using System.Windows.Media.Imaging;
 using Windows.Win32;
 using Windows.Win32.System.Threading;
 using LenovoLegionToolkit.Lib;
+using LenovoLegionToolkit.Lib.Extensions;
 using LenovoLegionToolkit.Lib.Listeners;
 using LenovoLegionToolkit.Lib.Messaging;
 using LenovoLegionToolkit.Lib.Messaging.Messages;
 using LenovoLegionToolkit.Lib.Settings;
 using LenovoLegionToolkit.Lib.SoftwareDisabler;
 using LenovoLegionToolkit.Lib.Utils;
-using LenovoLegionToolkit.WPF.Extensions;
+using LenovoLegionToolkit.Lib.Utils;
+using LenovoLegionToolkit.WPF.Controls.Custom;
+using CustomCardControl = LenovoLegionToolkit.WPF.Controls.Custom.CardControl;
+using CustomNavigationItem = LenovoLegionToolkit.WPF.Controls.Custom.NavigationItem;
 using LenovoLegionToolkit.WPF.Pages;
 using LenovoLegionToolkit.WPF.Resources;
 using LenovoLegionToolkit.WPF.Utils;
 using LenovoLegionToolkit.WPF.Windows.Utils;
 using Microsoft.Xaml.Behaviors.Core;
 using Wpf.Ui.Controls;
-#if !DEBUG
+using LenovoLegionToolkit.WPF.Extensions;
 using LenovoLegionToolkit.Lib.Extensions;
-#endif
-
-#pragma warning disable CA1416
 
 namespace LenovoLegionToolkit.WPF.Windows;
 
@@ -44,6 +45,7 @@ public partial class MainWindow
     private readonly LegionSpaceDisabler _legionSpaceDisabler = IoCContainer.Resolve<LegionSpaceDisabler>();
     private readonly LegionZoneDisabler _legionZoneDisabler = IoCContainer.Resolve<LegionZoneDisabler>();
     private readonly FnKeysDisabler _fnKeysDisabler = IoCContainer.Resolve<FnKeysDisabler>();
+    private readonly INavigationService _extensionNavigationService = IoCContainer.Resolve<INavigationService>();
     private readonly UpdateChecker _updateChecker = IoCContainer.Resolve<UpdateChecker>();
 
     private TrayHelper? _trayHelper;
@@ -104,10 +106,7 @@ public partial class MainWindow
             _navigationStore.Items.Remove(_lampArrayKeyboardItem);
         }
 
-        if (!await StandaloneFanCurvePage.IsSupportedAsync())
-        {
-            _navigationStore.Items.Remove(_fanItem);
-        }
+
 
         var mi = await Compatibility.GetMachineInformationAsync();
         if (!(mi.LegionSeries == LegionSeries.Legion_Pro_7 && mi.Generation >= 10))
@@ -116,6 +115,8 @@ public partial class MainWindow
         }
 
         SmartKeyHelper.Instance.BringToForeground = () => Dispatcher.Invoke(BringToForeground);
+
+        AddExtensionNavigationItems();
 
         _specialKeyListener.Changed += (_, args) =>
         {
@@ -133,7 +134,7 @@ public partial class MainWindow
         InputBindings.Add(new KeyBinding(new ActionCommand(_navigationStore.NavigateToPrevious), Key.Tab, ModifierKeys.Control | ModifierKeys.Shift));
 
         var key = (int)Key.D1;
-        foreach (var item in _navigationStore.Items.OfType<NavigationItem>())
+        foreach (var item in _navigationStore.Items.OfType<CustomNavigationItem>())
             InputBindings.Add(new KeyBinding(new ActionCommand(() => _navigationStore.Navigate(item.PageTag)), (Key)key++, ModifierKeys.Control));
 
         var trayHelper = new TrayHelper(_navigationStore, BringToForeground, TrayTooltipEnabled);
@@ -202,6 +203,29 @@ public partial class MainWindow
 
         CheckForUpdates();
         SetVisual();
+    }
+
+    private void AddExtensionNavigationItems()
+    {
+        foreach (var item in _extensionNavigationService.Items.Where(i => !i.IsFooter))
+        {
+            if (_navigationStore.Items.OfType<CustomNavigationItem>().Any(existing => string.Equals(existing.PageTag, item.PageTag, StringComparison.OrdinalIgnoreCase)))
+            {
+                continue;
+            }
+
+            _navigationStore.Items.Add(new CustomNavigationItem
+            {
+                Content = item.Title,
+                Icon = item.Icon switch
+                {
+                    ExtensionIcon.Gauge => Wpf.Ui.Common.SymbolRegular.Gauge24,
+                    _ => Wpf.Ui.Common.SymbolRegular.Empty,
+                },
+                PageTag = item.PageTag,
+                PageType = item.PageType
+            });
+        }
     }
 
     private void OpenLogIndicator_Click(object sender, MouseButtonEventArgs e) => OpenLog();
@@ -466,7 +490,7 @@ public partial class MainWindow
                 SetBorderOpacity(border, opacity);
             }
 
-            var allCardControls = FindVisualChildren<CardControl>(rootElement);
+            var allCardControls = FindVisualChildren<CustomCardControl>(rootElement);
             foreach (var cardControl in allCardControls)
             {
                 SetCardControlOpacity(cardControl, opacity);
@@ -533,7 +557,7 @@ public partial class MainWindow
             border.BorderBrush = borderBrush;
         }
     }
-    private void SetCardControlOpacity(CardControl cardControl, double opacity)
+    private void SetCardControlOpacity(CustomCardControl cardControl, double opacity)
     {
         if (cardControl.Background == null)
         {

@@ -119,12 +119,6 @@
                         PageTag="battery"
                         PageType="{x:Type pages:BatteryPage}" />
                     <custom:NavigationItem
-                        x:Name="_fanItem"
-                        Content="{x:Static resources:Resource.MainWindow_NavigationItem_FanCurve}"
-                        Icon="Gauge24"
-                        PageTag="fanCurve"
-                        PageType="{x:Type pages:StandaloneFanCurvePage}" />
-                    <custom:NavigationItem
                         Content="{x:Static resources:Resource.MainWindow_NavigationItem_Actions}"
                         Icon="Rocket24"
                         PageTag="automation"

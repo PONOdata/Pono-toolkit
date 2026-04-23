@@ -288,12 +288,6 @@
                             <StackPanel x:Name="_fanCurveControlStackPanel">
                                 <controls:CardHeaderControl Title="{x:Static resources:Resource.GodModeSettingsWindow_Fans_Curve_Title}" Subtitle="{x:Static resources:Resource.GodModeSettingsWindow_Fans_Curve_Message}" />
 
-                                <ComboBox
-                                    x:Name="_fanSelector"
-                                    Margin="0,10,0,0"
-                                    SelectionChanged="FanSelector_SelectionChanged"
-                                    Visibility="Collapsed" />
-
                                 <wpfui:Button
                                     x:Name="_fanCurveButton"
                                     MinWidth="120"

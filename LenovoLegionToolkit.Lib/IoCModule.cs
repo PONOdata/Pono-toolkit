@@ -153,10 +153,5 @@ public class IoCModule : Module
         builder.Register<BatteryDischargeRateMonitorService>();
 
         builder.Register<AmdOverclockingController>();
-
-        builder.Register<FanCurveManager>(c => new FanCurveManager(
-            c.Resolve<PowerModeListener>(),
-            c.Resolve<PowerModeFeature>(),
-            c.Resolve<FanCurveSettings>())).SingleInstance();
     }
 }
