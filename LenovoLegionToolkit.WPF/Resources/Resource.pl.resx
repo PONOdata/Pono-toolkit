@@ -1349,6 +1349,12 @@ Jeśli dedykowana karta graficzna nie odpowiada, uruchom laptop ponownie.</value
   <data name="ITSModeAutomationStepControl_Title" xml:space="preserve">
     <value>IdeaPad Power Mode</value>
   </data>
+  <data name="ITSModeControl_Dialog_Message" xml:space="preserve">
+    <value>PowerBattery.dll is missing. Please place it manually to use ITSMode feature.</value>
+  </data>
+  <data name="ITSModeControl_Dialog_Title" xml:space="preserve">
+    <value>Missing Component</value>
+  </data>
   <data name="ITSModeControl_Message" xml:space="preserve">
     <value>Change IdeaPad Power Mode</value>
   </data>
@@ -2806,6 +2812,15 @@ Po zmianie tego ustawienia zalecane jest ponowne uruchomienie.</value>
   </data>
   <data name="SettingsPage_PowerModeMapping_Title" xml:space="preserve">
     <value>Synchronizacja trybu wydajności</value>
+  </data>
+  <data name="SettingsPage_ResetSettings_Confirm" xml:space="preserve">
+    <value>Are you sure you want to reset all settings to defaults? This action cannot be undone and the application will restart.</value>
+  </data>
+  <data name="SettingsPage_ResetSettings_Message" xml:space="preserve">
+    <value>Reset all application settings to their defaults.</value>
+  </data>
+  <data name="SettingsPage_ResetSettings_Title" xml:space="preserve">
+    <value>Reset Settings</value>
   </data>
   <data name="SettingsPage_RestartRequired_Message" xml:space="preserve">
     <value>Restart to apply changes.</value>

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -464,5 +465,44 @@ public partial class SettingsAppBehaviorControl
 
         var window = new SensorSettingsWindow { Owner = Window.GetWindow(this) };
         window.ShowDialog();
+    }
+
+    private async void ResetSettings_Click(object sender, RoutedEventArgs e)
+    {
+        if (_isRefreshing || !IsLoaded)
+            return;
+
+        var confirmed = await MessageBoxHelper.ShowAsync(
+            Resource.SettingsPage_ResetSettings_Title,
+            Resource.SettingsPage_ResetSettings_Confirm
+        );
+
+        if (!confirmed)
+            return;
+
+        try
+        {
+            App.IsRestoringSettings = true;
+
+            var files = Directory.GetFiles(Folders.AppData);
+            foreach (var file in files)
+            {
+                try
+                {
+                    File.Delete(file);
+                }
+                catch (Exception ex)
+                {
+                    Log.Instance.Trace($"Failed to delete {file} during reset.", ex);
+                }
+            }
+
+            Process.Start(new ProcessStartInfo(Environment.ProcessPath!) { UseShellExecute = true });
+            Application.Current.Shutdown();
+        }
+        catch (Exception ex)
+        {
+            Log.Instance.Trace($"Failed to reset settings.", ex);
+        }
     }
 }

@@ -3708,7 +3708,7 @@ namespace LenovoLegionToolkit.WPF.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Missing Compoment.
+        ///   Looks up a localized string similar to Missing Component.
         /// </summary>
         public static string ITSModeControl_Dialog_Title {
             get {
@@ -8056,6 +8056,33 @@ namespace LenovoLegionToolkit.WPF.Resources {
         public static string SettingsPage_PowerModeMapping_Title {
             get {
                 return ResourceManager.GetString("SettingsPage_PowerModeMapping_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to reset all settings to defaults? This action cannot be undone and the application will restart..
+        /// </summary>
+        public static string SettingsPage_ResetSettings_Confirm {
+            get {
+                return ResourceManager.GetString("SettingsPage_ResetSettings_Confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset all application settings to their defaults..
+        /// </summary>
+        public static string SettingsPage_ResetSettings_Message {
+            get {
+                return ResourceManager.GetString("SettingsPage_ResetSettings_Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset Settings.
+        /// </summary>
+        public static string SettingsPage_ResetSettings_Title {
+            get {
+                return ResourceManager.GetString("SettingsPage_ResetSettings_Title", resourceCulture);
             }
         }
         

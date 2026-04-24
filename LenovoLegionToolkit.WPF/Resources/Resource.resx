@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -1352,7 +1352,7 @@ If dGPU does not respond at all, please restart your laptop.</value>
     <value>PowerBattery.dll is missing. Please place it manually to use ITSMode feature.</value>
   </data>
   <data name="ITSModeControl_Dialog_Title" xml:space="preserve">
-    <value>Missing Compoment</value>
+    <value>Missing Component</value>
   </data>
   <data name="ITSModeControl_Message" xml:space="preserve">
     <value>Change IdeaPad Power Mode</value>
@@ -2807,6 +2807,15 @@ If disabled, this app will handle Fn shortcuts.</value>
   </data>
   <data name="SettingsPage_PowerModeMapping_Title" xml:space="preserve">
     <value>Power Mode Synchronization</value>
+  </data>
+  <data name="SettingsPage_ResetSettings_Confirm" xml:space="preserve">
+    <value>Are you sure you want to reset all settings to defaults? This action cannot be undone and the application will restart.</value>
+  </data>
+  <data name="SettingsPage_ResetSettings_Message" xml:space="preserve">
+    <value>Reset all application settings to their defaults.</value>
+  </data>
+  <data name="SettingsPage_ResetSettings_Title" xml:space="preserve">
+    <value>Reset Settings</value>
   </data>
   <data name="SettingsPage_RestartRequired_Message" xml:space="preserve">
     <value>Restart to apply changes.</value>
