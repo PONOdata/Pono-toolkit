@@ -24,6 +24,16 @@ namespace LenovoLegionToolkit.WPF.Windows.Settings;
 
 public partial class SettingsBackupWindow
 {
+    private static readonly string[] KnownSettingsFiles = 
+    {
+        "sensor_dashboard.json", "dashboard.json", "hardware_sensors.json", 
+        "automation.json", "macro.json", "settings.json", "balancemode.json", 
+        "godmode.json", "fan_curves.json", "gpu_oc.json", "integrations.json", 
+        "itsmode_settings.json", "lamp_array.json", "package_downloader.json", 
+        "update_settings.json", "sunrise_sunset.json", "spectrum_keyboard.json", 
+        "rgb_keyboard.json", "osd.json"
+    };
+
     private readonly ObservableCollection<BackupItem> _items = new();
 
     public SettingsBackupWindow()
@@ -47,13 +57,12 @@ public partial class SettingsBackupWindow
         {
             var appData = Folders.AppData;
             if (!Directory.Exists(appData))
-                return;
+                Directory.CreateDirectory(appData);
 
-            var files = Directory.EnumerateFiles(appData, "*.json", SearchOption.TopDirectoryOnly);
-
-            foreach (var file in files)
+            foreach (var fileName in KnownSettingsFiles)
             {
-                var fileInfo = new FileInfo(file);
+                var filePath = Path.Combine(appData, fileName);
+                var fileInfo = new FileInfo(filePath);
                 
                 var item = new BackupItem(fileInfo);
                 item.PropertyChanged += Item_PropertyChanged;
@@ -122,6 +131,8 @@ public partial class SettingsBackupWindow
             var destDir = dialog.SelectedPath;
             foreach (var item in selectedItems)
             {
+                if (!File.Exists(item.FullPath)) continue;
+
                 var destPath = Path.Combine(destDir, item.FileName);
                 File.Copy(item.FullPath, destPath, true);
             }
@@ -202,7 +213,7 @@ public partial class SettingsBackupWindow
 
     private void RestartApp()
     {
-        Process.Start(Environment.ProcessPath!);
+        Process.Start(new ProcessStartInfo(Environment.ProcessPath!) { UseShellExecute = true });
         Application.Current.Shutdown();
     }
 
@@ -237,7 +248,7 @@ public class BackupItem : INotifyPropertyChanged
         FileName = info.Name;
         DisplayName = Path.GetFileNameWithoutExtension(info.Name).Titleize();
         FullPath = info.FullName;
-        FileSize = BytesToString(info.Length);
+        FileSize = info.Exists ? BytesToString(info.Length) : "-";
         IsSelected = true;
     }
 
