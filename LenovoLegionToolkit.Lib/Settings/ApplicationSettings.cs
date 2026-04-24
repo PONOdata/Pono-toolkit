@@ -39,7 +39,6 @@ public class ApplicationSettings : AbstractSettings<ApplicationSettingsStore>
         public bool DontShowNotifications { get; set; }
         public NotificationPosition NotificationPosition { get; set; } = NotificationPosition.BottomCenter;
         public NotificationDuration NotificationDuration { get; set; } = NotificationDuration.Normal;
-        public int RefreshRateNotificationDuration { get; set; } = 3;
         public bool NotificationAlwaysOnTop { get; set; }
         public bool NotificationOnAllScreens { get; set; }
         public Notifications Notifications { get; set; } = new();

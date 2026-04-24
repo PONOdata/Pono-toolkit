@@ -67,7 +67,7 @@ public partial class SettingsAppearanceControl
         _hardwareAccelerationToggle.IsChecked = _settings.Store.EnableHardwareAcceleration;
 
         var array = Enum.GetValues<WindowBackdropType>();
-        if (Environment.OSVersion.Version.Build <= 22523)
+        if (Environment.OSVersion.Version.Build < 22621)
         {
             array = array.Where(t => t != WindowBackdropType.Acrylic).ToArray();
         }

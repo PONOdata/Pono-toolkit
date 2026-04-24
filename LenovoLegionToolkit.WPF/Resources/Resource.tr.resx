@@ -59,7 +59,7 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
@@ -1701,12 +1701,6 @@ Diğer tam ekran pencereleri etkilemeyecek, ancak bildirimlere tıklayamayacaks�
   </data>
   <data name="NotificationsSettingsWindow_RefreshRate" xml:space="preserve">
     <value>Yenileme Hızı</value>
-  </data>
-  <data name="NotificationsSettingsWindow_RefreshRateNotificationDuration_Message" xml:space="preserve">
-    <value>Duration using by refresh rate notifications, which may help on devices where the screen stays black for a few seconds during refresh rate switching.</value>
-  </data>
-  <data name="NotificationsSettingsWindow_RefreshRateNotificationDuration_Title" xml:space="preserve">
-    <value>Refresh Rate Duration</value>
   </data>
   <data name="NotificationsSettingsWindow_SmartKey" xml:space="preserve">
     <value>Akıllı Tuş</value>

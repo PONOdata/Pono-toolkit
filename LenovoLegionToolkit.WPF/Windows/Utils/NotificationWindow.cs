@@ -96,14 +96,6 @@ public class NotificationWindow : UiWindow, INotificationWindow
         }, TaskScheduler.FromCurrentSynchronizationContext());
     }
 
-    public void Show(TimeSpan closeAfter)
-    {
-        Show();
-        Task.Delay(closeAfter).ContinueWith(_ =>
-        {
-            Close();
-        }, TaskScheduler.FromCurrentSynchronizationContext());
-    }
 
     public void Close(bool immediate)
     {

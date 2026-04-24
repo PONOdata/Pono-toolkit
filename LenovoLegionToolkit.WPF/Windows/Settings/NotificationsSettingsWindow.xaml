@@ -1,4 +1,4 @@
-﻿<local:BaseWindow
+<local:BaseWindow
     x:Class="LenovoLegionToolkit.WPF.Windows.Settings.NotificationsSettingsWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -97,7 +97,7 @@
                         SelectionChanged="NotificationPositionComboBox_SelectionChanged" />
                 </custom:CardControl>
 
-                <custom:CardControl x:Name="_notificationDurationCard" Margin="0,0,0,8">
+                <custom:CardControl x:Name="_notificationDurationCard" Margin="0,0,0,24">
                     <custom:CardControl.Header>
                         <controls:CardHeaderControl Title="{x:Static resources:Resource.NotificationsSettingsWindow_NotificationDuration_Title}" />
                     </custom:CardControl.Header>
@@ -110,17 +110,6 @@
                         SelectionChanged="NotificationDurationComboBox_SelectionChanged" />
                 </custom:CardControl>
 
-                <custom:CardControl x:Name="_refreshRateNotificationDurationCard" Margin="0,0,0,24">
-                    <custom:CardControl.Header>
-                        <controls:CardHeaderControl Title="{x:Static resources:Resource.NotificationsSettingsWindow_RefreshRateNotificationDuration_Title}" Subtitle="{x:Static resources:Resource.NotificationsSettingsWindow_RefreshRateNotificationDuration_Message}" />
-                    </custom:CardControl.Header>
-                    <ComboBox
-                        x:Name="_refreshRateNotificationDurationComboBox"
-                        MinWidth="200"
-                        Margin="0,0,0,8"
-                        MaxDropDownHeight="Auto"
-                        SelectionChanged="RefreshRateNotificationDurationComboBox_SelectionChanged" />
-                </custom:CardControl>
 
                 <custom:CardControl x:Name="_updateAvailableCard" Margin="0,0,0,8">
                     <custom:CardControl.Header>
