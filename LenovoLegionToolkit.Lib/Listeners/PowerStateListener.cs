@@ -172,12 +172,6 @@ public sealed class PowerStateListener : IListener<PowerStateListener.ChangedEve
 
             var powerAdapterStateChanged = powerAdapterState != _lastPowerAdapterState;
 
-            // Unchanged power state should not be executed.
-            if (!powerAdapterStateChanged)
-            {
-                return;
-            }
-
             switch (powerStateEvent)
             {
                 case PowerStateEvent.Suspend:
@@ -189,7 +183,15 @@ public sealed class PowerStateListener : IListener<PowerStateListener.ChangedEve
                     break;
 
                 case PowerStateEvent.StatusChange when powerAdapterState == PowerAdapterStatus.Connected:
-                    await HandleConnectedStatusChangeAsync().ConfigureAwait(false);
+                    if (powerAdapterStateChanged)
+                    {
+                        await HandleConnectedStatusChangeAsync().ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        return;
+                    }
+
                     break;
             }
 

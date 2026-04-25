@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using LenovoLegionToolkit.Lib.Extensions;
 using LenovoLegionToolkit.Lib.System;
+using LenovoLegionToolkit.Lib.Utils;
 
 namespace LenovoLegionToolkit.Lib.Features;
 
@@ -18,15 +18,14 @@ public class BatteryFeature() : AbstractDriverFeature<BatteryState>(Drivers.GetE
 
     protected override Task<uint[]> ToInternalAsync(BatteryState state)
     {
-        uint[] commands = state switch
+        var result = state switch
         {
-            BatteryState.Conservation => new uint[] { 0x08, 0x03 },
-            BatteryState.Normal => new uint[] { 0x05, 0x08 },
-            BatteryState.RapidCharge => new uint[] { 0x05, 0x07 },
-            _ => throw new InvalidOperationException("Invalid battery mode.")
+            BatteryState.Conservation => LastState == BatteryState.RapidCharge ? new uint[] { 0x8, 0x3 } : [0x3],
+            BatteryState.Normal => LastState == BatteryState.Conservation ? [0x5] : [0x8],
+            BatteryState.RapidCharge => LastState == BatteryState.Conservation ? [0x5, 0x7] : [0x7],
+            _ => throw new InvalidOperationException("Invalid state")
         };
-
-        return Task.FromResult(commands);
+        return Task.FromResult(result);
     }
 
     protected override Task<BatteryState> FromInternalAsync(uint state)
@@ -45,40 +44,30 @@ public class BatteryFeature() : AbstractDriverFeature<BatteryState>(Drivers.GetE
     public override async Task SetStateAsync(BatteryState state)
     {
         await base.SetStateAsync(state).ConfigureAwait(false);
+        var actual = await GetStateAsync().ConfigureAwait(false);
 
-        BatteryState actualState;
-        bool success = false;
-        for (int i = 0; i < 10; i++)
+        if (actual != state)
         {
-            await Task.Delay(50).ConfigureAwait(false);
-            actualState = await GetStateAsync().ConfigureAwait(false);
-            if (actualState == state)
-            {
-                success = true;
-                break;
-            }
+            Log.Instance.Trace($"Battery Mode mismatch, Actual: {actual}, Target: {state}");
         }
 
-        actualState = await GetStateAsync().ConfigureAwait(false);
-        SetStateInRegistry(actualState);
-
-        if (!success)
-        {
-            throw new InvalidOperationException($"Failed to set battery mode to: {state}, Current: {actualState}");
-        }
+        SetStateInRegistry(state);
     }
 
     public async Task EnsureCorrectBatteryModeIsSetAsync()
     {
-        var registryState = GetStateFromRegistry();
-        if (!registryState.HasValue)
+        var state = GetStateFromRegistry();
+        if (!state.HasValue)
+        {
             return;
+        }
 
-        var actualState = await GetStateAsync().ConfigureAwait(false);
-        if (actualState == registryState.Value)
+        if (await GetStateAsync().ConfigureAwait(false) == state.Value)
+        {
             return;
+        }
 
-        SetStateInRegistry(actualState);
+        await SetStateAsync(state.Value).ConfigureAwait(false);
     }
 
     private static BatteryState? GetStateFromRegistry()
