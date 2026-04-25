@@ -64,8 +64,13 @@ public partial class SettingsAppearanceControl
         _selectBackgroundImageButton.Visibility = Visibility.Visible;
         _clearBackgroundImageButton.Visibility = Visibility.Visible;
         _backgroundImageOpacitySlider.Visibility = Visibility.Visible;
-        _backdropTypeComboBox.SetItems(Enum.GetValues<WindowBackdropType>(), _settings.Store.BackdropType, t => t.GetDisplayName());
         _hardwareAccelerationToggle.IsChecked = _settings.Store.EnableHardwareAcceleration;
+
+        var array = Enum.GetValues<WindowBackdropType>()
+            .Where(t => Environment.OSVersion.Version.Build >= 22621 || t != WindowBackdropType.Acrylic)
+            .ToArray();
+
+        _backdropTypeComboBox.SetItems(array, _settings.Store.BackdropType, t => t.GetDisplayName());
 
         if (!Displays.HasMultipleGpus())
         {

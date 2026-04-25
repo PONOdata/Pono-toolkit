@@ -230,13 +230,22 @@ public class NotificationsManager
             if (symbolTransform is null && overlaySymbol is not null)
                 symbolTransform = si => si.SetResourceReference(Control.ForegroundProperty, "TextFillColorSecondaryBrush");
 
-            ShowNotification(symbol, overlaySymbol, symbolTransform, text, clickAction);
+            var duration = _settings.Store.NotificationDuration switch
+            {
+                NotificationDuration.Short  => notification.Type == NotificationType.RefreshRate ? 2000 : 500,
+                NotificationDuration.Normal => notification.Type == NotificationType.RefreshRate ? 3500 : 1000,
+                NotificationDuration.Long   => notification.Type == NotificationType.RefreshRate ? 5000 : 2500,
+                _ => throw new ArgumentException(nameof(_settings.Store.NotificationDuration))
+            };
+
+
+            ShowNotification(duration, symbol, overlaySymbol, symbolTransform, text, clickAction);
 
             Log.Instance.Trace($"Notification {notification} shown.");
         });
     }
 
-    private void ShowNotification(SymbolRegular symbol, SymbolRegular? overlaySymbol, Action<SymbolIcon>? symbolTransform, string text, Action? clickAction)
+    private void ShowNotification(int duration, SymbolRegular symbol, SymbolRegular? overlaySymbol, Action<SymbolIcon>? symbolTransform, string text, Action? clickAction)
     {
         if (App.Current.MainWindow is not MainWindow mainWindow)
             return;
@@ -255,7 +264,7 @@ public class NotificationsManager
         {
             foreach (var screen in ScreenHelper.Screens)
             {
-                ShowOnScreen(screen, symbol, overlaySymbol, symbolTransform, text, clickAction);
+                ShowOnScreen(screen, duration, symbol, overlaySymbol, symbolTransform, text, clickAction);
             }
         }
         else
@@ -263,12 +272,12 @@ public class NotificationsManager
             var primaryScreen = ScreenHelper.PrimaryScreen;
             if (primaryScreen.HasValue)
             {
-                ShowOnScreen(primaryScreen.Value, symbol, overlaySymbol, symbolTransform, text, clickAction);
+                ShowOnScreen(primaryScreen.Value, duration, symbol, overlaySymbol, symbolTransform, text, clickAction);
             }
         }
     }
 
-    private void ShowOnScreen(ScreenInfo screen, SymbolRegular symbol, SymbolRegular? overlaySymbol, Action<SymbolIcon>? symbolTransform, string text, Action? clickAction)
+    private void ShowOnScreen(ScreenInfo screen, int duration, SymbolRegular symbol, SymbolRegular? overlaySymbol, Action<SymbolIcon>? symbolTransform, string text, Action? clickAction)
     {
         var nw = new NotificationWindow(symbol, overlaySymbol, symbolTransform, text, clickAction, screen, _settings.Store.NotificationPosition);
         if (_settings.Store.NotificationAlwaysOnTop)
@@ -276,13 +285,7 @@ public class NotificationsManager
             nw.SourceInitialized += (_, _) => nw.EscalateZBand();
         }
 
-        nw.Show(_settings.Store.NotificationDuration switch
-        {
-            NotificationDuration.Short => 500,
-            NotificationDuration.Long => 2500,
-            NotificationDuration.Normal => 1000,
-            _ => throw new ArgumentException(nameof(_settings.Store.NotificationDuration))
-        });
+        nw.Show(duration);
         _windows.Add(nw);
     }
 

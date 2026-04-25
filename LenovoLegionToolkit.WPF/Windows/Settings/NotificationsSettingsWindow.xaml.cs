@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -119,6 +119,7 @@ public partial class NotificationsSettingsWindow
         _settings.Store.NotificationDuration = state;
         _settings.SynchronizeStore();
     }
+
 
     private void CapsLockToggle_Click(object sender, RoutedEventArgs e)
     {

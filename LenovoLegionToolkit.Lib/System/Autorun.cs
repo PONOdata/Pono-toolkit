@@ -91,7 +91,7 @@ public static class Autorun
         td.Principal.RunLevel = IsUacDisabledOrBuiltInAdmin() ? TaskRunLevel.LUA : TaskRunLevel.Highest;
         td.Triggers.Add(new LogonTrigger { UserId = currentUser, Delay = new TimeSpan(0, 0, delayed ? 30 : 0) });
 
-        var action = new ExecAction($"\"{launchTarget}\"", "--minimized", Path.GetDirectoryName(launchTarget));
+        var action = new ExecAction("rundll32.exe", $"shell32.dll,ShellExec_RunDLL \"{launchTarget}\" --minimized", Path.GetDirectoryName(launchTarget));
         td.Actions.Add(action);
 
         td.Settings.DisallowStartIfOnBatteries = false;

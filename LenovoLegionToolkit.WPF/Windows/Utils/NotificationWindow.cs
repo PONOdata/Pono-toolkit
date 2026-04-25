@@ -96,6 +96,7 @@ public class NotificationWindow : UiWindow, INotificationWindow
         }, TaskScheduler.FromCurrentSynchronizationContext());
     }
 
+
     public void Close(bool immediate)
     {
         WindowStyle = WindowStyle.None;
