@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using LenovoLegionToolkit.Lib.Station.Core;
 using LenovoLegionToolkit.Lib.Station.Logging;
@@ -14,6 +15,7 @@ public sealed class ExtensionContext : IExtensionContext
     private static readonly string PluginsBasePath = Path.Combine(Folders.AppData, "Plugins", "Configs");
 
     private readonly string _pluginId;
+    private readonly SemaphoreSlim _settingsLock = new(1, 1);
     private Dictionary<string, JsonElement>? _settings;
 
     public ExtensionContext(string pluginId, INavigationService navigation, IUiDispatcher uiDispatcher, IExtensionLogger logger)
@@ -75,37 +77,56 @@ public sealed class ExtensionContext : IExtensionContext
         if (_settings is not null)
             return _settings;
 
-        var settingsFile = GetSettingsFilePath();
-
-        if (!File.Exists(settingsFile))
-        {
-            _settings = [];
-            return _settings;
-        }
-
+        await _settingsLock.WaitAsync().ConfigureAwait(false);
         try
         {
-            var json = await File.ReadAllTextAsync(settingsFile).ConfigureAwait(false);
-            _settings = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json) ?? [];
-        }
-        catch
-        {
-            _settings = [];
-        }
+            if (_settings is not null)
+                return _settings;
 
-        return _settings;
+            var settingsFile = GetSettingsFilePath();
+
+            if (!File.Exists(settingsFile))
+            {
+                _settings = [];
+                return _settings;
+            }
+
+            try
+            {
+                var json = await File.ReadAllTextAsync(settingsFile).ConfigureAwait(false);
+                _settings = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json) ?? [];
+            }
+            catch
+            {
+                _settings = [];
+            }
+
+            return _settings;
+        }
+        finally
+        {
+            _settingsLock.Release();
+        }
     }
 
     private async Task SaveSettingsAsync(Dictionary<string, JsonElement> settings)
     {
-        var settingsFile = GetSettingsFilePath();
-        var dir = Path.GetDirectoryName(settingsFile)!;
+        await _settingsLock.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            var settingsFile = GetSettingsFilePath();
+            var dir = Path.GetDirectoryName(settingsFile)!;
 
-        if (!Directory.Exists(dir))
-            Directory.CreateDirectory(dir);
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
 
-        var json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
-        await File.WriteAllTextAsync(settingsFile, json).ConfigureAwait(false);
+            var json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
+            await File.WriteAllTextAsync(settingsFile, json).ConfigureAwait(false);
+        }
+        finally
+        {
+            _settingsLock.Release();
+        }
     }
 
     private string GetSettingsFilePath()
