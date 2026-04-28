@@ -1346,12 +1346,6 @@
   <data name="ITSModeAutomationStepControl_Title" xml:space="preserve">
     <value>Режим живлення IdeaPad</value>
   </data>
-  <data name="ITSModeControl_Dialog_Message" xml:space="preserve">
-    <value>PowerBattery.dll is missing. Please place it manually to use ITSMode feature.</value>
-  </data>
-  <data name="ITSModeControl_Dialog_Title" xml:space="preserve">
-    <value>Missing Component</value>
-  </data>
   <data name="ITSModeControl_Message" xml:space="preserve">
     <value>Зміна режиму живлення IdeaPad</value>
   </data>
