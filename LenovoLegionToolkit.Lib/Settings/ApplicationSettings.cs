@@ -33,6 +33,8 @@ public class ApplicationSettings : AbstractSettings<ApplicationSettingsStore>
         public PowerModeMappingMode PowerModeMappingMode { get; set; } = PowerModeMappingMode.Disabled;
         public Dictionary<PowerModeState, Guid> PowerPlans { get; set; } = [];
         public Dictionary<PowerModeState, WindowsPowerMode> PowerModes { get; set; } = [];
+        public Dictionary<PowerModeState, Dictionary<PowerOverrideKey, string>> Overrides { get; set; } = [];
+
         public bool MinimizeToTray { get; set; } = true;
         public bool MinimizeOnClose { get; set; }
         public WindowSize? WindowSize { get; set; }
@@ -78,34 +80,5 @@ public class ApplicationSettings : AbstractSettings<ApplicationSettingsStore>
 
     public ApplicationSettings() : base("settings.json")
     {
-        JsonSerializerSettings.Converters.Add(new LegacyPowerPlanInstanceIdToGuidConverter());
-    }
-}
-
-internal class LegacyPowerPlanInstanceIdToGuidConverter : JsonConverter
-{
-    public override bool CanWrite => false;
-
-    public override bool CanConvert(Type objectType) => objectType == typeof(Guid);
-
-    public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer) => throw new InvalidOperationException();
-
-    public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
-    {
-        var value = reader.Value?.ToString() ?? string.Empty;
-
-        const string prefix = "Microsoft:PowerPlan\\{";
-        const string suffix = "}";
-
-        var prefixIndex = value.Contains(prefix, StringComparison.InvariantCulture);
-        var suffixIndex = value.IndexOf(suffix, StringComparison.InvariantCulture);
-
-        if (prefixIndex && suffixIndex > 0)
-        {
-            value = value[..suffixIndex];
-            value = value[prefix.Length..];
-        }
-
-        return Guid.Parse(value);
     }
 }

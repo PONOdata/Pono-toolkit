@@ -153,6 +153,9 @@
   <data name="AutorunState_EnabledDelayed" xml:space="preserve">
     <value>Enabled (delayed)</value>
   </data>
+  <data name="Balanced" xml:space="preserve">
+    <value>Balanced</value>
+  </data>
   <data name="BatteryNightChargeState_Off" xml:space="preserve">
     <value>Off</value>
   </data>
@@ -167,6 +170,12 @@
   </data>
   <data name="BatteryState_RapidCharge" xml:space="preserve">
     <value>Rapid Charge</value>
+  </data>
+  <data name="BestPerformance" xml:space="preserve">
+    <value>Best Performance</value>
+  </data>
+  <data name="BestPowerEfficiency" xml:space="preserve">
+    <value>Best Power Efficiency</value>
   </data>
   <data name="CustomFanCurveControl_Fan_CPU" xml:space="preserve">
     <value>CPU Fan</value>

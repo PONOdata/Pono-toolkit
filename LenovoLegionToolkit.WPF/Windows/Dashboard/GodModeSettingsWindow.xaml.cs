@@ -138,8 +138,6 @@ public partial class GodModeSettingsWindow
             var newPreset = new GodModePreset
             {
                 Name = preset.Name,
-                PowerPlanGuid = preset.PowerPlanGuid,
-                PowerMode = preset.PowerMode,
                 CPULongTermPowerLimit = preset.CPULongTermPowerLimit?.WithValue(_cpuLongTermPowerLimitControl.Value),
                 CPUShortTermPowerLimit = preset.CPUShortTermPowerLimit?.WithValue(_cpuShortTermPowerLimitControl.Value),
                 CPUPeakPowerLimit = preset.CPUPeakPowerLimit?.WithValue(_cpuPeakPowerLimitControl.Value),
@@ -160,8 +158,8 @@ public partial class GodModeSettingsWindow
                 AllCoreCurveOptimizer = preset.AllCoreCurveOptimizer?.WithValue(_cpuAllCoreCurveOptimizer.Value),
                 EnableAllCoreCurveOptimizer = _toggleCoreCurveCard.Visibility == Visibility.Visible ? _coreCurveToggle.IsChecked : preset.EnableAllCoreCurveOptimizer,
                 EnableOverclocking = _toggleOcCard.Visibility == Visibility.Visible ? _overclockingToggle.IsChecked : preset.EnableOverclocking,
-
                 FanTableInfo = fanInfo,
+                Overrides = preset.Overrides,
             };
 
             var newPresets = new Dictionary<Guid, GodModePreset>(_state.Value.Presets)

@@ -73,52 +73,64 @@
                         <custom:CardControl.Header>
                             <controls:CardHeaderControl Title="{x:Static resourcesLib:Resource.PowerModeState_Quiet}" />
                         </custom:CardControl.Header>
-                        <ComboBox
-                            x:Name="_quietModeComboBox"
-                            MinWidth="200"
-                            Margin="0,0,0,8"
-                            AutomationProperties.Name="{x:Static resourcesLib:Resource.PowerModeState_Quiet}"
-                            MaxDropDownHeight="Auto"
-                            SelectionChanged="QuietModeComboBox_SelectionChanged" />
+                        <StackPanel>
+                            <ComboBox
+                                x:Name="_quietModeComboBox"
+                                MinWidth="200"
+                                Margin="0,0,0,8"
+                                AutomationProperties.Name="{x:Static resourcesLib:Resource.PowerModeState_Quiet}"
+                                MaxDropDownHeight="Auto"
+                                SelectionChanged="QuietModeComboBox_SelectionChanged" />
+                            <StackPanel x:Name="_quietOverlayContainer" Visibility="Collapsed" />
+                        </StackPanel>
                     </custom:CardControl>
 
                     <custom:CardControl Margin="0,0,0,8">
                         <custom:CardControl.Header>
                             <controls:CardHeaderControl Title="{x:Static resourcesLib:Resource.PowerModeState_Balance}" />
                         </custom:CardControl.Header>
-                        <ComboBox
-                            x:Name="_balanceModeComboBox"
-                            MinWidth="200"
-                            Margin="0,0,0,8"
-                            AutomationProperties.Name="{x:Static resourcesLib:Resource.PowerModeState_Balance}"
-                            MaxDropDownHeight="Auto"
-                            SelectionChanged="BalanceModeComboBox_SelectionChanged" />
+                        <StackPanel>
+                            <ComboBox
+                                x:Name="_balanceModeComboBox"
+                                MinWidth="200"
+                                Margin="0,0,0,8"
+                                AutomationProperties.Name="{x:Static resourcesLib:Resource.PowerModeState_Balance}"
+                                MaxDropDownHeight="Auto"
+                                SelectionChanged="BalanceModeComboBox_SelectionChanged" />
+                            <StackPanel x:Name="_balanceOverlayContainer" Visibility="Collapsed" />
+                        </StackPanel>
                     </custom:CardControl>
 
                     <custom:CardControl Margin="0,0,0,8">
                         <custom:CardControl.Header>
                             <controls:CardHeaderControl Title="{x:Static resourcesLib:Resource.PowerModeState_Performance}" />
                         </custom:CardControl.Header>
-                        <ComboBox
-                            x:Name="_performanceModeComboBox"
-                            MinWidth="200"
-                            Margin="0,0,0,8"
-                            AutomationProperties.Name="{x:Static resourcesLib:Resource.PowerModeState_Performance}"
-                            MaxDropDownHeight="Auto"
-                            SelectionChanged="PerformanceModeComboBox_SelectionChanged" />
+                        <StackPanel>
+                            <ComboBox
+                                x:Name="_performanceModeComboBox"
+                                MinWidth="200"
+                                Margin="0,0,0,8"
+                                AutomationProperties.Name="{x:Static resourcesLib:Resource.PowerModeState_Performance}"
+                                MaxDropDownHeight="Auto"
+                                SelectionChanged="PerformanceModeComboBox_SelectionChanged" />
+                            <StackPanel x:Name="_performanceOverlayContainer" Visibility="Collapsed" />
+                        </StackPanel>
                     </custom:CardControl>
 
                     <custom:CardControl Margin="0,0,0,8">
                         <custom:CardControl.Header>
                             <controls:CardHeaderControl Title="{x:Static resourcesLib:Resource.PowerModeState_Extreme}" />
                         </custom:CardControl.Header>
-                        <ComboBox
-                            x:Name="_extremeModeComboBox"
-                            MinWidth="200"
-                            Margin="0,0,0,8"
-                            AutomationProperties.Name="{x:Static resourcesLib:Resource.PowerModeState_Extreme}"
-                            MaxDropDownHeight="Auto"
-                            SelectionChanged="ExtremeModeComboBox_SelectionChanged" />
+                        <StackPanel>
+                            <ComboBox
+                                x:Name="_extremeModeComboBox"
+                                MinWidth="200"
+                                Margin="0,0,0,8"
+                                AutomationProperties.Name="{x:Static resourcesLib:Resource.PowerModeState_Extreme}"
+                                MaxDropDownHeight="Auto"
+                                SelectionChanged="ExtremeModeComboBox_SelectionChanged" />
+                            <StackPanel x:Name="_extremeOverlayContainer" Visibility="Collapsed" />
+                        </StackPanel>
                     </custom:CardControl>
 
                     <custom:CardControl x:Name="_godModeCardControl" Margin="0,0,0,8">
@@ -136,6 +148,7 @@
                                 SelectionChanged="GodModeComboBox_SelectionChanged" />
 
                             <StackPanel x:Name="_godModePresetsContainer" Visibility="Collapsed" />
+                            <StackPanel x:Name="_godModeOverlayContainer" Visibility="Collapsed" />
                         </StackPanel>
                     </custom:CardControl>
 

@@ -9282,6 +9282,33 @@ namespace LenovoLegionToolkit.WPF.Resources {
         }
         
         /// <summary>
+        ///   查找类似 AC 的本地化字符串。
+        /// </summary>
+        public static string WindowsPowerPlansWindow_PowerMode_AC {
+            get {
+                return ResourceManager.GetString("WindowsPowerPlansWindow_PowerMode_AC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 DC 的本地化字符串。
+        /// </summary>
+        public static string WindowsPowerPlansWindow_PowerMode_DC {
+            get {
+                return ResourceManager.GetString("WindowsPowerPlansWindow_PowerMode_DC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Power Mode 的本地化字符串。
+        /// </summary>
+        public static string WindowsPowerPlansWindow_PowerMode_Title {
+            get {
+                return ResourceManager.GetString("WindowsPowerPlansWindow_PowerMode_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Windows Power Plans 的本地化字符串。
         /// </summary>
         public static string WindowsPowerPlansWindow_Title {

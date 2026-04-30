@@ -3236,6 +3236,15 @@
   <data name="WindowsPowerModesWindow_Title" xml:space="preserve">
     <value>Windows 电源模式</value>
   </data>
+  <data name="WindowsPowerPlansWindow_PowerMode_AC" xml:space="preserve">
+    <value>AC</value>
+  </data>
+  <data name="WindowsPowerPlansWindow_PowerMode_Title" xml:space="preserve">
+    <value>Power Mode</value>
+  </data>
+  <data name="WindowsPowerPlansWindow_PowerMode_DC" xml:space="preserve">
+    <value>DC</value>
+  </data>
   <data name="WindowsPowerPlansWindow_DefaultPowerPlan" xml:space="preserve">
     <value>默认</value>
   </data>

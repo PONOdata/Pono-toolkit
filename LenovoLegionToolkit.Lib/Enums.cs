@@ -558,6 +558,15 @@ public enum PowerModeMappingMode
     WindowsPowerPlan,
 }
 
+public enum PowerOverrideKey
+{
+    PowerPlan,
+    PowerModeOnAc,
+    PowerModeOnDc,
+    PowerPlanBalanceOnAc,
+    PowerPlanBalanceOnDc,
+}
+
 public enum PowerModeState
 {
     [Display(ResourceType = typeof(Resource), Name = "PowerModeState_Quiet")]

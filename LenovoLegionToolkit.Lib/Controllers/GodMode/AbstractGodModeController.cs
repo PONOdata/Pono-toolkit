@@ -73,8 +73,6 @@ public abstract class AbstractGodModeController(GodModeSettings settings)
             presets.Add(id, new()   
             {
                 Name = preset.Name,
-                PowerPlanGuid = preset.PowerPlanGuid,
-                PowerMode = preset.PowerMode,
                 CPULongTermPowerLimit = preset.CPULongTermPowerLimit,
                 CPUShortTermPowerLimit = preset.CPUShortTermPowerLimit,
                 CPUPeakPowerLimit = preset.CPUPeakPowerLimit,
@@ -96,6 +94,7 @@ public abstract class AbstractGodModeController(GodModeSettings settings)
                 AllCoreCurveOptimizer = preset.AllCoreCurveOptimizer,
                 EnableAllCoreCurveOptimizer = preset.EnableAllCoreCurveOptimizer,
                 EnableOverclocking = preset.EnableOverclocking,
+                Overrides = new Dictionary<PowerOverrideKey, string>(preset.Overrides ?? []),
             });
         }
 
@@ -191,8 +190,6 @@ public abstract class AbstractGodModeController(GodModeSettings settings)
             states.Add(id, new GodModePreset
             {
                 Name = preset.Name,
-                PowerPlanGuid = preset.PowerPlanGuid,
-                PowerMode = preset.PowerMode,
                 CPULongTermPowerLimit = CreateStepperValue(defaultState.CPULongTermPowerLimit, preset.CPULongTermPowerLimit, preset.MinValueOffset, preset.MaxValueOffset),
                 CPUShortTermPowerLimit = CreateStepperValue(defaultState.CPUShortTermPowerLimit, preset.CPUShortTermPowerLimit, preset.MinValueOffset, preset.MaxValueOffset),
                 CPUPeakPowerLimit = CreateStepperValue(defaultState.CPUPeakPowerLimit, preset.CPUPeakPowerLimit, preset.MinValueOffset, preset.MaxValueOffset),
@@ -217,6 +214,7 @@ public abstract class AbstractGodModeController(GodModeSettings settings)
                 AllCoreCurveOptimizer = (isAmdDevice && allCoreCurve is null) ? curve : preset.AllCoreCurveOptimizer,
                 EnableAllCoreCurveOptimizer = (isAmdDevice && enableOverclocking is null) ? false : preset.EnableAllCoreCurveOptimizer,
                 EnableOverclocking = (isAmdDevice && enableOverclocking is null) ? false : preset.EnableOverclocking,
+                Overrides = new Dictionary<PowerOverrideKey, string>(preset.Overrides ?? []),
             });
         }
 
