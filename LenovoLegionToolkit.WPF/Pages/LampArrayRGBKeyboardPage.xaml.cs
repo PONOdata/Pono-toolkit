@@ -168,11 +168,21 @@ public partial class LampArrayRGBKeyboardPage : UiPage
 
             if (_smoothTransitionCheckBox != null) _smoothTransitionCheckBox.IsChecked = store.SmoothTransition;
 
+            if (_respectLampPurposesCheckBox != null)
+            {
+                _respectLampPurposesCheckBox.IsChecked = store.RespectLampPurposes;
+                _controller.RespectLampPurposes = store.RespectLampPurposes;
+            }
+
+            UpdateControllerStatusText(_controller.IsControlled);
+
             UpdateZoneVisibility();
             ClearSelection();
             UpdateEffectSelectionUI();
 
         }, DispatcherPriority.Loaded);
+
+        _controller.ControlledChanged += Controller_ControlledChanged;
 
         CompositionTarget.Rendering += OnEffectTick;
     }
@@ -181,8 +191,30 @@ public partial class LampArrayRGBKeyboardPage : UiPage
     {
         CompositionTarget.Rendering -= OnEffectTick;
 
+        if (_controller != null)
+            _controller.ControlledChanged -= Controller_ControlledChanged;
+
         _controller.SaveSettings(_settings);
         StopScreenCapture();
+    }
+
+    private void Controller_ControlledChanged(object? sender, bool isControlled)
+    {
+        Dispatcher.InvokeAsync(() => UpdateControllerStatusText(isControlled));
+    }
+
+    private void UpdateControllerStatusText(bool isControlled)
+    {
+        if (_controllerStatusText == null) return;
+        _controllerStatusText.Text = isControlled
+            ? Resource.LampArrayRGBKeyboardPage_Controller_Active
+            : Resource.LampArrayRGBKeyboardPage_Controller_Yielded;
+    }
+
+    private void RespectLampPurposes_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_controller != null && _respectLampPurposesCheckBox != null)
+            _controller.RespectLampPurposes = _respectLampPurposesCheckBox.IsChecked ?? false;
     }
 
     private void CalculateAuroraBounds()
@@ -459,6 +491,9 @@ public partial class LampArrayRGBKeyboardPage : UiPage
                 RainbowWaveEffect => LampEffectType.RainbowWave,
                 SpiralRainbowEffect => LampEffectType.SpiralRainbow,
                 AuroraSyncEffect => LampEffectType.AuroraSync,
+                BatteryLowEffect => LampEffectType.BatteryLowIndicator,
+                ChargingEffect => LampEffectType.ChargingIndicator,
+                CapsLockIndicatorEffect => LampEffectType.CapsLockIndicator,
                 _ => null
             };
 
@@ -512,6 +547,9 @@ public partial class LampArrayRGBKeyboardPage : UiPage
             LampEffectType.RainbowWave => new RainbowWaveEffect(1.0, 2.0, GetSelectedDirection()),
             LampEffectType.SpiralRainbow => new SpiralRainbowEffect(),
             LampEffectType.AuroraSync => _globalAuroraEffect,
+            LampEffectType.BatteryLowIndicator => new BatteryLowEffect(WinUIColor.FromArgb(255, 255, 0, 0)),
+            LampEffectType.ChargingIndicator => new ChargingEffect(WinUIColor.FromArgb(255, 0, 200, 0), WinUIColor.FromArgb(255, 0, 120, 220)),
+            LampEffectType.CapsLockIndicator => new CapsLockIndicatorEffect(WinUIColor.FromArgb(255, 255, 255, 255)),
             _ => new RainbowEffect(4.0, true)
         };
 
