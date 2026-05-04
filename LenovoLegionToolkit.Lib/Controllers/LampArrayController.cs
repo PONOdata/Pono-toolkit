@@ -39,6 +39,8 @@ public class LampArrayController : IDisposable
     private bool _respectLampPurposes;
     private Color _statusLampColor = Color.FromArgb(255, 255, 255, 255);
     private bool _isControlled;
+    private bool _borgMode;
+    private static readonly BorgEffect _borgInstance = new();
 
     private ILampEffect? _currentEffect;
     private ILampEffect? _targetEffect;
@@ -98,6 +100,18 @@ public class LampArrayController : IDisposable
     public bool IsControlled => _isControlled;
 
     public event EventHandler<bool>? ControlledChanged;
+
+    // When BorgMode is on, the controller takes full control of every lamp on
+    // every device and runs BorgEffect across the whole array, ignoring the
+    // currently-selected effect, per-lamp overrides, the active transition,
+    // and the RespectLampPurposes / StatusLampColor settings. The intent is
+    // a single zero-configuration master override for users who plug in an
+    // off-brand replacement keyboard and want it to "just work".
+    public bool BorgMode
+    {
+        get => _borgMode;
+        set => _borgMode = value;
+    }
 
     public bool IsAvailable
     {
@@ -224,8 +238,12 @@ public class LampArrayController : IDisposable
 
     private void CheckAuroraSyncState()
     {
-        var hasAurora = _currentEffect is AuroraSyncEffect
-            || _effectOverrides.Values.Any(e => e is AuroraSyncEffect);
+        // BorgMode bypasses every other effect path including AuroraSync, so no
+        // screen capture is needed; force-stop it to avoid running the capture
+        // loop for output nothing consumes.
+        var hasAurora = !_borgMode && (
+            _currentEffect is AuroraSyncEffect
+            || _effectOverrides.Values.Any(e => e is AuroraSyncEffect));
 
         if (hasAurora && !_auroraActive)
         {
@@ -449,35 +467,49 @@ public class LampArrayController : IDisposable
                     var lampCount = device.LampCount;
                     var colors = new Color[lampCount];
 
+                    // Snapshot _borgMode for the duration of this device's frame so
+                    // a mid-frame toggle from the UI thread cannot split the array
+                    // across both code paths.
+                    var useBorg = _borgMode;
+
                     for (var i = 0; i < lampCount; i++)
                     {
                         var lampInfo = device.GetLampInfo(i);
-                        
-                        ILampEffect? effectToUse = _currentEffect;
-                        bool isOverridden = _effectOverrides.TryGetValue(i, out var overrideEffect);
-                        if (isOverridden) effectToUse = overrideEffect;
-
-                        if (effectToUse == null)
-                        {
-                             colors[i] = Color.FromArgb(0,0,0,0);
-                             continue;
-                        }
 
                         Color color;
-                        if (!isOverridden && _respectLampPurposes && IsStatusPurposed(lampInfo.Purposes))
+                        if (useBorg)
                         {
-                            color = _statusLampColor;
+                            // Master override: BorgEffect runs on every lamp regardless of
+                            // currentEffect, per-lamp overrides, transitions, or status routing.
+                            color = _borgInstance.GetColorForLamp(i, currentTime, lampInfo, lampCount);
                         }
                         else
                         {
-                            color = effectToUse.GetColorForLamp(i, currentTime, lampInfo, lampCount);
+                            ILampEffect? effectToUse = _currentEffect;
+                            bool isOverridden = _effectOverrides.TryGetValue(i, out var overrideEffect);
+                            if (isOverridden) effectToUse = overrideEffect;
 
-                            if (!isOverridden && _targetEffect != null)
+                            if (effectToUse == null)
                             {
-                                var targetColor = _targetEffect.GetColorForLamp(i, currentTime, lampInfo, lampCount);
-                                var elapsed = _stopwatch.Elapsed.TotalSeconds - _transitionStartTime;
-                                var t = Math.Clamp(elapsed / _transitionDuration, 0, 1);
-                                color = LerpColor(color, targetColor, t);
+                                 colors[i] = Color.FromArgb(0,0,0,0);
+                                 continue;
+                            }
+
+                            if (!isOverridden && _respectLampPurposes && IsStatusPurposed(lampInfo.Purposes))
+                            {
+                                color = _statusLampColor;
+                            }
+                            else
+                            {
+                                color = effectToUse.GetColorForLamp(i, currentTime, lampInfo, lampCount);
+
+                                if (!isOverridden && _targetEffect != null)
+                                {
+                                    var targetColor = _targetEffect.GetColorForLamp(i, currentTime, lampInfo, lampCount);
+                                    var elapsed = _stopwatch.Elapsed.TotalSeconds - _transitionStartTime;
+                                    var t = Math.Clamp(elapsed / _transitionDuration, 0, 1);
+                                    color = LerpColor(color, targetColor, t);
+                                }
                             }
                         }
 
@@ -647,6 +679,7 @@ public class LampArrayController : IDisposable
         _smoothTransition = store.SmoothTransition;
         _respectLampPurposes = store.RespectLampPurposes;
         _statusLampColor = TryParseStatusLampColor(store.StatusLampColor) ?? Color.FromArgb(255, 255, 255, 255);
+        _borgMode = store.BorgMode;
 
         if (store.DefaultEffect is { } defCfg)
             _currentEffect = EffectFromConfig(defCfg);
@@ -686,6 +719,7 @@ public class LampArrayController : IDisposable
         store.SmoothTransition = _smoothTransition;
         store.RespectLampPurposes = _respectLampPurposes;
         store.StatusLampColor = $"{_statusLampColor.A},{_statusLampColor.R},{_statusLampColor.G},{_statusLampColor.B}";
+        store.BorgMode = _borgMode;
 
         if (_currentEffect != null)
             store.DefaultEffect = ConfigFromEffect(_currentEffect);
@@ -716,6 +750,7 @@ public class LampArrayController : IDisposable
             "Battery Low" => LampEffectType.BatteryLowIndicator,
             "Charging" => LampEffectType.ChargingIndicator,
             "Caps Lock" => LampEffectType.CapsLockIndicator,
+            "Borg" => LampEffectType.Borg,
             _ => LampEffectType.Rainbow
         };
 
@@ -792,6 +827,7 @@ public class LampArrayController : IDisposable
                 GetParam(ps, "Period", 4.0)),
             LampEffectType.CapsLockIndicator => new CapsLockIndicatorEffect(
                 ps.TryGetValue("Color", out var clc) ? ParseColor(clc.ToString()!) : Color.FromArgb(255, 255, 255, 255)),
+            LampEffectType.Borg => new BorgEffect(),
             _ => new RainbowEffect(4.0, true)
         };
     }

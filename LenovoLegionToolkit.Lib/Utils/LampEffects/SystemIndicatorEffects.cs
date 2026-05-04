@@ -135,6 +135,28 @@ public class ChargingEffect : BaseLampEffect
     }
 }
 
+// Borg mode: zero-configuration adaptive effect that "just works" on any
+// LampArray-conformant device. Status and Branding lamps are held at white
+// so system feedback channels are preserved; everything else runs a spatial
+// rainbow wave whose period scales with the lamp count, so a 5-lamp ambient
+// strip and a 100-key keyboard both look intentional. Resistance is futile.
+public class BorgEffect : BaseLampEffect
+{
+    public override string Name => "Borg";
+
+    public override Color GetColorForLamp(int lampIndex, double time, LampInfo lampInfo, int totalLamps)
+    {
+        if (lampInfo.Purposes.HasFlag(LampPurposes.Status) || lampInfo.Purposes.HasFlag(LampPurposes.Branding))
+            return Color.FromArgb(255, 255, 255, 255);
+
+        var period = totalLamps > 30 ? 6.0 : 3.0;
+        var hue = time / period * 360.0 + lampInfo.Position.X * 200.0 + lampInfo.Position.Y * 100.0;
+        hue %= 360.0;
+        if (hue < 0) hue += 360.0;
+        return HsvToRgb(hue, 0.85, 0.9);
+    }
+}
+
 public class CapsLockIndicatorEffect : BaseLampEffect
 {
     public override string Name => "Caps Lock";

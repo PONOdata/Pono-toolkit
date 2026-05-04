@@ -174,6 +174,12 @@ public partial class LampArrayRGBKeyboardPage : UiPage
                 _controller.RespectLampPurposes = store.RespectLampPurposes;
             }
 
+            if (_borgModeCheckBox != null)
+            {
+                _borgModeCheckBox.IsChecked = store.BorgMode;
+                _controller.BorgMode = store.BorgMode;
+            }
+
             // Defensive load: if InitLampArrayControllerAsync skipped because
             // AppFlags.EnableLampArray was false, the controller still has its
             // default StatusLampColor. SaveSettings on Unloaded would then write
@@ -229,6 +235,12 @@ public partial class LampArrayRGBKeyboardPage : UiPage
     {
         if (_controller != null && _respectLampPurposesCheckBox != null)
             _controller.RespectLampPurposes = _respectLampPurposesCheckBox.IsChecked ?? false;
+    }
+
+    private void BorgMode_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_controller != null && _borgModeCheckBox != null)
+            _controller.BorgMode = _borgModeCheckBox.IsChecked ?? false;
     }
 
     private void CalculateAuroraBounds()
@@ -508,6 +520,7 @@ public partial class LampArrayRGBKeyboardPage : UiPage
                 BatteryLowEffect => LampEffectType.BatteryLowIndicator,
                 ChargingEffect => LampEffectType.ChargingIndicator,
                 CapsLockIndicatorEffect => LampEffectType.CapsLockIndicator,
+                BorgEffect => LampEffectType.Borg,
                 _ => null
             };
 
@@ -564,6 +577,7 @@ public partial class LampArrayRGBKeyboardPage : UiPage
             LampEffectType.BatteryLowIndicator => new BatteryLowEffect(WinUIColor.FromArgb(255, 255, 0, 0)),
             LampEffectType.ChargingIndicator => new ChargingEffect(WinUIColor.FromArgb(255, 0, 200, 0), WinUIColor.FromArgb(255, 0, 120, 220)),
             LampEffectType.CapsLockIndicator => new CapsLockIndicatorEffect(WinUIColor.FromArgb(255, 255, 255, 255)),
+            LampEffectType.Borg => new BorgEffect(),
             _ => new RainbowEffect(4.0, true)
         };
 
