@@ -69,10 +69,10 @@ public class UpdateChecker
                     Log.Instance.Trace($"Checking GitHub for updates...");
 
                     var adapter = new HttpClientAdapter(_httpClientFactory.CreateHandler);
-                    var productInformation = new ProductHeaderValue("LenovoLegionToolkit-UpdateChecker");
+                    var productInformation = new ProductHeaderValue("PonoToolkit-UpdateChecker");
                     var connection = new Connection(productInformation, adapter);
                     var githubClient = new GitHubClient(connection);
-                    var releases = await githubClient.Repository.Release.GetAll("LenovoLegionToolkit-Team", "LenovoLegionToolkit", new ApiOptions { PageSize = 5 }).ConfigureAwait(false);
+                    var releases = await githubClient.Repository.Release.GetAll("PONOdata", "Pono-toolkit", new ApiOptions { PageSize = 5 }).ConfigureAwait(false);
 
                     var thisReleaseVersion = Assembly.GetEntryAssembly()?.GetName().Version ?? new Version(0, 0, 0, 0);
                     var thisBuildDate = Assembly.GetEntryAssembly()?.GetBuildDateTime() ?? new DateTime(2000, 1, 1);
@@ -515,16 +515,16 @@ public class UpdateChecker
     private async Task<(Version?, Version?, StatusCode, ProjectInfo, string)> TryGetUpdateFromServer(UpdateChannel channel)
     {
         var thisReleaseVersion = Assembly.GetEntryAssembly()?.GetName().Version;
-        string folderName = $"LenovoLegionToolkit{GetChannelSuffix(channel)}";
+        string folderName = $"PonoToolkit{GetChannelSuffix(channel)}";
 
         ProjectInfo projectInfo = new ProjectInfo
         {
-            ProjectName = "LenovoLegionToolkit",
-            ProjectExeName = "LenovoLegionToolkitSetup.exe",
-            ProjectAuthor = "LenovoLegionToolkit-Team",
+            ProjectName = "PonoToolkit",
+            ProjectExeName = "PonoToolkitSetup.exe",
+            ProjectAuthor = "PONOdata",
             ProjectCurrentVersion = thisReleaseVersion?.ToString() ?? "0.0.0.0",
             ProjectCurrentExePath = "NULL",
-            ProjectNewExePath = $"{SERVER_URL}/{folderName}/LenovoLegionToolkitSetup.exe"
+            ProjectNewExePath = $"{SERVER_URL}/{folderName}/PonoToolkitSetup.exe"
         };
 
         var (statusCode, newestVersion) = await GetLatestVersionWithRetryAsync(projectInfo, channel).ConfigureAwait(false);

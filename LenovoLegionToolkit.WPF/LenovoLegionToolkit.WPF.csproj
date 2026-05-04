@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<ApplicationIcon>Assets/icon.ico</ApplicationIcon>
-		<AssemblyName>Lenovo Legion Toolkit</AssemblyName>
+		<AssemblyName>Pono Toolkit</AssemblyName>
 
 		<UseWPF>true</UseWPF>
 		<UseWindowsForms>true</UseWindowsForms>

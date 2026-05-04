@@ -1,15 +1,15 @@
 #include "InnoDependencies\Scripts\install_dotnet.iss"
 
-#define MyAppName "Lenovo Legion Toolkit"
-#define MyAppNameCompact "LenovoLegionToolkit"
-#define MyAppPublisher "LenovoLegionToolkit-Team"
-#define MyAppURL "https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit"
-#define MyAppExeName "Lenovo Legion Toolkit.exe"
-#define MyAppGitHub "https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit"
+#define MyAppName "Pono Toolkit"
+#define MyAppNameCompact "PonoToolkit"
+#define MyAppPublisher "Pono Data Solutions"
+#define MyAppURL "https://github.com/PONOdata/Pono-toolkit"
+#define MyAppExeName "Pono Toolkit.exe"
+#define MyAppGitHub "https://github.com/PONOdata/Pono-toolkit"
 #define MyAppLegionDiscord "https://discord.com/invite/legionseries"
 #define MyAppLOQDiscord "https://discord.gg/3GKzQtwdNf"
 #define MyAppOfficialDiscord "https://discord.gg/TB3ER8ZVdt"
-#define MyAppCopyright "© 2026 Bartosz Cichecki, Kaguya, and Dr. Skinner"
+#define MyAppCopyright "© 2026 Pono Data Solutions. Based on Lenovo Legion Toolkit © 2026 Bartosz Cichecki, Kaguya, and Dr. Skinner. Licensed GPL-3.0."
 
 #ifndef MyAppVersion
   #define MyAppVersion "0.0.1"
@@ -18,8 +18,8 @@
 [Setup]
 UsePreviousAppDir=no
 UsedUserAreasWarning=false
-AppId={{0C37B9AC-9C3D-4302-8ABB-125C7C7D83D5}
-AppMutex=LenovoLegionToolkit_Mutex_6efcc882-924c-4cbc-8fec-f45c25696f98
+AppId={{DE600207-7B83-4EF7-BFAB-73A4ECCA8B8C}
+AppMutex=PonoToolkit_Mutex_3ff8861a-4f82-4787-98da-80620919da57
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppCopyright={#MyAppCopyright}
@@ -32,7 +32,7 @@ DefaultDirName={commonpf}\{#MyAppNameCompact}
 DisableProgramGroupPage=yes
 LicenseFile=LICENSE
 PrivilegesRequired=admin
-OutputBaseFilename=LenovoLegionToolkitSetup
+OutputBaseFilename=PonoToolkitSetup
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
@@ -163,7 +163,7 @@ VisitGitHub=Visit GitHub Repository
 JoinOfficialDiscord=Join Official Discord Community
 JoinLegionDiscord=Join Legion Series Discord Community
 JoinLOQDiscord=Join LOQ Series Discord Community
-UninstallKeepSettings=Do you want to delete all Lenovo Legion Toolkit settings, customizations, and configurations?
+UninstallKeepSettings=Do you want to delete all Pono Toolkit settings, customizations, and configurations?
 
 [Languages]
 Name: "en";      MessagesFile: "compiler:Default.isl"
@@ -223,4 +223,4 @@ Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -Com
 Filename: "rundll32.exe"; Parameters: "shell32.dll,ShellExec_RunDLL ""{app}\{#MyAppExeName}"""; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: runascurrentuser nowait postinstall skipifsilent
 
 [UninstallRun]
-RunOnceId: "DelAutorun"; Filename: "schtasks"; Parameters: "/Delete /TN ""LenovoLegionToolkit_Autorun_6efcc882-924c-4cbc-8fec-f45c25696f98"" /F"; Flags: runhidden
+RunOnceId: "DelAutorun"; Filename: "schtasks"; Parameters: "/Delete /TN ""PonoToolkit_Autorun_3ff8861a-4f82-4787-98da-80620919da57"" /F"; Flags: runhidden
