@@ -15,6 +15,16 @@
 
 Pono Toolkit is a fork of [Lenovo Legion Toolkit](https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit) (LLT) by Bartosz Cichecki, Kaguya, and Dr. Skinner. It is independent, GPL-3.0 licensed, and not officially affiliated with Lenovo or the LLT-Team.
 
+## Standing on shoulders
+
+Pono Toolkit would not exist without **Lenovo Legion Toolkit**. Bartosz Cichecki started the project, and Kaguya and Dr. Skinner have been carrying it forward. Years of WMI reverse engineering, hardware compatibility work, ACPI exploration, and feature design done by them is the foundation everything in this fork rests on.
+
+If you find Pono Toolkit useful, please consider donating to the upstream project that made it possible:
+
+[![Donate to upstream LLT](https://img.shields.io/badge/Donate%20to%20upstream%20LLT-PayPal-0070BA?logo=paypal&logoColor=white)](https://www.paypal.com/donate/?hosted_button_id=22AZE2NBP3HTL)
+
+Donations through this link go directly to the upstream LLT maintainers (Bartosz Cichecki et al.), not to Pono Data Solutions. That is intentional. The economic foundation of this fork belongs upstream.
+
 ## What is in this fork that is not in upstream
 
 - **Auto-detect Dynamic Lighting devices.** No debug flag. The Dynamic Lighting page surfaces automatically when a `LampArray`-conformant device is present.
