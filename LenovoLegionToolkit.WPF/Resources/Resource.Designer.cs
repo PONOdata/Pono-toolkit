@@ -3789,7 +3789,34 @@ namespace LenovoLegionToolkit.WPF.Resources {
                 return ResourceManager.GetString("LampArrayRGBKeyboardPage_Aurora_Sync", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Battery Low Indicator.
+        /// </summary>
+        public static string LampArrayRGBKeyboardPage_BatteryLow_Indicator {
+            get {
+                return ResourceManager.GetString("LampArrayRGBKeyboardPage_BatteryLow_Indicator", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Borg (auto-adapt).
+        /// </summary>
+        public static string LampArrayRGBKeyboardPage_Borg {
+            get {
+                return ResourceManager.GetString("LampArrayRGBKeyboardPage_Borg", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Borg mode (full control, auto-adapt for any keyboard).
+        /// </summary>
+        public static string LampArrayRGBKeyboardPage_Borg_Mode {
+            get {
+                return ResourceManager.GetString("LampArrayRGBKeyboardPage_Borg_Mode", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   查找类似 Bottom to Top 的本地化字符串。
         /// </summary>
@@ -3816,7 +3843,25 @@ namespace LenovoLegionToolkit.WPF.Resources {
                 return ResourceManager.GetString("LampArrayRGBKeyboardPage_Brightness", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Caps Lock Indicator.
+        /// </summary>
+        public static string LampArrayRGBKeyboardPage_CapsLock_Indicator {
+            get {
+                return ResourceManager.GetString("LampArrayRGBKeyboardPage_CapsLock_Indicator", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Charging Indicator.
+        /// </summary>
+        public static string LampArrayRGBKeyboardPage_Charging_Indicator {
+            get {
+                return ResourceManager.GetString("LampArrayRGBKeyboardPage_Charging_Indicator", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   查找类似 Clear Colors 的本地化字符串。
         /// </summary>
@@ -3825,7 +3870,34 @@ namespace LenovoLegionToolkit.WPF.Resources {
                 return ResourceManager.GetString("LampArrayRGBKeyboardPage_Clear_Colors", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Active.
+        /// </summary>
+        public static string LampArrayRGBKeyboardPage_Controller_Active {
+            get {
+                return ResourceManager.GetString("LampArrayRGBKeyboardPage_Controller_Active", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Controller.
+        /// </summary>
+        public static string LampArrayRGBKeyboardPage_Controller_Status {
+            get {
+                return ResourceManager.GetString("LampArrayRGBKeyboardPage_Controller_Status", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Yielded to system or other application.
+        /// </summary>
+        public static string LampArrayRGBKeyboardPage_Controller_Yielded {
+            get {
+                return ResourceManager.GetString("LampArrayRGBKeyboardPage_Controller_Yielded", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   查找类似 Custom 的本地化字符串。
         /// </summary>
@@ -3960,7 +4032,16 @@ namespace LenovoLegionToolkit.WPF.Resources {
                 return ResourceManager.GetString("LampArrayRGBKeyboardPage_Rear_Ambient", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Hold status lamps at fixed color.
+        /// </summary>
+        public static string LampArrayRGBKeyboardPage_Respect_Lamp_Purposes {
+            get {
+                return ResourceManager.GetString("LampArrayRGBKeyboardPage_Respect_Lamp_Purposes", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   查找类似 Right to Left 的本地化字符串。
         /// </summary>
@@ -4041,7 +4122,25 @@ namespace LenovoLegionToolkit.WPF.Resources {
                 return ResourceManager.GetString("LampArrayRGBKeyboardPage_Static", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Status lamp color.
+        /// </summary>
+        public static string LampArrayRGBKeyboardPage_Status_Lamp_Color {
+            get {
+                return ResourceManager.GetString("LampArrayRGBKeyboardPage_Status_Lamp_Color", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to System Indicators.
+        /// </summary>
+        public static string LampArrayRGBKeyboardPage_System_Indicators {
+            get {
+                return ResourceManager.GetString("LampArrayRGBKeyboardPage_System_Indicators", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   查找类似 Target Zone 的本地化字符串。
         /// </summary>

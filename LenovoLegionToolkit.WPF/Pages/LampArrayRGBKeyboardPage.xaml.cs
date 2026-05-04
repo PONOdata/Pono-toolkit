@@ -18,6 +18,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Windows.Devices.Enumeration;
+using Windows.Devices.Lights;
 using Wpf.Ui.Controls;
 using Button = System.Windows.Controls.Button;
 using WinUIColor = Windows.UI.Color;
@@ -74,15 +76,14 @@ public partial class LampArrayRGBKeyboardPage : UiPage
         try
         {
             if (AppFlags.Instance.EnableLampArray)
-            {
                 return true;
-            }
 
-            return false;
+            var devices = await DeviceInformation.FindAllAsync(LampArray.GetDeviceSelector());
+            return devices.Count > 0;
         }
         catch (Exception ex)
         {
-            Log.Instance.Trace($"Error checking keyboard support: {ex.Message}");
+            Log.Instance.Trace($"Error checking LampArray support: {ex.Message}");
             return false;
         }
     }
@@ -155,23 +156,17 @@ public partial class LampArrayRGBKeyboardPage : UiPage
                 _controller.SetEffectForIndices(allIndices, _defaultEffect);
             }
 
-            _controller.Brightness = store.Brightness;
-            _controller.Speed = store.Speed;
-            _controller.SmoothTransition = store.SmoothTransition;
+            ApplyStoreToControllerAndUi(store);
 
-            if (_brightnessSlider != null) _brightnessSlider.Value = store.Brightness * 100.0;
-            if (_brightnessValue != null) _brightnessValue.Text = $"{store.Brightness * 100:F0}{Resource.Percent}";
-
-            if (_speedSlider != null) _speedSlider.Value = store.Speed * 100.0;
-            if (_speedValue != null) _speedValue.Text = $"{store.Speed * 100:F0}{Resource.Percent}";
-
-            if (_smoothTransitionCheckBox != null) _smoothTransitionCheckBox.IsChecked = store.SmoothTransition;
+            UpdateControllerStatusText(_controller.IsControlled);
 
             UpdateZoneVisibility();
             ClearSelection();
             UpdateEffectSelectionUI();
 
         }, DispatcherPriority.Loaded);
+
+        _controller.ControlledChanged += Controller_ControlledChanged;
 
         CompositionTarget.Rendering += OnEffectTick;
     }
@@ -180,8 +175,73 @@ public partial class LampArrayRGBKeyboardPage : UiPage
     {
         CompositionTarget.Rendering -= OnEffectTick;
 
+        if (_controller != null)
+            _controller.ControlledChanged -= Controller_ControlledChanged;
+
         _controller.SaveSettings(_settings);
         StopScreenCapture();
+    }
+
+    private void Controller_ControlledChanged(object? sender, bool isControlled)
+    {
+        if (Dispatcher.HasShutdownStarted || Dispatcher.HasShutdownFinished)
+            return;
+        try
+        {
+            Dispatcher.InvokeAsync(() => UpdateControllerStatusText(isControlled));
+        }
+        catch (TaskCanceledException) { }
+    }
+
+    private void UpdateControllerStatusText(bool isControlled)
+    {
+        if (_controllerStatusText == null) return;
+        _controllerStatusText.Text = isControlled
+            ? Resource.LampArrayRGBKeyboardPage_Controller_Active
+            : Resource.LampArrayRGBKeyboardPage_Controller_Yielded;
+    }
+
+    private void RespectLampPurposes_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_controller != null && _respectLampPurposesCheckBox != null)
+            _controller.RespectLampPurposes = _respectLampPurposesCheckBox.IsChecked ?? false;
+    }
+
+    private void BorgMode_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_controller != null && _borgModeCheckBox != null)
+            _controller.BorgMode = _borgModeCheckBox.IsChecked ?? false;
+    }
+
+    // Push the flat settings (brightness, speed, smooth-transition,
+    // RespectLampPurposes, BorgMode, StatusLampColor) from the store into both
+    // the controller and the page's UI controls. Used on initial load and on
+    // profile import; per-lamp effect dictionaries stay the responsibility of
+    // RestoreEffectsFromSettings.
+    private void ApplyStoreToControllerAndUi(LampArraySettings.LampArraySettingsStore store)
+    {
+        _controller.Brightness = store.Brightness;
+        _controller.Speed = store.Speed;
+        _controller.SmoothTransition = store.SmoothTransition;
+        _controller.RespectLampPurposes = store.RespectLampPurposes;
+        _controller.BorgMode = store.BorgMode;
+
+        // If InitLampArrayControllerAsync skipped because AppFlags.EnableLampArray
+        // was false, the controller would otherwise hold its default StatusLampColor
+        // and OnUnloaded SaveSettings would write that default back over the stored
+        // value. Pushing the parsed value here keeps the user's saved color intact.
+        if (LampArrayController.TryParseStatusLampColor(store.StatusLampColor) is { } parsedStatus)
+            _controller.StatusLampColor = parsedStatus;
+
+        if (_brightnessSlider != null) _brightnessSlider.Value = store.Brightness * 100.0;
+        if (_brightnessValue != null) _brightnessValue.Text = $"{store.Brightness * 100:F0}{Resource.Percent}";
+
+        if (_speedSlider != null) _speedSlider.Value = store.Speed * 100.0;
+        if (_speedValue != null) _speedValue.Text = $"{store.Speed * 100:F0}{Resource.Percent}";
+
+        if (_smoothTransitionCheckBox != null) _smoothTransitionCheckBox.IsChecked = store.SmoothTransition;
+        if (_respectLampPurposesCheckBox != null) _respectLampPurposesCheckBox.IsChecked = store.RespectLampPurposes;
+        if (_borgModeCheckBox != null) _borgModeCheckBox.IsChecked = store.BorgMode;
     }
 
     private void CalculateAuroraBounds()
@@ -458,6 +518,10 @@ public partial class LampArrayRGBKeyboardPage : UiPage
                 RainbowWaveEffect => LampEffectType.RainbowWave,
                 SpiralRainbowEffect => LampEffectType.SpiralRainbow,
                 AuroraSyncEffect => LampEffectType.AuroraSync,
+                BatteryLowEffect => LampEffectType.BatteryLowIndicator,
+                ChargingEffect => LampEffectType.ChargingIndicator,
+                CapsLockIndicatorEffect => LampEffectType.CapsLockIndicator,
+                BorgEffect => LampEffectType.Borg,
                 _ => null
             };
 
@@ -511,6 +575,10 @@ public partial class LampArrayRGBKeyboardPage : UiPage
             LampEffectType.RainbowWave => new RainbowWaveEffect(1.0, 2.0, GetSelectedDirection()),
             LampEffectType.SpiralRainbow => new SpiralRainbowEffect(),
             LampEffectType.AuroraSync => _globalAuroraEffect,
+            LampEffectType.BatteryLowIndicator => new BatteryLowEffect(WinUIColor.FromArgb(255, 255, 0, 0)),
+            LampEffectType.ChargingIndicator => new ChargingEffect(WinUIColor.FromArgb(255, 0, 200, 0), WinUIColor.FromArgb(255, 0, 120, 220)),
+            LampEffectType.CapsLockIndicator => new CapsLockIndicatorEffect(WinUIColor.FromArgb(255, 255, 255, 255)),
+            LampEffectType.Borg => new BorgEffect(),
             _ => new RainbowEffect(4.0, true)
         };
 
@@ -898,10 +966,7 @@ public partial class LampArrayRGBKeyboardPage : UiPage
         {
             _settings.ImportFromFile(dialog.FileName);
 
-            var store = _settings.Store;
-            _controller.Brightness = store.Brightness;
-            _controller.Speed = store.Speed;
-            _controller.SmoothTransition = store.SmoothTransition;
+            ApplyStoreToControllerAndUi(_settings.Store);
 
             RestoreEffectsFromSettings();
             UpdateEffectSelectionUI();
