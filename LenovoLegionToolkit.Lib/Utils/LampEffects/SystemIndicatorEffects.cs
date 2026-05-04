@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Windows.Devices.Lights;
 using Windows.UI;
 using Windows.Win32;
@@ -9,8 +10,15 @@ using LenovoLegionToolkit.Lib.Utils;
 namespace LenovoLegionToolkit.Lib.Utils.LampEffects;
 
 // System-state-driven indicator effects. Each effect samples a Windows or Lenovo
-// platform signal at most once per second to keep the per-frame cost negligible
-// while the effect runs at the controller's render cadence.
+// platform signal at most once per second of wall-clock time to keep the per-frame
+// cost negligible while the effect runs at the controller's render cadence. The
+// shared Stopwatch is intentionally separate from the controller's animation time
+// (which is scaled by the speed slider) so sampling cadence stays at one second
+// regardless of how fast or slow the visual animation runs.
+internal static class IndicatorSampleClock
+{
+    public static readonly Stopwatch Wall = Stopwatch.StartNew();
+}
 
 public class BatteryLowEffect : BaseLampEffect
 {
@@ -19,7 +27,7 @@ public class BatteryLowEffect : BaseLampEffect
     private const double DefaultThreshold = 0.15;
     private const double DefaultPeriod = 1.5;
 
-    private double _lastSampleTime = -1;
+    private long _lastSampleMs = -1;
     private bool _sampledLow;
 
     public BatteryLowEffect(Color color, double threshold = DefaultThreshold, double period = DefaultPeriod)
@@ -35,7 +43,7 @@ public class BatteryLowEffect : BaseLampEffect
         var threshold = (double)Parameters["Threshold"];
         var period = (double)Parameters["Period"];
 
-        SampleIfDue(time, threshold);
+        SampleIfDue(threshold);
 
         if (!_sampledLow)
             return Color.FromArgb(0, 0, 0, 0);
@@ -51,12 +59,13 @@ public class BatteryLowEffect : BaseLampEffect
             (byte)(color.B * pulse));
     }
 
-    private void SampleIfDue(double time, double threshold)
+    private void SampleIfDue(double threshold)
     {
-        if (_lastSampleTime >= 0 && time - _lastSampleTime < 1.0)
+        var nowMs = IndicatorSampleClock.Wall.ElapsedMilliseconds;
+        if (_lastSampleMs >= 0 && nowMs - _lastSampleMs < 1000)
             return;
 
-        _lastSampleTime = time;
+        _lastSampleMs = nowMs;
         try
         {
             var info = Battery.GetBatteryInformation();
@@ -72,7 +81,7 @@ public class BatteryLowEffect : BaseLampEffect
 
     public override void Reset()
     {
-        _lastSampleTime = -1;
+        _lastSampleMs = -1;
         _sampledLow = false;
     }
 }
@@ -83,7 +92,7 @@ public class ChargingEffect : BaseLampEffect
 
     private const double DefaultPeriod = 4.0;
 
-    private double _lastSampleTime = -1;
+    private long _lastSampleMs = -1;
     private bool _sampledCharging;
 
     public ChargingEffect(Color startColor, Color endColor, double period = DefaultPeriod)
@@ -99,7 +108,7 @@ public class ChargingEffect : BaseLampEffect
         var endColor = (Color)Parameters["EndColor"];
         var period = (double)Parameters["Period"];
 
-        SampleIfDue(time);
+        SampleIfDue();
 
         if (!_sampledCharging)
             return Color.FromArgb(0, 0, 0, 0);
@@ -110,12 +119,13 @@ public class ChargingEffect : BaseLampEffect
         return LerpColor(startColor, endColor, sweep);
     }
 
-    private void SampleIfDue(double time)
+    private void SampleIfDue()
     {
-        if (_lastSampleTime >= 0 && time - _lastSampleTime < 1.0)
+        var nowMs = IndicatorSampleClock.Wall.ElapsedMilliseconds;
+        if (_lastSampleMs >= 0 && nowMs - _lastSampleMs < 1000)
             return;
 
-        _lastSampleTime = time;
+        _lastSampleMs = nowMs;
         try
         {
             var info = Battery.GetBatteryInformation();
@@ -130,7 +140,7 @@ public class ChargingEffect : BaseLampEffect
 
     public override void Reset()
     {
-        _lastSampleTime = -1;
+        _lastSampleMs = -1;
         _sampledCharging = false;
     }
 }
