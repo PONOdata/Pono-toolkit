@@ -38,6 +38,13 @@ public class AutomationProcessor(
 
     public event EventHandler<List<AutomationPipeline>>? PipelinesChanged;
 
+    // Fires after a pipeline finishes successfully on the listener-triggered
+    // path (RunAsync). Lets subscribers react to pipelines that ran because of
+    // an automation event rather than a user-initiated invocation. Not raised
+    // from RunNowAsync, which is reserved for explicit user actions (Smart Key,
+    // tray menu, CLI, "Run Now" button) that callers usually handle directly.
+    public event EventHandler<AutomationPipeline>? PipelineRan;
+
     #region Initialization / pipeline reloading
 
     public async Task InitializeAsync()
@@ -213,6 +220,8 @@ public class AutomationProcessor(
 
                 var otherPipelines = pipelines.Where(p => p.Id != pipeline.Id).ToList();
                 await pipeline.RunAsync(otherPipelines, ct).ConfigureAwait(false);
+
+                PipelineRan?.Invoke(this, pipeline);
 
                 Log.Instance.Trace($"Pipeline completed successfully. [name={pipeline.Name}, trigger={pipeline.Trigger}]");
             }
