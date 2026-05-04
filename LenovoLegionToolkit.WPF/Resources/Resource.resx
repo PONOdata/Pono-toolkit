@@ -1648,6 +1648,9 @@ Click Yes to disable and No to ignore.</value>
   <data name="NotificationsSettingsWindow_ACAdapter" xml:space="preserve">
     <value>AC Adapter</value>
   </data>
+  <data name="NotificationsSettingsWindow_AirplaneMode" xml:space="preserve">
+    <value>Airplane Mode</value>
+  </data>
   <data name="NotificationsSettingsWindow_Automation" xml:space="preserve">
     <value>Actions</value>
   </data>
@@ -1721,6 +1724,12 @@ It won't affect other full screen windows, but you will not be able to click on 
   </data>
   <data name="Notification_ACAdapterDisconnected" xml:space="preserve">
     <value>AC adapter disconnected</value>
+  </data>
+  <data name="Notification_AirplaneModeOff" xml:space="preserve">
+    <value>Airplane Mode off</value>
+  </data>
+  <data name="Notification_AirplaneModeOn" xml:space="preserve">
+    <value>Airplane Mode on</value>
   </data>
   <data name="Notification_CameraOff" xml:space="preserve">
     <value>Camera off</value>

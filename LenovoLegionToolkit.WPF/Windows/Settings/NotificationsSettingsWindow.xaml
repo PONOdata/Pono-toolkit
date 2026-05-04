@@ -243,7 +243,7 @@
                         Click="RefreshRateToggle_Click" />
                 </custom:CardControl>
 
-                <custom:CardControl x:Name="_acAdapterCard" Margin="0,0,0,24">
+                <custom:CardControl x:Name="_acAdapterCard" Margin="0,0,0,8">
                     <custom:CardControl.Header>
                         <controls:CardHeaderControl Title="{x:Static resources:Resource.NotificationsSettingsWindow_ACAdapter}" />
                     </custom:CardControl.Header>
@@ -252,6 +252,17 @@
                         Margin="0,0,0,8"
                         AutomationProperties.Name="{x:Static resources:Resource.NotificationsSettingsWindow_ACAdapter}"
                         Click="ACAdapterToggle_Click" />
+                </custom:CardControl>
+
+                <custom:CardControl x:Name="_airplaneModeCard" Margin="0,0,0,24">
+                    <custom:CardControl.Header>
+                        <controls:CardHeaderControl Title="{x:Static resources:Resource.NotificationsSettingsWindow_AirplaneMode}" />
+                    </custom:CardControl.Header>
+                    <wpfui:ToggleSwitch
+                        x:Name="_airplaneModeToggle"
+                        Margin="0,0,0,8"
+                        AutomationProperties.Name="{x:Static resources:Resource.NotificationsSettingsWindow_AirplaneMode}"
+                        Click="AirplaneModeToggle_Click" />
                 </custom:CardControl>
             </StackPanel>
         </wpfui:DynamicScrollViewer>
