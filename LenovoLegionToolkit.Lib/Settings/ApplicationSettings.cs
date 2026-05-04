@@ -29,8 +29,12 @@ public class ApplicationSettings : AbstractSettings<ApplicationSettingsStore>
     public class ApplicationSettingsStore
     {
         public Theme Theme { get; set; }
-        public RGBColor? AccentColor { get; set; }
-        public AccentColorSource AccentColorSource { get; set; }
+        // Pono Toolkit defaults to a navy blue accent on first run. Users can
+        // change this in Settings -> Appearance -> Accent color. Existing
+        // installations keep their persisted value because Newtonsoft only
+        // writes defaults when the field is missing from settings.json.
+        public RGBColor? AccentColor { get; set; } = new RGBColor(30, 58, 95);
+        public AccentColorSource AccentColorSource { get; set; } = AccentColorSource.Custom;
         public PowerModeMappingMode PowerModeMappingMode { get; set; } = PowerModeMappingMode.Disabled;
         public Dictionary<PowerModeState, Guid> PowerPlans { get; set; } = [];
         public Dictionary<PowerModeState, WindowsPowerMode> PowerModes { get; set; } = [];

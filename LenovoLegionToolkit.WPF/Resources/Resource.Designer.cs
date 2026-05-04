@@ -167,7 +167,43 @@ namespace LenovoLegionToolkit.WPF.Resources {
                 return ResourceManager.GetString("AboutPage_TranslationCredit", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   查找类似 About this fork 的本地化字符串。
+        /// </summary>
+        public static string AboutPage_Fork_Title {
+            get {
+                return ResourceManager.GetString("AboutPage_Fork_Title", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   查找类似 Pono Toolkit is a fork of Lenovo Legion Toolkit ... 的本地化字符串。
+        /// </summary>
+        public static string AboutPage_Fork_Description {
+            get {
+                return ResourceManager.GetString("AboutPage_Fork_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   查找类似 Upstream Lenovo Legion Toolkit on GitHub 的本地化字符串。
+        /// </summary>
+        public static string AboutPage_Fork_Upstream {
+            get {
+                return ResourceManager.GetString("AboutPage_Fork_Upstream", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   查找类似 Donate to upstream LLT (PayPal) 的本地化字符串。
+        /// </summary>
+        public static string AboutPage_Fork_DonateUpstream {
+            get {
+                return ResourceManager.GetString("AboutPage_Fork_DonateUpstream", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   查找类似 Version 的本地化字符串。
         /// </summary>

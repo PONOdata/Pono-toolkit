@@ -17,6 +17,36 @@
             FontWeight="Medium"
             Text="{x:Static resources:Resource.AboutPage_Title}" />
 
+        <Border
+            Margin="0,0,0,16"
+            Padding="16"
+            Background="{DynamicResource SubtleFillColorSecondaryBrush}"
+            BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="4">
+            <StackPanel>
+                <TextBlock
+                    FontSize="14"
+                    FontWeight="Medium"
+                    Text="{x:Static resources:Resource.AboutPage_Fork_Title}" />
+                <TextBlock
+                    Padding="0,8,0,0"
+                    Text="{x:Static resources:Resource.AboutPage_Fork_Description}"
+                    TextWrapping="Wrap" />
+                <wpfui:Hyperlink
+                    Margin="0,12,0,0"
+                    Click="Hyperlink_Click"
+                    Content="{x:Static resources:Resource.AboutPage_Fork_Upstream}"
+                    Icon="Link24"
+                    Tag="https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit" />
+                <wpfui:Hyperlink
+                    Click="Hyperlink_Click"
+                    Content="{x:Static resources:Resource.AboutPage_Fork_DonateUpstream}"
+                    Icon="Heart24"
+                    Tag="https://www.paypal.com/donate/?hosted_button_id=22AZE2NBP3HTL" />
+            </StackPanel>
+        </Border>
+
         <TextBlock
             Padding="0,0,0,8"
             Focusable="True"
