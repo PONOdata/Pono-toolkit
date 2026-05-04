@@ -26,12 +26,15 @@ public static class AirplaneMode
     // briefly and then proceeds with a fresh read of the now-flipped state.
     private static readonly object Sync = new();
 
-    // Coalesces concurrent bounces. If a bounce is already in flight when the
-    // user presses Fn+F8 again, the second request skips its own bounce; the
-    // in-flight one will finish and pick up the latest registry value when
-    // RmSvc reads it on startup. Prevents two threads from fighting the
-    // service control manager (which is not reentrant for stop/start cycles).
+    // Serializes bounce work so two threads do not fight the service control
+    // manager (which is not reentrant for stop/start cycles).
     private static readonly object BounceSync = new();
+
+    // Bounce request flag. Set by Toggle() after each successful registry write;
+    // the drain loop reads and clears it under BounceSync until it observes 0,
+    // so a second toggle that arrives mid-bounce still gets its policy applied
+    // by a follow-up stop/start cycle rather than being silently dropped.
+    private static int _bounceRequested;
 
     public static void Open()
     {
@@ -96,7 +99,8 @@ public static class AirplaneMode
                 // Bouncing on a background task keeps Fn+F8 snappy. The radios
                 // re-evaluate the airplane mode flag once RmSvc comes back; the
                 // notification fires on the target state and does not block on it.
-                _ = Task.Run(BounceRadioService);
+                Interlocked.Exchange(ref _bounceRequested, 1);
+                _ = Task.Run(BounceRadioServiceDrain);
 
                 Log.Instance.Trace($"Airplane mode toggled to {(target ? "on" : "off")}.");
                 return target;
@@ -110,14 +114,32 @@ public static class AirplaneMode
         }
     }
 
-    private static void BounceRadioService()
+    // Drains pending bounce requests so a second Fn+F8 that arrived mid-bounce
+    // still triggers a follow-up stop/start cycle. TryEnter coalesces multiple
+    // concurrent invocations of the drain itself (only one drain runs at a
+    // time); the inner while loop ensures every set of _bounceRequested becomes
+    // a real bounce before exit.
+    private static void BounceRadioServiceDrain()
     {
         if (!Monitor.TryEnter(BounceSync))
         {
-            Log.Instance.Trace($"Skipping {RadioServiceName} bounce, one already in flight.");
+            Log.Instance.Trace($"Skipping {RadioServiceName} drain, one already in flight.");
             return;
         }
 
+        try
+        {
+            while (Interlocked.Exchange(ref _bounceRequested, 0) == 1)
+                BounceRadioServiceOnce();
+        }
+        finally
+        {
+            Monitor.Exit(BounceSync);
+        }
+    }
+
+    private static void BounceRadioServiceOnce()
+    {
         try
         {
             using var sc = new ServiceController(RadioServiceName);
@@ -148,10 +170,6 @@ public static class AirplaneMode
         catch (Exception ex)
         {
             Log.Instance.Trace($"Failed to bounce {RadioServiceName}.", ex);
-        }
-        finally
-        {
-            Monitor.Exit(BounceSync);
         }
     }
 }
