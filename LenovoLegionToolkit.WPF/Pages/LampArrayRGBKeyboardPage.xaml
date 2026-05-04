@@ -116,6 +116,7 @@
                             x:Name="_respectLampPurposesCheckBox"
                             Grid.Column="1"
                             Checked="RespectLampPurposes_Changed"
+                            IsChecked="False"
                             Unchecked="RespectLampPurposes_Changed" />
                     </Grid>
 

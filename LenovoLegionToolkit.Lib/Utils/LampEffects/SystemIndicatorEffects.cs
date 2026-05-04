@@ -85,7 +85,6 @@ public class ChargingEffect : BaseLampEffect
 
     private double _lastSampleTime = -1;
     private bool _sampledCharging;
-    private double _sampledFraction;
 
     public ChargingEffect(Color startColor, Color endColor, double period = DefaultPeriod)
     {
@@ -108,8 +107,7 @@ public class ChargingEffect : BaseLampEffect
         var sweep = Math.Sin(time / period * Math.PI * 2) * 0.5 + 0.5;
         sweep = EaseInOut(sweep);
 
-        var blend = Math.Clamp(_sampledFraction + (sweep - 0.5) * 0.2, 0.0, 1.0);
-        return LerpColor(startColor, endColor, blend);
+        return LerpColor(startColor, endColor, sweep);
     }
 
     private void SampleIfDue(double time)
@@ -122,13 +120,11 @@ public class ChargingEffect : BaseLampEffect
         {
             var info = Battery.GetBatteryInformation();
             _sampledCharging = info.IsCharging;
-            _sampledFraction = Math.Clamp(info.BatteryPercentage / 100.0, 0.0, 1.0);
         }
         catch (Exception ex)
         {
             Log.Instance.Trace($"ChargingEffect sample failed: {ex.Message}");
             _sampledCharging = false;
-            _sampledFraction = 0;
         }
     }
 
@@ -136,13 +132,15 @@ public class ChargingEffect : BaseLampEffect
     {
         _lastSampleTime = -1;
         _sampledCharging = false;
-        _sampledFraction = 0;
     }
 }
 
 public class CapsLockIndicatorEffect : BaseLampEffect
 {
     public override string Name => "Caps Lock";
+
+    private double _lastQueryTime = double.NaN;
+    private bool _isOn;
 
     public CapsLockIndicatorEffect(Color color)
     {
@@ -151,21 +149,33 @@ public class CapsLockIndicatorEffect : BaseLampEffect
 
     public override Color GetColorForLamp(int lampIndex, double time, LampInfo lampInfo, int totalLamps)
     {
-        bool isOn;
-        try
+        // The controller passes the same time value to every lamp on a single
+        // frame. Cache the GetKeyState result on the time-key so a lamp array
+        // with N lamps does one Win32 call per frame rather than N.
+        if (time != _lastQueryTime)
         {
-            // ANCHOR: PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_CAPITAL) & 0x1, mirrors NativeWindowsMessageListener.cs:353.
-            isOn = (PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_CAPITAL) & 0x1) != 0;
-        }
-        catch (Exception ex)
-        {
-            Log.Instance.Trace($"CapsLockIndicatorEffect query failed: {ex.Message}");
-            isOn = false;
+            _lastQueryTime = time;
+            try
+            {
+                // ANCHOR: PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_CAPITAL) & 0x1, mirrors NativeWindowsMessageListener.cs:353.
+                _isOn = (PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_CAPITAL) & 0x1) != 0;
+            }
+            catch (Exception ex)
+            {
+                Log.Instance.Trace($"CapsLockIndicatorEffect query failed: {ex.Message}");
+                _isOn = false;
+            }
         }
 
-        if (!isOn)
+        if (!_isOn)
             return Color.FromArgb(0, 0, 0, 0);
 
         return (Color)Parameters["Color"];
+    }
+
+    public override void Reset()
+    {
+        _lastQueryTime = double.NaN;
+        _isOn = false;
     }
 }
