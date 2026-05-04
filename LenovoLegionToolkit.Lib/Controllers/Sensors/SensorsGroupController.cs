@@ -493,7 +493,12 @@ public class SensorsGroupController : IDisposable
             {
                 NVAPI.Initialize();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                // Expected on non-NVIDIA systems; tracing aids diagnosis on
+                // NVIDIA hardware where the call should succeed.
+                Log.Instance.Trace($"NVAPI.Initialize failed: {ex.Message}");
+            }
 
             _needRefreshGpuHardware = true;
         }
