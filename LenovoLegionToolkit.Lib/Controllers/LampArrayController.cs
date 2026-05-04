@@ -36,6 +36,11 @@ public class LampArrayController : IDisposable
     private double _brightness = 1.0;
     private double _speed = 1.0;
     private bool _smoothTransition = true;
+    private bool _respectLampPurposes;
+    private Color _statusLampColor = Color.FromArgb(255, 255, 255, 255);
+    private bool _isControlled;
+    private bool _borgMode;
+    private static readonly BorgEffect _borgInstance = new();
 
     private ILampEffect? _currentEffect;
     private ILampEffect? _targetEffect;
@@ -78,6 +83,35 @@ public class LampArrayController : IDisposable
     {
         get => _smoothTransition;
         set => _smoothTransition = value;
+    }
+
+    public bool RespectLampPurposes
+    {
+        get => _respectLampPurposes;
+        set => _respectLampPurposes = value;
+    }
+
+    public Color StatusLampColor
+    {
+        get => _statusLampColor;
+        set => _statusLampColor = value;
+    }
+
+    public bool IsControlled => _isControlled;
+
+    public event EventHandler<bool>? ControlledChanged;
+
+    // When BorgMode is on, BorgEffect replaces whichever effect is currently
+    // selected as the default for the array, while per-lamp overrides,
+    // RespectLampPurposes routing, and active transitions all continue to
+    // apply through the normal per-lamp pipeline. The intent is a single
+    // zero-configuration default effect for users who plug in an off-brand
+    // replacement keyboard and want it to "just work" without disturbing
+    // other settings they have configured.
+    public bool BorgMode
+    {
+        get => _borgMode;
+        set => _borgMode = value;
     }
 
     public bool IsAvailable
@@ -132,6 +166,7 @@ public class LampArrayController : IDisposable
         {
             Log.Instance.Trace($"LampArray device enumeration completed. Devices found: {_lampArrays.Count}");
         }
+        UpdateControlledState();
     }
 
     public async Task StopAsync()
@@ -162,6 +197,8 @@ public class LampArrayController : IDisposable
                 }
                 _lampArrays.Clear();
             }
+
+            UpdateControlledState();
 
             Log.Instance.Trace($"LampArray device watcher stopped.");
         }
@@ -429,28 +466,44 @@ public class LampArrayController : IDisposable
                     var lampCount = device.LampCount;
                     var colors = new Color[lampCount];
 
+                    // Snapshot _borgMode for the duration of this device's frame so
+                    // a mid-frame toggle from the UI thread cannot split the array
+                    // across both code paths. BorgMode replaces the current default
+                    // effect with BorgEffect; the rest of the per-lamp pipeline
+                    // (per-lamp overrides, RespectLampPurposes routing, transitions)
+                    // continues to apply normally.
+                    var defaultEffect = _borgMode ? _borgInstance : _currentEffect;
+
                     for (var i = 0; i < lampCount; i++)
                     {
                         var lampInfo = device.GetLampInfo(i);
-                        
-                        ILampEffect? effectToUse = _currentEffect;
+
+                        ILampEffect? effectToUse = defaultEffect;
                         bool isOverridden = _effectOverrides.TryGetValue(i, out var overrideEffect);
                         if (isOverridden) effectToUse = overrideEffect;
 
-                        if (effectToUse == null) 
+                        if (effectToUse == null)
                         {
                              colors[i] = Color.FromArgb(0,0,0,0);
                              continue;
                         }
 
-                        var color = effectToUse.GetColorForLamp(i, currentTime, lampInfo, lampCount);
-
-                        if (!isOverridden && _targetEffect != null)
+                        Color color;
+                        if (!isOverridden && _respectLampPurposes && IsStatusPurposed(lampInfo.Purposes))
                         {
-                            var targetColor = _targetEffect.GetColorForLamp(i, currentTime, lampInfo, lampCount);
-                            var elapsed = _stopwatch.Elapsed.TotalSeconds - _transitionStartTime;
-                            var t = Math.Clamp(elapsed / _transitionDuration, 0, 1);
-                            color = LerpColor(color, targetColor, t);
+                            color = _statusLampColor;
+                        }
+                        else
+                        {
+                            color = effectToUse.GetColorForLamp(i, currentTime, lampInfo, lampCount);
+
+                            if (!isOverridden && _targetEffect != null)
+                            {
+                                var targetColor = _targetEffect.GetColorForLamp(i, currentTime, lampInfo, lampCount);
+                                var elapsed = _stopwatch.Elapsed.TotalSeconds - _transitionStartTime;
+                                var t = Math.Clamp(elapsed / _transitionDuration, 0, 1);
+                                color = LerpColor(color, targetColor, t);
+                            }
                         }
 
                         colors[i] = ApplyBrightness(color, _brightness);
@@ -480,6 +533,33 @@ public class LampArrayController : IDisposable
     public Color? GetCurrentColor(int index)
     {
         return _lastFrameColors.TryGetValue(index, out var color) ? color : null;
+    }
+
+    // ANCHOR: LampPurposes is a flag enum on Windows.Devices.Lights.LampInfo.Purposes.
+    // Status / Branding purposes describe lamps the system intends to convey state on
+    // (caps-lock, charging LED, brand mark). When RespectLampPurposes is on, those
+    // lamps hold StatusLampColor instead of running the active animation.
+    private static bool IsStatusPurposed(LampPurposes purposes)
+    {
+        return purposes.HasFlag(LampPurposes.Status) || purposes.HasFlag(LampPurposes.Branding);
+    }
+
+    private void UpdateControlledState()
+    {
+        var newState = IsAvailable;
+
+        bool changed = false;
+        lock (_lampArrays)
+        {
+            if (newState != _isControlled)
+            {
+                _isControlled = newState;
+                changed = true;
+            }
+        }
+
+        if (changed)
+            ControlledChanged?.Invoke(this, newState);
     }
 
     private static Color ApplyBrightness(Color color, double brightness)
@@ -550,7 +630,7 @@ public class LampArrayController : IDisposable
             Log.Instance.Trace(
                 $"LampArray device registered: DeviceId={args.Id}, LampCount={lampArray.LampCount}, IsAvailable={isAvailableStr}");
 
-
+            UpdateControlledState();
         }
         catch (Exception ex)
         {
@@ -576,7 +656,7 @@ public class LampArrayController : IDisposable
                 }
             }
 
-
+            UpdateControlledState();
         }
         catch (Exception ex)
         {
@@ -590,6 +670,9 @@ public class LampArrayController : IDisposable
         _brightness = store.Brightness;
         _speed = store.Speed;
         _smoothTransition = store.SmoothTransition;
+        _respectLampPurposes = store.RespectLampPurposes;
+        _statusLampColor = TryParseStatusLampColor(store.StatusLampColor) ?? Color.FromArgb(255, 255, 255, 255);
+        _borgMode = store.BorgMode;
 
         if (store.DefaultEffect is { } defCfg)
             _currentEffect = EffectFromConfig(defCfg);
@@ -604,12 +687,32 @@ public class LampArrayController : IDisposable
         await StartAsync();
     }
 
+    public static Color? TryParseStatusLampColor(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
+        try
+        {
+            var parts = value.Split(',');
+            if (parts.Length != 4) return null;
+            return Color.FromArgb(byte.Parse(parts[0]), byte.Parse(parts[1]), byte.Parse(parts[2]), byte.Parse(parts[3]));
+        }
+        catch (Exception ex)
+        {
+            Log.Instance.Trace($"Failed to parse StatusLampColor='{value}': {ex.Message}");
+            return null;
+        }
+    }
+
     public void SaveSettings(LampArraySettings settings)
     {
         var store = settings.Store;
         store.Brightness = _brightness;
         store.Speed = _speed;
         store.SmoothTransition = _smoothTransition;
+        store.RespectLampPurposes = _respectLampPurposes;
+        store.StatusLampColor = $"{_statusLampColor.A},{_statusLampColor.R},{_statusLampColor.G},{_statusLampColor.B}";
+        store.BorgMode = _borgMode;
 
         if (_currentEffect != null)
             store.DefaultEffect = ConfigFromEffect(_currentEffect);
@@ -637,6 +740,10 @@ public class LampArrayController : IDisposable
             "Rainbow Wave" => LampEffectType.RainbowWave,
             "Spiral Rainbow" => LampEffectType.SpiralRainbow,
             "Aurora Sync" => LampEffectType.AuroraSync,
+            "Battery Low" => LampEffectType.BatteryLowIndicator,
+            "Charging" => LampEffectType.ChargingIndicator,
+            "Caps Lock" => LampEffectType.CapsLockIndicator,
+            "Borg" => LampEffectType.Borg,
             _ => LampEffectType.Rainbow
         };
 
@@ -703,6 +810,17 @@ public class LampArrayController : IDisposable
                 GetParam(ps, "Speed", 1.0),
                 GetParam(ps, "SpiralDensity", 5.0)),
             LampEffectType.AuroraSync => new AuroraSyncEffect(),
+            LampEffectType.BatteryLowIndicator => new BatteryLowEffect(
+                ps.TryGetValue("Color", out var blc) ? ParseColor(blc.ToString()!) : Color.FromArgb(255, 255, 0, 0),
+                GetParam(ps, "Threshold", 0.15),
+                GetParam(ps, "Period", 1.5)),
+            LampEffectType.ChargingIndicator => new ChargingEffect(
+                ps.TryGetValue("StartColor", out var chs) ? ParseColor(chs.ToString()!) : Color.FromArgb(255, 0, 200, 0),
+                ps.TryGetValue("EndColor", out var che) ? ParseColor(che.ToString()!) : Color.FromArgb(255, 0, 120, 220),
+                GetParam(ps, "Period", 4.0)),
+            LampEffectType.CapsLockIndicator => new CapsLockIndicatorEffect(
+                ps.TryGetValue("Color", out var clc) ? ParseColor(clc.ToString()!) : Color.FromArgb(255, 255, 255, 255)),
+            LampEffectType.Borg => new BorgEffect(),
             _ => new RainbowEffect(4.0, true)
         };
     }
@@ -715,6 +833,7 @@ public class LampArrayController : IDisposable
             isAvailableStr = sender.IsAvailable.ToString();
         }
         Log.Instance.Trace($"LampArray availability changed: IsAvailable={isAvailableStr}");
+        UpdateControlledState();
     }
 
     public void Dispose()
@@ -740,6 +859,8 @@ public class LampArrayController : IDisposable
             }
             _lampArrays.Clear();
         }
+
+        UpdateControlledState();
 
         GC.SuppressFinalize(this);
     }

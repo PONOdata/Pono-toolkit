@@ -19,6 +19,9 @@ public class LampArraySettings : AbstractSettings<LampArraySettings.LampArraySet
         public double Brightness { get; set; } = 1.0;
         public double Speed { get; set; } = 1.0;
         public bool SmoothTransition { get; set; } = true;
+        public bool RespectLampPurposes { get; set; } = false;
+        public string StatusLampColor { get; set; } = "255,255,255,255";
+        public bool BorgMode { get; set; } = false;
         public LampEffectConfig DefaultEffect { get; set; } = new();
         public Dictionary<int, LampEffectConfig> PerLampEffects { get; set; } = new();
     }

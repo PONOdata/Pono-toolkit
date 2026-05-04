@@ -10,6 +10,10 @@ on:
   pull_request:
     branches: [ master, dev ]
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   build:
 
@@ -26,22 +30,93 @@ jobs:
         cache-dependency-path: '**/*.csproj'
     - name: Restore
       run: dotnet restore
-    - name: Restore identity package signing key
+
+    # Three-tier signing detection. The original LLT_CERT_PFX path is unchanged
+    # (canonical for upstream maintainer pushes and tagged releases). Forks that
+    # set up Azure Trusted Signing (e.g. Brofalo's fso-kimo profile) get a real
+    # signature via the azure path. Forks with no signing credentials at all
+    # (the GitHub default for external pull_request runs) fall back to a
+    # compile-check so the workflow still surfaces real build breaks instead of
+    # red-flagging on the missing secret.
+    - name: Detect signing path
+      id: signing
+      env:
+        LLT_CERT_PFX: ${{ secrets.LLT_CERT_PFX }}
+        AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        AZURE_SIGNING_ENDPOINT: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
+      run: |
+        if ($env:LLT_CERT_PFX) {
+          "path=pfx" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          Write-Host "Signing path: PFX"
+        } elseif ($env:AZURE_CLIENT_ID -and $env:AZURE_TENANT_ID -and $env:AZURE_SIGNING_ENDPOINT) {
+          "path=azure" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          Write-Host "Signing path: Azure Trusted Signing"
+        } else {
+          "path=none" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          Write-Host "::warning::No signing credentials available. Falling back to compile-check (typical for fork PRs from contributors without their own signing setup)."
+        }
+      shell: powershell
+
+    # PFX path (canonical, unchanged behavior).
+    - name: Restore identity package signing key (PFX)
+      if: steps.signing.outputs.path == 'pfx'
       env:
         LLT_CERT_PFX: ${{ secrets.LLT_CERT_PFX }}
       run: |
-        if (-not $env:LLT_CERT_PFX) {
-          Write-Error "Missing LLT_CERT_PFX secret. The identity MSIX package cannot be signed."
-          exit 1
-        }
-
         [IO.File]::WriteAllBytes("LenovoLegionToolkit.pfx", [Convert]::FromBase64String($env:LLT_CERT_PFX))
       shell: powershell
-    - name: Build
+    - name: Build (PFX)
+      if: steps.signing.outputs.path == 'pfx'
       env:
         LLT_CERT_PASSWORD: ${{ secrets.LLT_CERT_PASSWORD }}
       run: .\make_action.bat
+
+    # Azure Trusted Signing path. make_action.bat expects a PFX so it can call
+    # SignTool internally; we satisfy that with a transient self-signed PFX whose
+    # signature is then replaced by a real Azure Trusted Signing signature on the
+    # output binaries. Requires the fork to configure (federated identity):
+    #   AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID,
+    #   AZURE_SIGNING_ENDPOINT, AZURE_SIGNING_ACCOUNT_NAME, AZURE_SIGNING_PROFILE_NAME
+    - name: Generate transient PFX for build (Azure path)
+      if: steps.signing.outputs.path == 'azure'
+      run: |
+        $cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject "CN=LLT Transient Build" -KeyAlgorithm RSA -KeyLength 2048 -CertStoreLocation Cert:\CurrentUser\My
+        $password = ConvertTo-SecureString -String "transient-fork-build" -Force -AsPlainText
+        Export-PfxCertificate -Cert $cert -FilePath "LenovoLegionToolkit.pfx" -Password $password | Out-Null
+        "LLT_CERT_PASSWORD=transient-fork-build" | Out-File -FilePath $env:GITHUB_ENV -Append
+      shell: powershell
+    - name: Build (Azure)
+      if: steps.signing.outputs.path == 'azure'
+      run: .\make_action.bat
+    - name: Azure login (federated identity)
+      if: steps.signing.outputs.path == 'azure'
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    - name: Re-sign installer with Azure Trusted Signing
+      if: steps.signing.outputs.path == 'azure'
+      uses: azure/trusted-signing-action@v0.5.1
+      with:
+        endpoint: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
+        trusted-signing-account-name: ${{ secrets.AZURE_SIGNING_ACCOUNT_NAME }}
+        certificate-profile-name: ${{ secrets.AZURE_SIGNING_PROFILE_NAME }}
+        files-folder: build_installer
+        files-folder-filter: exe
+        file-digest: SHA256
+        timestamp-rfc3161: http://timestamp.digicert.com
+        timestamp-digest: SHA256
+
+    # Compile-check fallback (no signing creds at all, typical for fork PRs).
+    - name: Compile check (no signing)
+      if: steps.signing.outputs.path == 'none'
+      run: dotnet build LenovoLegionToolkit.WPF\LenovoLegionToolkit.WPF.csproj -c Release --no-restore
+
+    # Verify + upload (skipped on the no-signing path since no installer is produced).
     - name: Verify installer
+      if: steps.signing.outputs.path != 'none'
       run: |
         $installerPath = "build_installer\LenovoLegionToolkitSetup.exe"
         if (-not (Test-Path $installerPath)) {
@@ -50,6 +125,7 @@ jobs:
         }
       shell: powershell
     - name: Upload artifact
+      if: steps.signing.outputs.path != 'none'
       uses: actions/upload-artifact@v4
       with:
         name: installer

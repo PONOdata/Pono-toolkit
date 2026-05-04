@@ -343,6 +343,10 @@ public enum LampEffectType
     RainbowWave,
     SpiralRainbow,
     AuroraSync,
+    BatteryLowIndicator,
+    ChargingIndicator,
+    CapsLockIndicator,
+    Borg,
 }
 
 public enum LightingChangeState
