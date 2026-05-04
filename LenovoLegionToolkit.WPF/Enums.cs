@@ -82,7 +82,9 @@ public enum LampEffectType
     [Display(ResourceType = typeof(Resource), Name = nameof(Resource.LampArrayRGBKeyboardPage_Charging_Indicator))]
     ChargingIndicator,
     [Display(ResourceType = typeof(Resource), Name = nameof(Resource.LampArrayRGBKeyboardPage_CapsLock_Indicator))]
-    CapsLockIndicator
+    CapsLockIndicator,
+    [Display(ResourceType = typeof(Resource), Name = nameof(Resource.LampArrayRGBKeyboardPage_Borg))]
+    Borg
 }
 
 public enum SensorGroupType

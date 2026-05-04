@@ -3800,6 +3800,24 @@ namespace LenovoLegionToolkit.WPF.Resources {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Borg (auto-adapt).
+        /// </summary>
+        public static string LampArrayRGBKeyboardPage_Borg {
+            get {
+                return ResourceManager.GetString("LampArrayRGBKeyboardPage_Borg", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Borg mode (full control, auto-adapt for any keyboard).
+        /// </summary>
+        public static string LampArrayRGBKeyboardPage_Borg_Mode {
+            get {
+                return ResourceManager.GetString("LampArrayRGBKeyboardPage_Borg_Mode", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   查找类似 Bottom to Top 的本地化字符串。
         /// </summary>
         public static string LampArrayRGBKeyboardPage_Bottom_to_Top {

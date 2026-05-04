@@ -120,6 +120,20 @@
                             Unchecked="RespectLampPurposes_Changed" />
                     </Grid>
 
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock VerticalAlignment="Stretch" Text="{x:Static resources:Resource.LampArrayRGBKeyboardPage_Borg_Mode}" />
+                        <CheckBox
+                            x:Name="_borgModeCheckBox"
+                            Grid.Column="1"
+                            Checked="BorgMode_Changed"
+                            IsChecked="False"
+                            Unchecked="BorgMode_Changed" />
+                    </Grid>
+
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
