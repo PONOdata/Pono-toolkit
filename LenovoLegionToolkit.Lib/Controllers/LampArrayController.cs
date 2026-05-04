@@ -42,6 +42,20 @@ public class LampArrayController : IDisposable
     private bool _borgMode;
     private static readonly BorgEffect _borgInstance = new();
 
+    // Capability probes are constant for the lifetime of the process; cache them
+    // once so the 30 Hz render loop and IsAvailable getter do not pay an
+    // ApiInformation lookup on every iteration.
+    private static readonly bool IsAvailablePropertyPresent =
+        ApiInformation.IsPropertyPresent("Windows.Devices.Lights.LampArray", "IsAvailable");
+    private static readonly bool IsEnabledPropertyPresent =
+        ApiInformation.IsPropertyPresent("Windows.Devices.Lights.LampArray", "IsEnabled");
+    private static readonly bool AvailabilityChangedEventPresent =
+        ApiInformation.IsEventPresent("Windows.Devices.Lights.LampArray", "AvailabilityChanged");
+
+    // Common transparent value used for off-lamp output. Hoisted to avoid
+    // allocating an identical Color struct on every off-lamp on every frame.
+    private static readonly Color TransparentColor = Color.FromArgb(0, 0, 0, 0);
+
     private ILampEffect? _currentEffect;
     private ILampEffect? _targetEffect;
     private double _transitionStartTime = 0;
@@ -50,6 +64,12 @@ public class LampArrayController : IDisposable
 
     private readonly global::System.Collections.Concurrent.ConcurrentDictionary<int, ILampEffect> _effectOverrides = new();
     private readonly global::System.Collections.Concurrent.ConcurrentDictionary<int, Color> _lastFrameColors = new();
+
+    // Per-device scratch buffers. UpdateEffect is the only writer and runs
+    // serialized inside lock (_lampArrays). Reusing them avoids two array
+    // allocations per device per frame (~30 Hz * device count).
+    private readonly Dictionary<string, Color[]> _colorBufferCache = new();
+    private readonly Dictionary<string, int[]> _indicesBufferCache = new();
 
     private class LampArrayDevice
     {
@@ -122,15 +142,10 @@ public class LampArrayController : IDisposable
             {
                 foreach (var kvp in _lampArrays)
                 {
-                    if (ApiInformation.IsPropertyPresent("Windows.Devices.Lights.LampArray", "IsAvailable"))
-                    {
-                        if (kvp.Value.Device.IsAvailable)
-                            return true;
-                    }
-                    else
-                    {
+                    if (!IsAvailablePropertyPresent)
                         return true;
-                    }
+                    if (kvp.Value.Device.IsAvailable)
+                        return true;
                 }
                 return false;
             }
@@ -190,7 +205,7 @@ public class LampArrayController : IDisposable
             {
                 foreach (var device in _lampArrays.Values)
                 {
-                    if (ApiInformation.IsEventPresent("Windows.Devices.Lights.LampArray", "AvailabilityChanged"))
+                    if (AvailabilityChangedEventPresent)
                     {
                         device.Device.AvailabilityChanged -= LampArray_AvailabilityChanged;
                     }
@@ -351,7 +366,7 @@ public class LampArrayController : IDisposable
             foreach (var kvp in _lampArrays)
             {
                 var device = kvp.Value.Device;
-                if (ApiInformation.IsPropertyPresent("Windows.Devices.Lights.LampArray", "IsAvailable"))
+                if (IsAvailablePropertyPresent)
                 {
                     if (!device.IsAvailable) continue;
                 }
@@ -374,7 +389,7 @@ public class LampArrayController : IDisposable
             Log.Instance.Trace($"SetAllLampsColor: RGB({color.R},{color.G},{color.B}) on {_lampArrays.Count} devices.");
             foreach (var kvp in _lampArrays)
             {
-                if (ApiInformation.IsPropertyPresent("Windows.Devices.Lights.LampArray", "IsAvailable"))
+                if (IsAvailablePropertyPresent)
                 {
                     if (!kvp.Value.Device.IsAvailable)
                     {
@@ -411,7 +426,7 @@ public class LampArrayController : IDisposable
             Log.Instance.Trace($"SetLampColors: Setting {lampColors.Count} lamp colors.");
             foreach (var kvp in _lampArrays)
             {
-                if (ApiInformation.IsPropertyPresent("Windows.Devices.Lights.LampArray", "IsAvailable"))
+                if (IsAvailablePropertyPresent)
                 {
                     if (!kvp.Value.Device.IsAvailable) continue;
                 }
@@ -451,28 +466,38 @@ public class LampArrayController : IDisposable
 
         if (_currentEffect == null && _effectOverrides.IsEmpty) return;
 
+        // Compute transition interpolation factor once per frame; it is constant
+        // across all lamps of all devices on the same UpdateEffect tick.
+        double transitionT = 0;
+        bool transitionActive = _targetEffect != null && _transitionDuration > 0;
+        if (transitionActive)
+        {
+            var elapsed = _stopwatch.Elapsed.TotalSeconds - _transitionStartTime;
+            transitionT = Math.Clamp(elapsed / _transitionDuration, 0, 1);
+        }
+
+        // Snapshot _borgMode once for the whole frame so a mid-frame UI toggle
+        // cannot split lamps of one device across both code paths.
+        var defaultEffect = _borgMode ? _borgInstance : _currentEffect;
+
         lock (_lampArrays)
         {
             foreach (var kvp in _lampArrays)
             {
-                if (ApiInformation.IsPropertyPresent("Windows.Devices.Lights.LampArray", "IsAvailable"))
-                {
-                    if (!kvp.Value.Device.IsAvailable) continue;
-                }
+                if (IsAvailablePropertyPresent && !kvp.Value.Device.IsAvailable)
+                    continue;
 
                 try
                 {
                     var device = kvp.Value.Device;
                     var lampCount = device.LampCount;
-                    var colors = new Color[lampCount];
-
-                    // Snapshot _borgMode for the duration of this device's frame so
-                    // a mid-frame toggle from the UI thread cannot split the array
-                    // across both code paths. BorgMode replaces the current default
-                    // effect with BorgEffect; the rest of the per-lamp pipeline
-                    // (per-lamp overrides, RespectLampPurposes routing, transitions)
-                    // continues to apply normally.
-                    var defaultEffect = _borgMode ? _borgInstance : _currentEffect;
+                    var colors = GetOrAllocBuffer(_colorBufferCache, kvp.Key, lampCount, () => new Color[lampCount]);
+                    var indices = GetOrAllocBuffer(_indicesBufferCache, kvp.Key, lampCount, () =>
+                    {
+                        var arr = new int[lampCount];
+                        for (var j = 0; j < lampCount; j++) arr[j] = j;
+                        return arr;
+                    });
 
                     for (var i = 0; i < lampCount; i++)
                     {
@@ -484,8 +509,8 @@ public class LampArrayController : IDisposable
 
                         if (effectToUse == null)
                         {
-                             colors[i] = Color.FromArgb(0,0,0,0);
-                             continue;
+                            colors[i] = TransparentColor;
+                            continue;
                         }
 
                         Color color;
@@ -497,12 +522,10 @@ public class LampArrayController : IDisposable
                         {
                             color = effectToUse.GetColorForLamp(i, currentTime, lampInfo, lampCount);
 
-                            if (!isOverridden && _targetEffect != null)
+                            if (!isOverridden && transitionActive)
                             {
-                                var targetColor = _targetEffect.GetColorForLamp(i, currentTime, lampInfo, lampCount);
-                                var elapsed = _stopwatch.Elapsed.TotalSeconds - _transitionStartTime;
-                                var t = Math.Clamp(elapsed / _transitionDuration, 0, 1);
-                                color = LerpColor(color, targetColor, t);
+                                var targetColor = _targetEffect!.GetColorForLamp(i, currentTime, lampInfo, lampCount);
+                                color = LerpColor(color, targetColor, transitionT);
                             }
                         }
 
@@ -510,7 +533,7 @@ public class LampArrayController : IDisposable
                         _lastFrameColors[i] = colors[i];
                     }
 
-                    device.SetColorsForIndices(colors, Enumerable.Range(0, lampCount).ToArray());
+                    device.SetColorsForIndices(colors, indices);
                 }
                 catch (Exception ex)
                 {
@@ -518,6 +541,17 @@ public class LampArrayController : IDisposable
                 }
             }
         }
+    }
+
+    // Reuses a per-device buffer keyed on DeviceId. Reallocates only when the
+    // lamp count changes (rare, basically only on device replug).
+    private static T[] GetOrAllocBuffer<T>(Dictionary<string, T[]> cache, string deviceId, int requiredLength, Func<T[]> factory)
+    {
+        if (cache.TryGetValue(deviceId, out var existing) && existing.Length == requiredLength)
+            return existing;
+        var fresh = factory();
+        cache[deviceId] = fresh;
+        return fresh;
     }
 
     public void SetEffectForIndices(IEnumerable<int> indices, ILampEffect? effect)
@@ -596,7 +630,7 @@ public class LampArrayController : IDisposable
                 return;
             }
 
-            if (ApiInformation.IsPropertyPresent("Windows.Devices.Lights.LampArray", "IsEnabled"))
+            if (IsEnabledPropertyPresent)
             {
                 lampArray.IsEnabled = true;
             }
@@ -608,21 +642,21 @@ public class LampArrayController : IDisposable
                 if (_lampArrays.TryGetValue(args.Id, out var oldWrapper))
                 {
                     Log.Instance.Trace($"Refreshing stale LampArray instance for {args.Id}");
-                    if (ApiInformation.IsEventPresent("Windows.Devices.Lights.LampArray", "AvailabilityChanged"))
+                    if (AvailabilityChangedEventPresent)
                     {
                         oldWrapper.Device.AvailabilityChanged -= LampArray_AvailabilityChanged;
                     }
                 }
 
                 _lampArrays[args.Id] = deviceWrapper;
-                if (ApiInformation.IsEventPresent("Windows.Devices.Lights.LampArray", "AvailabilityChanged"))
+                if (AvailabilityChangedEventPresent)
                 {
                     lampArray.AvailabilityChanged += LampArray_AvailabilityChanged;
                 }
             }
 
             var isAvailableStr = "N/A";
-            if (ApiInformation.IsPropertyPresent("Windows.Devices.Lights.LampArray", "IsAvailable"))
+            if (IsAvailablePropertyPresent)
             {
                 isAvailableStr = lampArray.IsAvailable.ToString();
             }
@@ -648,7 +682,7 @@ public class LampArrayController : IDisposable
             {
                 if (_lampArrays.TryGetValue(args.Id, out var device))
                 {
-                    if (ApiInformation.IsEventPresent("Windows.Devices.Lights.LampArray", "AvailabilityChanged"))
+                    if (AvailabilityChangedEventPresent)
                     {
                         device.Device.AvailabilityChanged -= LampArray_AvailabilityChanged;
                     }
@@ -828,7 +862,7 @@ public class LampArrayController : IDisposable
     private void LampArray_AvailabilityChanged(LampArray sender, object args)
     {
         var isAvailableStr = "N/A";
-        if (ApiInformation.IsPropertyPresent("Windows.Devices.Lights.LampArray", "IsAvailable"))
+        if (IsAvailablePropertyPresent)
         {
             isAvailableStr = sender.IsAvailable.ToString();
         }
@@ -852,7 +886,7 @@ public class LampArrayController : IDisposable
         {
             foreach (var dev in _lampArrays.Values)
             {
-                if (ApiInformation.IsEventPresent("Windows.Devices.Lights.LampArray", "AvailabilityChanged"))
+                if (AvailabilityChangedEventPresent)
                 {
                     dev.Device.AvailabilityChanged -= LampArray_AvailabilityChanged;
                 }
