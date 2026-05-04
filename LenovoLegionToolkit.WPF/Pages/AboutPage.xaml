@@ -50,12 +50,12 @@
             Click="Hyperlink_Click"
             Content="{x:Static resources:Resource.AboutPage_ProjectWebsiteOnGitHub}"
             Icon="Link24"
-            Tag="https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit" />
+            Tag="https://github.com/PONOdata/Pono-toolkit" />
         <wpfui:Hyperlink
             Click="Hyperlink_Click"
             Content="{x:Static resources:Resource.AboutPage_LatestReleaseOnGitHub}"
             Icon="Link24"
-            Tag="https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit/releases/latest" />
+            Tag="https://github.com/PONOdata/Pono-toolkit/releases/latest" />
 
         <TextBlock
             Padding="0,24,0,8"
