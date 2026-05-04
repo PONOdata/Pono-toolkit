@@ -3,7 +3,7 @@
 #define MyAppName "Pono Toolkit"
 #define MyAppNameCompact "PonoToolkit"
 #define MyAppPublisher "Pono Data Solutions"
-#define MyAppURL "https://github.com/PONOdata/Pono-toolkit"
+#define MyAppURL "https://ponotoolkit.com"
 #define MyAppExeName "Pono Toolkit.exe"
 #define MyAppGitHub "https://github.com/PONOdata/Pono-toolkit"
 #define MyAppLegionDiscord "https://discord.com/invite/legionseries"
