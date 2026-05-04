@@ -106,7 +106,10 @@ public partial class LampArrayRGBKeyboardPage : UiPage
 
             await _controller.StartAsync();
         }
-        catch { }
+        catch (Exception ex)
+        {
+            Log.Instance.Trace($"LampArray controller startup failed: {ex.Message}");
+        }
 
         await Dispatcher.InvokeAsync(() =>
         {
@@ -451,7 +454,11 @@ public partial class LampArrayRGBKeyboardPage : UiPage
                     }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                // One zone failing should not break the rest of the restore.
+                Log.Instance.Trace($"Zone restore failed: {ex.Message}");
+            }
         }
 
         UpdateEffectSelectionUI();

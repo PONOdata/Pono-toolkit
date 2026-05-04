@@ -248,7 +248,11 @@ public partial class DiscreteGPUManagementWindow : BaseWindow
                     var process = Process.GetProcessById(pid);
                     process.Kill(true);
                 }
-                catch (Exception) { }
+                catch (Exception ex)
+                {
+                    // Process may already be gone or inaccessible; expected.
+                    Log.Instance.Trace($"Failed to kill process {pid}: {ex.Message}");
+                }
             }
             Task.Run(async () =>
             {

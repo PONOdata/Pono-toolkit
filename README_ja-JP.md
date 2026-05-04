@@ -1,6 +1,10 @@
 <img height="128" align="left" src="assets/logo.png" alt="Logo">
 
-# レノボ・レギオン・ツールキット
+# Pono Toolkit
+
+> Pono Toolkit は Lenovo Legion Toolkit (LLT) のフォークです。日本語ドキュメントは未翻訳です。詳細は英語の [README.md](README.md) をご覧ください。LLT 本家は Bartosz Cichecki さんと Kaguya さんが開発しています。本ソフトウェアが役立つ場合は [上流 LLT への寄付 (PayPal)](https://www.paypal.com/donate/?hosted_button_id=22AZE2NBP3HTL) もぜひご検討ください。
+
+# レノボ・レギオン・ツールキット (上流 / upstream)
 
 [![Build](https://img.shields.io/github/actions/workflow/status/LenovoLegionToolkit-Team/LenovoLegionToolkit/build.yml?branch=master&logo=github&logoColor=white)](https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit/actions)
 [![Downloads](https://img.shields.io/github/downloads/LenovoLegionToolkit-Team/LenovoLegionToolkit/total?color=brightgreen)](https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit/releases)

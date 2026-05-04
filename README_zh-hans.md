@@ -1,6 +1,10 @@
 <img height="128" align="left" src="assets/logo.png" alt="Logo">
 
-# 拯救者工具箱 Lenovo Legion Toolkit
+# Pono Toolkit
+
+> Pono Toolkit 是 Lenovo Legion Toolkit (LLT) 的分支版本。本中文文档暂未完整迁移；完整说明请参见英文 [README.md](README.md)。原版 LLT 由 Bartosz Cichecki 与 Kaguya 维护。如果本工具对您有帮助，欢迎[支持上游 LLT (PayPal)](https://www.paypal.com/donate/?hosted_button_id=22AZE2NBP3HTL)。
+
+# 拯救者工具箱 Lenovo Legion Toolkit (上游 / upstream)
 
 [![Build](https://img.shields.io/github/actions/workflow/status/LenovoLegionToolkit-Team/LenovoLegionToolkit/build.yml?branch=master&logo=github&logoColor=white)](https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit/actions)
 [![Downloads](https://img.shields.io/github/downloads/LenovoLegionToolkit-Team/LenovoLegionToolkit/total?color=brightgreen)](https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit/releases)
