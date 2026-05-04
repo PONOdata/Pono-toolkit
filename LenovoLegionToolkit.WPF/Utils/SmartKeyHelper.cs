@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using LenovoLegionToolkit.Lib;
 using LenovoLegionToolkit.Lib.Automation;
+using LenovoLegionToolkit.Lib.Automation.Pipeline;
 using LenovoLegionToolkit.Lib.Extensions;
 using LenovoLegionToolkit.Lib.Listeners;
 using LenovoLegionToolkit.Lib.Messaging;
@@ -35,6 +36,54 @@ internal class SmartKeyHelper
     private SmartKeyHelper()
     {
         _specialKeyListener.Changed += SpecialKeyListener_Changed;
+        _automationProcessor.PipelineRan += AutomationProcessor_PipelineRan;
+    }
+
+    // Keeps the smart-key cycle index in sync when a different code path runs
+    // a pipeline that happens to be in the cycle list. Without this, an
+    // automation that runs the same quick action the smart key is about to run
+    // would not advance the cycle, so the next smart-key press would repeat
+    // that quick action. Fires only on the listener-triggered automation path
+    // (see PipelineRan in AutomationProcessor); explicit RunNowAsync paths are
+    // handled by their own callers, so the smart key's own ProcessSpecialKey
+    // continues to advance via its existing logic.
+    private void AutomationProcessor_PipelineRan(object? sender, AutomationPipeline pipeline)
+    {
+        try
+        {
+            var changed = false;
+
+            var single = _settings.Store.SmartKeySinglePressActionList;
+            if (single.Count > 1)
+            {
+                var index = single.IndexOf(pipeline.Id);
+                if (index >= 0)
+                {
+                    var nextIndex = (index + 1) % single.Count;
+                    _settings.Store.SmartKeySinglePressActionId = single[nextIndex];
+                    changed = true;
+                }
+            }
+
+            var doublePress = _settings.Store.SmartKeyDoublePressActionList;
+            if (doublePress.Count > 1)
+            {
+                var index = doublePress.IndexOf(pipeline.Id);
+                if (index >= 0)
+                {
+                    var nextIndex = (index + 1) % doublePress.Count;
+                    _settings.Store.SmartKeyDoublePressActionId = doublePress[nextIndex];
+                    changed = true;
+                }
+            }
+
+            if (changed)
+                _settings.SynchronizeStore();
+        }
+        catch (Exception ex)
+        {
+            Log.Instance.Trace($"Failed to sync smart key cycle index after pipeline run.", ex);
+        }
     }
 
     private async void SpecialKeyListener_Changed(object? sender, SpecialKeyListener.ChangedEventArgs e)
