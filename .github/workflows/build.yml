@@ -118,7 +118,7 @@ jobs:
     - name: Verify installer
       if: steps.signing.outputs.path != 'none'
       run: |
-        $installerPath = "build_installer\LenovoLegionToolkitSetup.exe"
+        $installerPath = "build_installer\PonoToolkitSetup.exe"
         if (-not (Test-Path $installerPath)) {
           Write-Error "Installer file not found at $installerPath"
           exit 1
@@ -129,4 +129,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: installer
-        path: build_installer\LenovoLegionToolkitSetup.exe
+        path: build_installer\PonoToolkitSetup.exe

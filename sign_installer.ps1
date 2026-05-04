@@ -3,7 +3,7 @@
 # certificate. This allows the custom updater to verify the installer's signature.
 
 param(
-    [string]$InstallerPath = "build_installer\LenovoLegionToolkitSetup.exe",
+    [string]$InstallerPath = "build_installer\PonoToolkitSetup.exe",
     [string]$PfxPath = "LenovoLegionToolkit.pfx",
     [string]$Password = $env:LLT_CERT_PASSWORD
 )
