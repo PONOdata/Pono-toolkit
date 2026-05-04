@@ -96,12 +96,12 @@ public class NotificationsManager
                 NotificationType.ITSModeCool => _settings.Store.Notifications.ITSMode,
                 NotificationType.ITSModePerformance => _settings.Store.Notifications.ITSMode,
                 NotificationType.ITSModeGeek => _settings.Store.Notifications.ITSMode,
-                _ => throw new ArgumentException(nameof(notification.Type))
+                _ => false
             };
 
             if (!allow)
             {
-                Log.Instance.Trace($"Notification type {notification.Type} is disabled.");
+                Log.Instance.Trace($"Notification type {notification.Type} is disabled (or unmapped).");
 
                 return;
             }
@@ -150,7 +150,7 @@ public class NotificationsManager
                 NotificationType.ITSModeCool => SymbolRegular.Gauge24,
                 NotificationType.ITSModePerformance => SymbolRegular.Gauge24,
                 NotificationType.ITSModeGeek => SymbolRegular.Gauge24,
-                _ => throw new ArgumentException(nameof(notification.Type))
+                _ => SymbolRegular.Info24
             };
 
             SymbolRegular? overlaySymbol = notification.Type switch
@@ -215,7 +215,7 @@ public class NotificationsManager
                 NotificationType.ITSModeCool => string.Format("{0}", notification.Args),
                 NotificationType.ITSModePerformance => string.Format("{0}", notification.Args),
                 NotificationType.ITSModeGeek => string.Format("{0}", notification.Args),
-                _ => throw new ArgumentException(nameof(notification.Type))
+                _ => notification.Args?.ToString() ?? notification.Type.ToString()
             };
 
             Action<SymbolIcon>? symbolTransform = notification.Type switch
@@ -245,7 +245,7 @@ public class NotificationsManager
                 NotificationDuration.Short  => notification.Type == NotificationType.RefreshRate ? 2000 : 500,
                 NotificationDuration.Normal => notification.Type == NotificationType.RefreshRate ? 3500 : 1000,
                 NotificationDuration.Long   => notification.Type == NotificationType.RefreshRate ? 5000 : 2500,
-                _ => throw new ArgumentException(nameof(_settings.Store.NotificationDuration))
+                _ => 1000
             };
 
 
