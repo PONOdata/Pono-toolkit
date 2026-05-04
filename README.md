@@ -13,6 +13,8 @@
 
 **Pono Toolkit** is a Windows desktop utility for power users who want one place to manage system-level features that vendors usually spread across multiple bloated apps. Lenovo Legion is the primary supported platform today; Pono Toolkit is built as an **AIO** (all-in-one) tool with cross-vendor utilities at its core (airplane mode, Dynamic Lighting, automation, notifications) and Lenovo-specific tools layered on top.
 
+> *"If it fits, it ships."*
+
 Pono Toolkit is a fork of [Lenovo Legion Toolkit](https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit) (LLT) by Bartosz Cichecki, Kaguya, and Dr. Skinner. It is independent, GPL-3.0 licensed, and not officially affiliated with Lenovo or the LLT-Team.
 
 ## Standing on shoulders

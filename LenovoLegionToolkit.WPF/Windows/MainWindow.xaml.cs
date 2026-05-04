@@ -140,6 +140,35 @@ public partial class MainWindow
         await trayHelper.InitializeAsync();
         trayHelper.MakeVisible();
         _trayHelper = trayHelper;
+
+        MaybeShowUpstreamShoutout();
+    }
+
+    // Shows a one-time upstream-shoutout window on first launch and once after
+    // every version upgrade. The dialog credits Bartosz Cichecki (original
+    // author) and Kaguya (current upstream developer), and surfaces a PayPal
+    // donate link that goes directly to upstream's hosted_button_id.
+    private void MaybeShowUpstreamShoutout()
+    {
+        try
+        {
+            var settings = IoCContainer.Resolve<ApplicationSettings>();
+            var currentVersion = Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "0.0.0.0";
+            if (settings.Store.LastShoutoutVersion == currentVersion)
+                return;
+
+            var shoutout = new Windows.Utils.UpstreamShoutoutWindow { Owner = this };
+            shoutout.Closed += (_, _) =>
+            {
+                settings.Store.LastShoutoutVersion = currentVersion;
+                settings.SynchronizeStore();
+            };
+            shoutout.Show();
+        }
+        catch (Exception ex)
+        {
+            Log.Instance.Trace($"Failed to show upstream shoutout: {ex.Message}");
+        }
     }
 
     private async void MainWindow_Closing(object? sender, CancelEventArgs e)

@@ -120,7 +120,15 @@ code {
 .tagline-meta {
   font-size: 14px;
   color: var(--navy-300);
+  margin: 0 0 4px 0;
+}
+
+.motto {
+  font-size: 13px;
+  color: var(--navy-300);
   margin: 0 0 32px 0;
+  font-style: italic;
+  letter-spacing: 0.04em;
 }
 
 .cta-row { display: flex; gap: 12px; flex-wrap: wrap; }

@@ -74,6 +74,13 @@ public class ApplicationSettings : AbstractSettings<ApplicationSettingsStore>
         public int GPUMonitoringStartupDelay { get; set; } = 1000;
         public int GPUKillProcessDelay { get; set; } = 500;
         public WindowBackdropType BackdropType { get; set; } = WindowBackdropType.Mica;
+
+        // Tracks the last app version that displayed the upstream-shoutout
+        // window. Empty string on first run; otherwise the version string of
+        // the build that already showed the dialog. Compared against the
+        // current entry-assembly version on startup; mismatch triggers the
+        // shoutout once per upgrade.
+        public string LastShoutoutVersion { get; set; } = string.Empty;
     }
 
     public class GameDetectionSettings
