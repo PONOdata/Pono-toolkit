@@ -4689,7 +4689,25 @@ namespace LenovoLegionToolkit.WPF.Resources {
                 return ResourceManager.GetString("Notification_ACAdapterDisconnected", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   查找类似 Airplane Mode off 的本地化字符串。
+        /// </summary>
+        public static string Notification_AirplaneModeOff {
+            get {
+                return ResourceManager.GetString("Notification_AirplaneModeOff", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   查找类似 Airplane Mode on 的本地化字符串。
+        /// </summary>
+        public static string Notification_AirplaneModeOn {
+            get {
+                return ResourceManager.GetString("Notification_AirplaneModeOn", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   查找类似 Camera off 的本地化字符串。
         /// </summary>
@@ -4905,7 +4923,16 @@ namespace LenovoLegionToolkit.WPF.Resources {
                 return ResourceManager.GetString("NotificationsSettingsWindow_ACAdapter", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   查找类似 Airplane Mode 的本地化字符串。
+        /// </summary>
+        public static string NotificationsSettingsWindow_AirplaneMode {
+            get {
+                return ResourceManager.GetString("NotificationsSettingsWindow_AirplaneMode", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   查找类似 Actions 的本地化字符串。
         /// </summary>

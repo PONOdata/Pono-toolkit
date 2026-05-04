@@ -124,7 +124,16 @@ public class DriverKeyListener(
             }
 
             if (value.HasFlag(DriverKey.FnF8))
-                AirplaneMode.Open();
+            {
+                var newState = AirplaneMode.Toggle();
+                if (newState is not null)
+                {
+                    var type = newState.Value
+                        ? NotificationType.AirplaneModeOn
+                        : NotificationType.AirplaneModeOff;
+                    MessagingCenter.Publish(new NotificationMessage(type));
+                }
+            }
 
             if (value.HasFlag(DriverKey.FnF10))
             {

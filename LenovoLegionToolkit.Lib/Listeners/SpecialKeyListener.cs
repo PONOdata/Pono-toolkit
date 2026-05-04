@@ -98,7 +98,7 @@ public class SpecialKeyListener(
                     await ToggleMicrophoneAsync().ConfigureAwait(false);
                     break;
                 case SpecialKey.FnF8:
-                    OpenAirplaneModeSettings();
+                    ToggleAirplaneMode();
                     break;
                 case SpecialKey.WhiteBacklightOff:
                     NotifyWhiteBacklight(WhiteKeyboardBacklightState.Off);
@@ -229,7 +229,17 @@ public class SpecialKeyListener(
         }
     }
 
-    private static void OpenAirplaneModeSettings() => AirplaneMode.Open();
+    private static void ToggleAirplaneMode()
+    {
+        var newState = AirplaneMode.Toggle();
+        if (newState is null)
+            return;
+
+        var type = newState.Value
+            ? NotificationType.AirplaneModeOn
+            : NotificationType.AirplaneModeOff;
+        MessagingCenter.Publish(new NotificationMessage(type));
+    }
 
     private static void NotifyWhiteBacklight(WhiteKeyboardBacklightState value)
     {
