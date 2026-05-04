@@ -88,7 +88,10 @@ jobs:
       shell: powershell
     - name: Build (Azure)
       if: steps.signing.outputs.path == 'azure'
-      run: .\make_action.bat
+      # Use raw mode: the transient self-signed PFX cannot satisfy SignTool's
+      # MSIX signing (0x8007000b), so skip MSIX and let Azure Trusted Signing
+      # re-sign just the installer .exe.
+      run: .\make_action.bat raw
     - name: Azure login (federated identity)
       if: steps.signing.outputs.path == 'azure'
       uses: azure/login@v2

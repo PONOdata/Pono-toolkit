@@ -163,7 +163,10 @@ jobs:
       shell: powershell
     - name: Build (Azure)
       if: steps.signing.outputs.path == 'azure'
-      run: .\make_action.bat ${{ steps.release_meta.outputs.version }}
+      # Use raw mode: the transient self-signed PFX cannot satisfy SignTool's
+      # MSIX signing (0x8007000b ERROR_BAD_FORMAT), so we skip MSIX entirely
+      # and rely on Azure Trusted Signing to sign the final installer .exe.
+      run: .\make_action.bat ${{ steps.release_meta.outputs.version }} raw
     - name: Azure login (federated identity)
       if: steps.signing.outputs.path == 'azure'
       uses: azure/login@v2
