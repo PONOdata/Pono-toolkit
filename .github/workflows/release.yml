@@ -51,7 +51,7 @@ jobs:
       run: |
         $channel = "Stable"
         $prerelease = "false"
-        $targetCommitish = "master"
+        $targetCommitish = "main"
 
         # 1. Determine Channel and Version
         if ($env:EVENT_NAME -eq "workflow_dispatch") {
@@ -85,11 +85,11 @@ jobs:
         switch ($channel) {
             "Stable" {
                 $prerelease = "false"
-                $targetCommitish = "master"
+                $targetCommitish = "main"
             }
             "Beta" {
                 $prerelease = "true"
-                $targetCommitish = "master"
+                $targetCommitish = "main"
             }
             "Dev" {
                 $prerelease = "false"
