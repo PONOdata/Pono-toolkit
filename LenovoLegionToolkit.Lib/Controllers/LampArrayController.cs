@@ -198,6 +198,8 @@ public class LampArrayController : IDisposable
                 _lampArrays.Clear();
             }
 
+            UpdateControlledState();
+
             Log.Instance.Trace($"LampArray device watcher stopped.");
         }
     }
@@ -857,6 +859,8 @@ public class LampArrayController : IDisposable
             }
             _lampArrays.Clear();
         }
+
+        UpdateControlledState();
 
         GC.SuppressFinalize(this);
     }
