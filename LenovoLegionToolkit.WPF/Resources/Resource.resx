@@ -1380,6 +1380,33 @@ Click Yes to disable and No to ignore.</value>
   <data name="LampArrayRGBKeyboardPage_Aurora_Sync" xml:space="preserve">
     <value>Aurora Sync</value>
   </data>
+  <data name="LampArrayRGBKeyboardPage_BatteryLow_Indicator" xml:space="preserve">
+    <value>Battery Low Indicator</value>
+  </data>
+  <data name="LampArrayRGBKeyboardPage_Charging_Indicator" xml:space="preserve">
+    <value>Charging Indicator</value>
+  </data>
+  <data name="LampArrayRGBKeyboardPage_CapsLock_Indicator" xml:space="preserve">
+    <value>Caps Lock Indicator</value>
+  </data>
+  <data name="LampArrayRGBKeyboardPage_System_Indicators" xml:space="preserve">
+    <value>System Indicators</value>
+  </data>
+  <data name="LampArrayRGBKeyboardPage_Respect_Lamp_Purposes" xml:space="preserve">
+    <value>Hold status lamps at fixed color</value>
+  </data>
+  <data name="LampArrayRGBKeyboardPage_Status_Lamp_Color" xml:space="preserve">
+    <value>Status lamp color</value>
+  </data>
+  <data name="LampArrayRGBKeyboardPage_Controller_Status" xml:space="preserve">
+    <value>Controller</value>
+  </data>
+  <data name="LampArrayRGBKeyboardPage_Controller_Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="LampArrayRGBKeyboardPage_Controller_Yielded" xml:space="preserve">
+    <value>Yielded to system or other application</value>
+  </data>
   <data name="LampArrayRGBKeyboardPage_Bottom_to_Top" xml:space="preserve">
     <value>Bottom to Top</value>
   </data>

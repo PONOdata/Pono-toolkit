@@ -76,7 +76,13 @@ public enum LampEffectType
     [Display(ResourceType = typeof(Resource), Name = nameof(Resource.LampArrayRGBKeyboardPage_Spiral_Rainbow))]
     SpiralRainbow,
     [Display(ResourceType = typeof(Resource), Name = nameof(Resource.LampArrayRGBKeyboardPage_Aurora_Sync))]
-    AuroraSync
+    AuroraSync,
+    [Display(ResourceType = typeof(Resource), Name = nameof(Resource.LampArrayRGBKeyboardPage_BatteryLow_Indicator))]
+    BatteryLowIndicator,
+    [Display(ResourceType = typeof(Resource), Name = nameof(Resource.LampArrayRGBKeyboardPage_Charging_Indicator))]
+    ChargingIndicator,
+    [Display(ResourceType = typeof(Resource), Name = nameof(Resource.LampArrayRGBKeyboardPage_CapsLock_Indicator))]
+    CapsLockIndicator
 }
 
 public enum SensorGroupType
