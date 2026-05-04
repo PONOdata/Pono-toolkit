@@ -40,7 +40,7 @@ Donations through this link go directly to the upstream LLT maintainers (Bartosz
 
 ## Install
 
-Download the latest signed installer from the [Releases page](https://github.com/PONOdata/Pono-toolkit/releases/latest) and run it.
+Download the latest signed installer from the [Releases page](https://ponotoolkit.com/releases (or [GitHub Releases](https://github.com/PONOdata/Pono-toolkit/releases/latest))) and run it.
 
 Pono Toolkit installs to `Program Files\PonoToolkit` and stores its settings under `%localappdata%\PonoToolkit`. It can coexist on the same machine as Lenovo Legion Toolkit; the AppId, mutex, and settings folder are independent.
 
