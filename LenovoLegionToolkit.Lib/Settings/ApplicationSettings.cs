@@ -20,6 +20,7 @@ public class ApplicationSettings : AbstractSettings<ApplicationSettingsStore>
         public bool PowerMode { get; set; }
         public bool RefreshRate { get; set; } = true;
         public bool ACAdapter { get; set; }
+        public bool AirplaneMode { get; set; } = true;
         public bool SmartKey { get; set; }
         public bool AutomationNotification { get; set; } = true;
         public bool ITSMode { get; set; } = true;
