@@ -19,13 +19,15 @@ Pono Toolkit is a fork of [Lenovo Legion Toolkit](https://github.com/LenovoLegio
 
 ## Standing on shoulders
 
-Pono Toolkit would not exist without **Lenovo Legion Toolkit**. Bartosz Cichecki started the project, and Kaguya and Dr. Skinner have been carrying it forward. Years of WMI reverse engineering, hardware compatibility work, ACPI exploration, and feature design done by them is the foundation everything in this fork rests on.
+Pono Toolkit would not exist without **Lenovo Legion Toolkit**. [Bartosz Cichecki](https://github.com/BartoszCichecki) started the project, and the [LenovoLegionToolkit-Team](https://github.com/LenovoLegionToolkit-Team) has been carrying it forward, specifically [**Metanome**](https://github.com/Metanome) (a.k.a. Dr. Skinner, "Hammer") and [**Kaguya**](https://github.com/XKaguya). Years of WMI reverse engineering, hardware compatibility work, ACPI exploration, and feature design done by them is the foundation everything in this fork rests on.
 
-If you find Pono Toolkit useful, please consider donating to the upstream project that made it possible:
+If you find Pono Toolkit useful, please consider supporting the upstream maintainers and the original project that made it possible:
 
-[![Donate to upstream LLT](https://img.shields.io/badge/Donate%20to%20upstream%20LLT-PayPal-0070BA?logo=paypal&logoColor=white)](https://www.paypal.com/donate/?hosted_button_id=22AZE2NBP3HTL)
+[![Sponsor Metanome](https://img.shields.io/badge/Sponsor-Metanome-EA4AAA?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/Metanome)
+[![Sponsor Kaguya](https://img.shields.io/badge/Sponsor-Kaguya-EA4AAA?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/XKaguya)
+[![Donate to original LLT](https://img.shields.io/badge/Donate%20to%20original%20LLT-PayPal-0070BA?logo=paypal&logoColor=white)](https://www.paypal.com/donate/?hosted_button_id=22AZE2NBP3HTL)
 
-Donations through this link go directly to the upstream LLT maintainers (Bartosz Cichecki et al.), not to Pono Data Solutions. That is intentional. The economic foundation of this fork belongs upstream.
+GitHub Sponsors links go directly to the active upstream maintainers (Metanome and Kaguya). The PayPal link goes to the original creator (Bartosz Cichecki). None of these go to Pono Data Solutions. That is intentional. The economic foundation of this fork belongs upstream.
 
 ## What is in this fork that is not in upstream
 
@@ -80,8 +82,8 @@ Pono Toolkit uses semantic versioning starting at v0.1.0. Releases are tagged on
 
 Pono Toolkit is licensed under [GPL-3.0](LICENSE), inherited from Lenovo Legion Toolkit. Original copyright notices in source files are preserved. The upstream project is the foundation for everything in this fork.
 
-- Lenovo Legion Toolkit — © Bartosz Cichecki, and the LLT-Team (Kaguya, Dr. Skinner). https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit
-- Pono Toolkit additions — © Pono Data Solutions.
+- Lenovo Legion Toolkit, copyright [Bartosz Cichecki](https://github.com/BartoszCichecki) and the [LenovoLegionToolkit-Team](https://github.com/LenovoLegionToolkit-Team) ([Metanome](https://github.com/Metanome), [Kaguya](https://github.com/XKaguya)). https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit
+- Pono Toolkit additions, copyright Pono Data Solutions.
 
 ## Status
 
