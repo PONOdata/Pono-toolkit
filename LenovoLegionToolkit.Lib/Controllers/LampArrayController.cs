@@ -101,12 +101,13 @@ public class LampArrayController : IDisposable
 
     public event EventHandler<bool>? ControlledChanged;
 
-    // When BorgMode is on, the controller takes full control of every lamp on
-    // every device and runs BorgEffect across the whole array, ignoring the
-    // currently-selected effect, per-lamp overrides, the active transition,
-    // and the RespectLampPurposes / StatusLampColor settings. The intent is
-    // a single zero-configuration master override for users who plug in an
-    // off-brand replacement keyboard and want it to "just work".
+    // When BorgMode is on, BorgEffect replaces whichever effect is currently
+    // selected as the default for the array, while per-lamp overrides,
+    // RespectLampPurposes routing, and active transitions all continue to
+    // apply through the normal per-lamp pipeline. The intent is a single
+    // zero-configuration default effect for users who plug in an off-brand
+    // replacement keyboard and want it to "just work" without disturbing
+    // other settings they have configured.
     public bool BorgMode
     {
         get => _borgMode;
@@ -238,12 +239,8 @@ public class LampArrayController : IDisposable
 
     private void CheckAuroraSyncState()
     {
-        // BorgMode bypasses every other effect path including AuroraSync, so no
-        // screen capture is needed; force-stop it to avoid running the capture
-        // loop for output nothing consumes.
-        var hasAurora = !_borgMode && (
-            _currentEffect is AuroraSyncEffect
-            || _effectOverrides.Values.Any(e => e is AuroraSyncEffect));
+        var hasAurora = _currentEffect is AuroraSyncEffect
+            || _effectOverrides.Values.Any(e => e is AuroraSyncEffect);
 
         if (hasAurora && !_auroraActive)
         {
@@ -469,47 +466,41 @@ public class LampArrayController : IDisposable
 
                     // Snapshot _borgMode for the duration of this device's frame so
                     // a mid-frame toggle from the UI thread cannot split the array
-                    // across both code paths.
-                    var useBorg = _borgMode;
+                    // across both code paths. BorgMode replaces the current default
+                    // effect with BorgEffect; the rest of the per-lamp pipeline
+                    // (per-lamp overrides, RespectLampPurposes routing, transitions)
+                    // continues to apply normally.
+                    var defaultEffect = _borgMode ? _borgInstance : _currentEffect;
 
                     for (var i = 0; i < lampCount; i++)
                     {
                         var lampInfo = device.GetLampInfo(i);
 
-                        Color color;
-                        if (useBorg)
+                        ILampEffect? effectToUse = defaultEffect;
+                        bool isOverridden = _effectOverrides.TryGetValue(i, out var overrideEffect);
+                        if (isOverridden) effectToUse = overrideEffect;
+
+                        if (effectToUse == null)
                         {
-                            // Master override: BorgEffect runs on every lamp regardless of
-                            // currentEffect, per-lamp overrides, transitions, or status routing.
-                            color = _borgInstance.GetColorForLamp(i, currentTime, lampInfo, lampCount);
+                             colors[i] = Color.FromArgb(0,0,0,0);
+                             continue;
+                        }
+
+                        Color color;
+                        if (!isOverridden && _respectLampPurposes && IsStatusPurposed(lampInfo.Purposes))
+                        {
+                            color = _statusLampColor;
                         }
                         else
                         {
-                            ILampEffect? effectToUse = _currentEffect;
-                            bool isOverridden = _effectOverrides.TryGetValue(i, out var overrideEffect);
-                            if (isOverridden) effectToUse = overrideEffect;
+                            color = effectToUse.GetColorForLamp(i, currentTime, lampInfo, lampCount);
 
-                            if (effectToUse == null)
+                            if (!isOverridden && _targetEffect != null)
                             {
-                                 colors[i] = Color.FromArgb(0,0,0,0);
-                                 continue;
-                            }
-
-                            if (!isOverridden && _respectLampPurposes && IsStatusPurposed(lampInfo.Purposes))
-                            {
-                                color = _statusLampColor;
-                            }
-                            else
-                            {
-                                color = effectToUse.GetColorForLamp(i, currentTime, lampInfo, lampCount);
-
-                                if (!isOverridden && _targetEffect != null)
-                                {
-                                    var targetColor = _targetEffect.GetColorForLamp(i, currentTime, lampInfo, lampCount);
-                                    var elapsed = _stopwatch.Elapsed.TotalSeconds - _transitionStartTime;
-                                    var t = Math.Clamp(elapsed / _transitionDuration, 0, 1);
-                                    color = LerpColor(color, targetColor, t);
-                                }
+                                var targetColor = _targetEffect.GetColorForLamp(i, currentTime, lampInfo, lampCount);
+                                var elapsed = _stopwatch.Elapsed.TotalSeconds - _transitionStartTime;
+                                var t = Math.Clamp(elapsed / _transitionDuration, 0, 1);
+                                color = LerpColor(color, targetColor, t);
                             }
                         }
 
