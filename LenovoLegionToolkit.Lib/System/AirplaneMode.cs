@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.ServiceProcess;
+using System.Threading;
 using System.Threading.Tasks;
 using LenovoLegionToolkit.Lib.Utils;
 using Microsoft.Win32;
@@ -18,6 +19,19 @@ public static class AirplaneMode
     private const string SystemRadioStateValue = "SystemRadioState";
     private const string RadioServiceName = "RmSvc";
     private static readonly TimeSpan ServiceTimeout = TimeSpan.FromSeconds(5);
+
+    // Serializes Toggle() so a rapid Fn+F8 double-press cannot interleave the
+    // read-then-write half of the operation. The lock is released before the
+    // RmSvc bounce starts on its background task, so a second press queues
+    // briefly and then proceeds with a fresh read of the now-flipped state.
+    private static readonly object Sync = new();
+
+    // Coalesces concurrent bounces. If a bounce is already in flight when the
+    // user presses Fn+F8 again, the second request skips its own bounce; the
+    // in-flight one will finish and pick up the latest registry value when
+    // RmSvc reads it on startup. Prevents two threads from fighting the
+    // service control manager (which is not reentrant for stop/start cycles).
+    private static readonly object BounceSync = new();
 
     public static void Open()
     {
@@ -48,32 +62,45 @@ public static class AirplaneMode
     // Toggles system airplane mode by writing the RadioManagement registry value
     // and bouncing the Radio Management Service so the policy is reapplied.
     // Falls back to opening the airplane mode settings page when the registry
-    // path is missing or the write fails. Returns the target state on success
-    // or null on failure.
+    // read fails, the registry path is missing, or the write throws. Returns
+    // the new target state on success, or null on failure.
     public static bool? Toggle()
     {
         try
         {
-            var before = IsOn() ?? false;
-            var target = !before;
-
-            using (var key = MsRegistry.LocalMachine.OpenSubKey(RadioManagementSubKey, writable: true))
+            lock (Sync)
             {
-                if (key is null)
+                Log.Instance.Trace($"Toggling airplane mode...");
+
+                var before = IsOn();
+                if (before is null)
                 {
-                    Log.Instance.Trace($"RadioManagement registry key missing, opening settings page instead.");
+                    Log.Instance.Trace($"Could not read airplane mode state, opening settings page instead.");
                     Open();
                     return null;
                 }
-                key.SetValue(SystemRadioStateValue, target ? 1 : 0, RegistryValueKind.DWord);
+
+                var target = !before.Value;
+
+                using (var key = MsRegistry.LocalMachine.OpenSubKey(RadioManagementSubKey, writable: true))
+                {
+                    if (key is null)
+                    {
+                        Log.Instance.Trace($"RadioManagement registry key missing, opening settings page instead.");
+                        Open();
+                        return null;
+                    }
+                    key.SetValue(SystemRadioStateValue, target ? 1 : 0, RegistryValueKind.DWord);
+                }
+
+                // Bouncing on a background task keeps Fn+F8 snappy. The radios
+                // re-evaluate the airplane mode flag once RmSvc comes back; the
+                // notification fires on the target state and does not block on it.
+                _ = Task.Run(BounceRadioService);
+
+                Log.Instance.Trace($"Airplane mode toggled to {(target ? "on" : "off")}.");
+                return target;
             }
-
-            // Bouncing on a background task keeps Fn+F8 snappy. The radios
-            // re-evaluate the airplane mode flag once RmSvc comes back; the
-            // notification fires on the target state and does not block on it.
-            _ = Task.Run(BounceRadioService);
-
-            return target;
         }
         catch (Exception ex)
         {
@@ -85,10 +112,32 @@ public static class AirplaneMode
 
     private static void BounceRadioService()
     {
+        if (!Monitor.TryEnter(BounceSync))
+        {
+            Log.Instance.Trace($"Skipping {RadioServiceName} bounce, one already in flight.");
+            return;
+        }
+
         try
         {
             using var sc = new ServiceController(RadioServiceName);
-            if (sc.Status != ServiceControllerStatus.Stopped)
+
+            // Accessing Status throws InvalidOperationException if the service
+            // does not exist on this Windows SKU. In that case the registry
+            // write has still landed; the policy will apply when (if) the
+            // service is later installed and started.
+            ServiceControllerStatus status;
+            try
+            {
+                status = sc.Status;
+            }
+            catch (InvalidOperationException ex)
+            {
+                Log.Instance.Trace($"{RadioServiceName} service not present, skipping bounce.", ex);
+                return;
+            }
+
+            if (status != ServiceControllerStatus.Stopped)
             {
                 sc.Stop();
                 sc.WaitForStatus(ServiceControllerStatus.Stopped, ServiceTimeout);
@@ -99,6 +148,10 @@ public static class AirplaneMode
         catch (Exception ex)
         {
             Log.Instance.Trace($"Failed to bounce {RadioServiceName}.", ex);
+        }
+        finally
+        {
+            Monitor.Exit(BounceSync);
         }
     }
 }
