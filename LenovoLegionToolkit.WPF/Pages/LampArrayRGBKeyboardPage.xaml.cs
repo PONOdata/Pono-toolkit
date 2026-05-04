@@ -174,6 +174,14 @@ public partial class LampArrayRGBKeyboardPage : UiPage
                 _controller.RespectLampPurposes = store.RespectLampPurposes;
             }
 
+            // Defensive load: if InitLampArrayControllerAsync skipped because
+            // AppFlags.EnableLampArray was false, the controller still has its
+            // default StatusLampColor. SaveSettings on Unloaded would then write
+            // that default back over the user's stored value, so push the
+            // stored value into the controller before any save can fire.
+            if (LampArrayController.TryParseStatusLampColor(store.StatusLampColor) is { } parsedStatus)
+                _controller.StatusLampColor = parsedStatus;
+
             UpdateControllerStatusText(_controller.IsControlled);
 
             UpdateZoneVisibility();
@@ -200,7 +208,13 @@ public partial class LampArrayRGBKeyboardPage : UiPage
 
     private void Controller_ControlledChanged(object? sender, bool isControlled)
     {
-        Dispatcher.InvokeAsync(() => UpdateControllerStatusText(isControlled));
+        if (Dispatcher.HasShutdownStarted || Dispatcher.HasShutdownFinished)
+            return;
+        try
+        {
+            Dispatcher.InvokeAsync(() => UpdateControllerStatusText(isControlled));
+        }
+        catch (TaskCanceledException) { }
     }
 
     private void UpdateControllerStatusText(bool isControlled)

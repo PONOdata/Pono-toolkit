@@ -521,29 +521,20 @@ public class LampArrayController : IDisposable
 
     private void UpdateControlledState()
     {
-        bool newState;
+        var newState = IsAvailable;
+
+        bool changed = false;
         lock (_lampArrays)
         {
-            newState = false;
-            foreach (var kvp in _lampArrays)
+            if (newState != _isControlled)
             {
-                if (ApiInformation.IsPropertyPresent("Windows.Devices.Lights.LampArray", "IsAvailable"))
-                {
-                    if (kvp.Value.Device.IsAvailable) { newState = true; break; }
-                }
-                else
-                {
-                    newState = true;
-                    break;
-                }
+                _isControlled = newState;
+                changed = true;
             }
         }
 
-        if (newState == _isControlled)
-            return;
-
-        _isControlled = newState;
-        ControlledChanged?.Invoke(this, _isControlled);
+        if (changed)
+            ControlledChanged?.Invoke(this, newState);
     }
 
     private static Color ApplyBrightness(Color color, double brightness)
@@ -670,7 +661,7 @@ public class LampArrayController : IDisposable
         await StartAsync();
     }
 
-    private static Color? TryParseStatusLampColor(string? value)
+    public static Color? TryParseStatusLampColor(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
             return null;
@@ -680,8 +671,9 @@ public class LampArrayController : IDisposable
             if (parts.Length != 4) return null;
             return Color.FromArgb(byte.Parse(parts[0]), byte.Parse(parts[1]), byte.Parse(parts[2]), byte.Parse(parts[3]));
         }
-        catch
+        catch (Exception ex)
         {
+            Log.Instance.Trace($"Failed to parse StatusLampColor='{value}': {ex.Message}");
             return null;
         }
     }
