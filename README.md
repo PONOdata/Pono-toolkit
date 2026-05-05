@@ -50,9 +50,9 @@ Pono Toolkit installs to `Program Files\PonoToolkit` and stores its settings und
 
 ## Compatibility
 
-**Lenovo Legion** — primary supported platform. The full Lenovo-specific feature set from upstream LLT works the same way: power modes, fan curves, GPU controls, RGB keyboard, GodMode, automation triggers, hardware sensors. Tested device matrix lives in [Compatibility.cs](LenovoLegionToolkit.Lib/Utils/Compatibility.cs).
+**Lenovo Legion** is the primary supported platform. The full Lenovo-specific feature set from upstream LLT works the same way: power modes, fan curves, GPU controls, RGB keyboard, GodMode, automation triggers, hardware sensors. Tested device matrix lives in [Compatibility.cs](LenovoLegionToolkit.Lib/Utils/Compatibility.cs).
 
-**Other Windows 11 devices** — the cross-vendor features are usable independently:
+**Other Windows 11 devices** can use the cross-vendor features independently:
 
 | Feature | Hardware requirement |
 |---|---|
