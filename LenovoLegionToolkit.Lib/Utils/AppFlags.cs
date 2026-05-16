@@ -216,7 +216,9 @@ public class AppFlags
         try
         {
             var argsFile = Path.Combine(Folders.AppData, "args.txt");
-            return !File.Exists(argsFile) ? [] : File.ReadAllLines(argsFile);
+            if (!File.Exists(argsFile)) return [];
+            if (new FileInfo(argsFile).Length > 16_384) return [];
+            return File.ReadAllLines(argsFile);
         }
         catch
         {

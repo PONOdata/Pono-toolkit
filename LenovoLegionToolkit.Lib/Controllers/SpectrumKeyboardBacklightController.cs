@@ -270,6 +270,10 @@ public class SpectrumKeyboardBacklightController
 
     public async Task ImportProfileDescription(int profile, string jsonPath)
     {
+        const long maxBytes = 1_000_000;
+        if (new FileInfo(jsonPath).Length > maxBytes)
+            throw new InvalidDataException($"Profile JSON exceeds {maxBytes} bytes: {jsonPath}");
+
         var json = await File.ReadAllTextAsync(jsonPath).ConfigureAwait(false);
         var effects = JsonConvert.DeserializeObject<SpectrumKeyboardBacklightEffect[]>(json)
                       ?? throw new InvalidOperationException("Couldn't deserialize effects");

@@ -28,6 +28,7 @@ public class LampArrayController : IDisposable
     private DeviceWatcher? _watcher;
     private bool _isDisposed;
     private CancellationTokenSource? _renderCts;
+    private Task? _renderTask;
     private CancellationTokenSource? _screenCaptureCts;
     private IScreenCaptureProvider? _screenCaptureProvider;
     private RGBColor[,] _screenBuffer = new RGBColor[32, 18];
@@ -224,7 +225,7 @@ public class LampArrayController : IDisposable
         if (_renderCts != null) return;
         _renderCts = new CancellationTokenSource();
         var token = _renderCts.Token;
-        Task.Run(async () =>
+        _renderTask = Task.Run(async () =>
         {
             while (!token.IsCancellationRequested)
             {
@@ -239,13 +240,20 @@ public class LampArrayController : IDisposable
                 }
                 await Task.Delay(33, token);
             }
-        }, token);
+        }, token).ContinueWith(t =>
+        {
+            if (t.IsFaulted && t.Exception is not null && t.Exception.InnerException is not OperationCanceledException)
+                Log.Instance.Trace($"Render loop faulted: {t.Exception.GetBaseException()}");
+        }, TaskScheduler.Default);
     }
 
     private void StopRenderLoop()
     {
-        _renderCts?.Cancel();
+        var cts = _renderCts;
         _renderCts = null;
+        cts?.Cancel();
+        cts?.Dispose();
+        _renderTask = null;
         StopScreenCapture();
     }
 
