@@ -5,7 +5,7 @@
 #define MyAppPublisher "Pono Data Solutions"
 #define MyAppURL "https://ponotoolkit.com"
 #define MyAppExeName "Pono Toolkit.exe"
-#define MyAppGitHub "https://github.com/PONOdata/Pono-toolkit"
+#define MyAppGitHub "https://github.com/Brofalo/LenovoLegionToolkit"
 #define MyAppLegionDiscord "https://discord.com/invite/legionseries"
 #define MyAppLOQDiscord "https://discord.gg/3GKzQtwdNf"
 #define MyAppOfficialDiscord "https://discord.gg/TB3ER8ZVdt"

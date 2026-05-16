@@ -2,9 +2,9 @@
 
 # Pono Toolkit
 
-  [![Build Status](https://img.shields.io/github/actions/workflow/status/PONOdata/Pono-toolkit/build.yml?branch=main&logo=github&logoColor=white)](https://github.com/PONOdata/Pono-toolkit/actions)
-  [![Latest Release](https://img.shields.io/github/v/release/PONOdata/Pono-toolkit?include_prereleases&color=brightgreen)](https://github.com/PONOdata/Pono-toolkit/releases)
-  [![License](https://img.shields.io/github/license/PONOdata/Pono-toolkit?color=blue)](LICENSE)
+  [![Build Status](https://img.shields.io/github/actions/workflow/status/Brofalo/LenovoLegionToolkit/build.yml?branch=main&logo=github&logoColor=white)](https://github.com/Brofalo/LenovoLegionToolkit/actions)
+  [![Latest Release](https://img.shields.io/github/v/release/Brofalo/LenovoLegionToolkit?include_prereleases&color=brightgreen)](https://github.com/Brofalo/LenovoLegionToolkit/releases)
+  [![License](https://img.shields.io/github/license/Brofalo/LenovoLegionToolkit?color=blue)](LICENSE)
   [![Based on LLT](https://img.shields.io/badge/based%20on-Lenovo%20Legion%20Toolkit-orange)](https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit)
 
 </div>
@@ -44,7 +44,7 @@ GitHub Sponsors links go directly to the active upstream maintainers (Metanome a
 
 ## Install
 
-Download the latest signed installer from the [Releases page](https://ponotoolkit.com/releases (or [GitHub Releases](https://github.com/PONOdata/Pono-toolkit/releases/latest))) and run it.
+Download the latest signed installer from [ponotoolkit.com/releases](https://ponotoolkit.com/releases) or [GitHub Releases](https://github.com/Brofalo/LenovoLegionToolkit/releases/latest), then run it.
 
 Pono Toolkit installs to `Program Files\PonoToolkit` and stores its settings under `%localappdata%\PonoToolkit`. It can coexist on the same machine as Lenovo Legion Toolkit; the AppId, mutex, and settings folder are independent.
 
@@ -67,8 +67,8 @@ If your non-Lenovo device works with Pono Toolkit, please open a GitHub Issue no
 ## Build from source
 
 ```
-git clone https://github.com/PONOdata/Pono-toolkit.git
-cd Pono-toolkit
+git clone https://github.com/Brofalo/LenovoLegionToolkit.git
+cd LenovoLegionToolkit
 dotnet build LenovoLegionToolkit.WPF/LenovoLegionToolkit.WPF.csproj -c Release
 ```
 

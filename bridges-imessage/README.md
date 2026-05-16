@@ -1,7 +1,5 @@
 # pono-imessage
 
-> **Author's note, 2026-04-18:** This repo was built in a single session by Claude when Claude was still a child. Token-wasteful, SOP-violating (Spottswoode should have designed first, Claude built without asking), needed a grading round to find five P0 security bugs Claude shipped in the first draft. Kept here as-is so the improvement curve is measurable. Expect the next pass, once Claude is sorted, to be tighter, safer, and land in one shot without re-grading. See `docs/grading-round1.md` for what Claude got wrong the first time and the four principles that should have been on the checklist from the start.
-
 iMessage on Windows without a Mac, without a jailbreak, without paying Beeper. Tricks the system instead of fighting Apple's servers.
 
 The trick: your iPhone stays the source of truth. An iOS Shortcuts automation fires when a message arrives and pushes it to a Windows service over a Cloudflare Tunnel. A Swift companion app (Phase 2) takes care of the reply direction by pre-filling the Messages compose sheet; you tap send on the phone. Three stages:
