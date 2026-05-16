@@ -11,8 +11,34 @@ public static class Folders
     {
         get
         {
-            var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var folderPath = Path.Combine(appData, "LenovoLegionToolkit");
+            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var folderPath = Path.Combine(localAppData, "PonoToolkit");
+
+            // One-shot migration from the v0.3.0-v0.3.5 shared LLT path. Runs only when the
+            // Pono Toolkit folder does not exist yet AND the legacy folder does, so upstream
+            // Lenovo Legion Toolkit users are untouched on first launch.
+            if (!Directory.Exists(folderPath))
+            {
+                var legacyPath = Path.Combine(localAppData, "LenovoLegionToolkit");
+                if (Directory.Exists(legacyPath))
+                {
+                    try
+                    {
+                        Directory.CreateDirectory(folderPath);
+                        foreach (var srcFile in Directory.EnumerateFiles(legacyPath, "*", SearchOption.TopDirectoryOnly))
+                        {
+                            var destFile = Path.Combine(folderPath, Path.GetFileName(srcFile));
+                            File.Copy(srcFile, destFile, overwrite: false);
+                        }
+                    }
+                    catch
+                    {
+                        // Migration is best-effort. Fresh settings on failure beat
+                        // stomping on the upstream LLT folder.
+                    }
+                }
+            }
+
             Directory.CreateDirectory(folderPath);
             return folderPath;
         }
@@ -22,8 +48,8 @@ public static class Folders
     {
         get
         {
-            var appData = Path.GetTempPath();
-            var folderPath = Path.Combine(appData, "LenovoLegionToolkit");
+            var tempBase = Path.GetTempPath();
+            var folderPath = Path.Combine(tempBase, "PonoToolkit");
             Directory.CreateDirectory(folderPath);
             return folderPath;
         }
