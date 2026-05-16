@@ -1,0 +1,27 @@
+# Script run artifacts - never commit
+*.transcript.txt
+*.report.txt
+*.log
+_install.log
+ryzen_ai_install.log
+
+# OS clutter
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Build artifacts (pre-built patched DLL lives outside the repo - see legion-toolkit/README.md)
+_build/
+**/bin/
+**/obj/
+
+# Secrets (should never happen, belt-and-suspenders)
+*.key
+*.pem
+.env
+.env.*

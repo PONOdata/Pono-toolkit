@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Secrets - never commit
+.env
+.env.*
+*.key
+*.pem
+shared_secret.txt
+
+# SQLite DB - lives in %LOCALAPPDATA%, never in repo
+*.db
+*.db-shm
+*.db-wal
+
+# Cloudflare tunnel creds
+*.tunnel.json
+cert.pem
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Xcode (Phase 2)
+companion-app/build/
+companion-app/DerivedData/
+companion-app/*.xcodeproj/xcuserdata/
+companion-app/*.xcodeproj/project.xcworkspace/xcuserdata/
+companion-app/*.xcworkspace/xcuserdata/
+
+# PowerShell logs
+*.transcript.txt
+*.log
