@@ -121,7 +121,7 @@
     <value>Папки приложения</value>
   </data>
   <data name="AboutPage_AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="AboutPage_Build" xml:space="preserve">
     <value>Сборка</value>
@@ -239,7 +239,7 @@
     <value>Применить и закрыть</value>
   </data>
   <data name="AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="ArgumentWindow_Category_Debugging" xml:space="preserve">
     <value>Отладка</value>
@@ -323,7 +323,7 @@
     <value>Активировать</value>
   </data>
   <data name="AutomationPage_ActionsEnable_Message" xml:space="preserve">
-    <value>Lenovo Legion Toolkit должен быть запущен для выполнения автоматических действий.</value>
+    <value>Pono Toolkit должен быть запущен для выполнения автоматических действий.</value>
   </data>
   <data name="AutomationPage_Actions_Empty" xml:space="preserve">
     <value>Действия не заданы. Нажмите "Добавить новое действие" для создания.</value>
@@ -918,7 +918,7 @@
     <value>Сделать пожертвование через</value>
   </data>
   <data name="DonatePage_Message" xml:space="preserve">
-    <value>На разработку и обслуживание Lenovo Legion Toolkit уходит много времени. Если вам нравится пользоваться этим программным обеспечением, вы можете поддержать его будущее, пожертвовав любую сумму денег.
+    <value>На разработку и обслуживание Pono Toolkit уходит много времени. Если вам нравится пользоваться этим программным обеспечением, вы можете поддержать его будущее, пожертвовав любую сумму денег.
 
 Нажмите на логотип PayPal ниже или отсканируйте QR-код, чтобы сделать пожертвование через PayPal.
 
@@ -984,7 +984,7 @@
     <value>Снимите галочки с частот обновления, которые вы не хотите учитывать при использовании сочетания клавиш Fn+R.</value>
   </data>
   <data name="ExcludeRefreshRatesWindow_NoRefreshRatesFound_Message" xml:space="preserve">
-    <value>Убедитесь, что дисплей ноутбука включен. Lenovo Legion Toolkit не может загрузить частоты обновления для не включенного дисплея.</value>
+    <value>Убедитесь, что дисплей ноутбука включен. Pono Toolkit не может загрузить частоты обновления для не включенного дисплея.</value>
   </data>
   <data name="ExcludeRefreshRatesWindow_NoRefreshRatesFound_Title" xml:space="preserve">
     <value>Частота обновления не обнаружена</value>
@@ -1326,7 +1326,7 @@
     <value>Неактивен</value>
   </data>
   <data name="IncompatibleDevice_Message" xml:space="preserve">
-    <value>Это устройство не совместимо с Lenovo Legion Toolkit.</value>
+    <value>Это устройство не совместимо с Pono Toolkit.</value>
   </data>
   <data name="Information" xml:space="preserve">
     <value>Информация</value>
@@ -1487,7 +1487,7 @@
     <value>Макрос</value>
   </data>
   <data name="MacroPage_Enable_Subtitle" xml:space="preserve">
-    <value>Lenovo Legion Toolkit должен быть запущен для работы макросов.</value>
+    <value>Pono Toolkit должен быть запущен для работы макросов.</value>
   </data>
   <data name="MacroPage_Enable_Title" xml:space="preserve">
     <value>Активировать</value>
@@ -3174,7 +3174,7 @@
     <value>Тип модели устройства</value>
   </data>
   <data name="UnsupportedWindow_Message" xml:space="preserve">
-    <value>Lenovo Legion Toolkit не был проверен на вашем устройстве.</value>
+    <value>Pono Toolkit не был проверен на вашем устройстве.</value>
   </data>
   <data name="UnsupportedWindow_Model" xml:space="preserve">
     <value>Модель</value>

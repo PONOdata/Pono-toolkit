@@ -121,7 +121,7 @@
     <value>Anwendungsordner</value>
   </data>
   <data name="AboutPage_AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="AboutPage_Build" xml:space="preserve">
     <value>Build</value>
@@ -239,7 +239,7 @@
     <value>Anwenden &amp; Schließen</value>
   </data>
   <data name="AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="ArgumentWindow_Category_Debugging" xml:space="preserve">
     <value>Debugging</value>
@@ -323,7 +323,7 @@
     <value>Einschalten</value>
   </data>
   <data name="AutomationPage_ActionsEnable_Message" xml:space="preserve">
-    <value>Lenovo Legion Toolkit muss ausgeführt werden, damit die automatischen Aktionen funktionieren.</value>
+    <value>Pono Toolkit muss ausgeführt werden, damit die automatischen Aktionen funktionieren.</value>
   </data>
   <data name="AutomationPage_Actions_Empty" xml:space="preserve">
     <value>Keine Aktionen definiert. Klicke auf "Neu hinzufügen", um eine neue Aktion zu erstellen.</value>
@@ -646,7 +646,7 @@ Unterstützte Formate sind: {1}.</value>
     <value>Beenden</value>
   </data>
   <data name="CloseAutomationStepControl_Message" xml:space="preserve">
-    <value>Beendet Lenovo Legion Toolkit</value>
+    <value>Beendet Pono Toolkit</value>
   </data>
   <data name="CloseAutomationStepControl_Title" xml:space="preserve">
     <value>Beenden</value>
@@ -917,7 +917,7 @@ WARNUNG: Diese Aktion wird nicht korrekt ausgeführt, wenn der interne Bildschir
     <value>Spenden mit</value>
   </data>
   <data name="DonatePage_Message" xml:space="preserve">
-    <value>Die Entwicklung und Pflege des Lenovo Legion Toolkits ist sehr zeitaufwändig. Wenn Sie diese Software gerne nutzen, können Sie ihre Zukunft unterstützen, indem Sie einen Betrag Ihrer Wahl spenden.
+    <value>Die Entwicklung und Pflege des Pono Toolkits ist sehr zeitaufwändig. Wenn Sie diese Software gerne nutzen, können Sie ihre Zukunft unterstützen, indem Sie einen Betrag Ihrer Wahl spenden.
 
 Klicken Sie auf das PayPal-Logo unten oder scannen Sie den QR-Code, um mit PayPal zu spenden.
 
@@ -983,7 +983,7 @@ WARNUNG: Diese Aktion wird nicht korrekt ausgeführt, wenn der interne Bildschir
     <value>Deaktivieren Sie die Aktualisierungsraten, die Sie nicht verwenden möchten, wenn die Tastenkombination Fn+R verwendet wird.</value>
   </data>
   <data name="ExcludeRefreshRatesWindow_NoRefreshRatesFound_Message" xml:space="preserve">
-    <value>Stellen Sie sicher, dass der Laptop-Bildschirm eingeschaltet ist. Das Lenovo Legion Toolkit kann keine Bildwiederholraten für ein nicht eingeschaltetes Display laden.</value>
+    <value>Stellen Sie sicher, dass der Laptop-Bildschirm eingeschaltet ist. Das Pono Toolkit kann keine Bildwiederholraten für ein nicht eingeschaltetes Display laden.</value>
   </data>
   <data name="ExcludeRefreshRatesWindow_NoRefreshRatesFound_Title" xml:space="preserve">
     <value>Keine Bildwiederholraten gefunden</value>
@@ -1325,7 +1325,7 @@ Wenn die dGPU überhaupt nicht reagiert, starten Sie bitte Ihren Laptop neu.</va
     <value>Inaktiv</value>
   </data>
   <data name="IncompatibleDevice_Message" xml:space="preserve">
-    <value>Dieses Gerät ist nicht mit dem Lenovo Legion Toolkit kompatibel.</value>
+    <value>Dieses Gerät ist nicht mit dem Pono Toolkit kompatibel.</value>
   </data>
   <data name="Information" xml:space="preserve">
     <value>Information</value>
@@ -1486,7 +1486,7 @@ Klicken Sie auf Ja zum Deaktivieren und Nein zum Ignorieren.</value>
     <value>Makro</value>
   </data>
   <data name="MacroPage_Enable_Subtitle" xml:space="preserve">
-    <value>Lenovo Legion Toolkit muss ausgeführt werden, damit Makros funktionieren.</value>
+    <value>Pono Toolkit muss ausgeführt werden, damit Makros funktionieren.</value>
   </data>
   <data name="MacroPage_Enable_Title" xml:space="preserve">
     <value>Aktivieren</value>
@@ -3172,7 +3172,7 @@ Die Protokollierung wird automatisch aktiviert, wenn Sie fortfahren möchten.</v
     <value>Gerätetyp</value>
   </data>
   <data name="UnsupportedWindow_Message" xml:space="preserve">
-    <value>Lenovo Legion Toolkit wurde nicht mit Ihrem Gerät getestet.</value>
+    <value>Pono Toolkit wurde nicht mit Ihrem Gerät getestet.</value>
   </data>
   <data name="UnsupportedWindow_Model" xml:space="preserve">
     <value>Modell</value>

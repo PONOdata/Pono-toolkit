@@ -121,7 +121,7 @@
     <value>Uygulama klasörleri</value>
   </data>
   <data name="AboutPage_AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="AboutPage_Build" xml:space="preserve">
     <value>Yapı</value>
@@ -239,7 +239,7 @@
     <value>Uygula &amp; Kapat</value>
   </data>
   <data name="AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="ArgumentWindow_Category_Debugging" xml:space="preserve">
     <value>Hata Ayıklama</value>
@@ -323,7 +323,7 @@
     <value>Etkinleştir</value>
   </data>
   <data name="AutomationPage_ActionsEnable_Message" xml:space="preserve">
-    <value>Otomatik eylemlerin çalışması için Lenovo Legion Toolkit çalışıyor olmalıdır.</value>
+    <value>Otomatik eylemlerin çalışması için Pono Toolkit çalışıyor olmalıdır.</value>
   </data>
   <data name="AutomationPage_Actions_Empty" xml:space="preserve">
     <value>Eylem bulunamadı. Yeni Eylem oluşturmak için "Yeni ekle"yi tıklayın.</value>
@@ -647,7 +647,7 @@ Desteklenen biçimler: {1}.</value>
     <value>Kapat</value>
   </data>
   <data name="CloseAutomationStepControl_Message" xml:space="preserve">
-    <value>Lenovo Legion Toolkit'i Kapat</value>
+    <value>Pono Toolkit'i Kapat</value>
   </data>
   <data name="CloseAutomationStepControl_Title" xml:space="preserve">
     <value>Kapat</value>
@@ -918,7 +918,7 @@ UYARI: Dahili ekran kapalıysa bu eylem düzgün çalışmayacaktır.</value>
     <value>Bağış yapın</value>
   </data>
   <data name="DonatePage_Message" xml:space="preserve">
-    <value>Lenovo Legion Toolkit'in geliştirilmesi ve bakımı çok zaman alıyor. Bu yazılımı kullanmayı seviyorsanız, istediğiniz miktarda bağış yaparak geleceğine destek olabilirsiniz.
+    <value>Pono Toolkit'in geliştirilmesi ve bakımı çok zaman alıyor. Bu yazılımı kullanmayı seviyorsanız, istediğiniz miktarda bağış yaparak geleceğine destek olabilirsiniz.
 
 PayPal ile bağış yapmak için aşağıdaki PayPal logosuna tıklayın veya QR kodunu tarayın.
 
@@ -984,7 +984,7 @@ UYARI: Dahili ekran kapalıysa, bu işlem doğru çalışmaz.</value>
     <value>Fn+R kısayolu kullanıldığında kullanmak istemediğiniz yenileme hızlarını kaldırın.</value>
   </data>
   <data name="ExcludeRefreshRatesWindow_NoRefreshRatesFound_Message" xml:space="preserve">
-    <value>Dizüstü bilgisayar ekranının açık olduğundan emin olun. Lenovo Legion Toolkit, açık olmayan bir ekran için yenileme hızlarını yükleyemez.</value>
+    <value>Dizüstü bilgisayar ekranının açık olduğundan emin olun. Pono Toolkit, açık olmayan bir ekran için yenileme hızlarını yükleyemez.</value>
   </data>
   <data name="ExcludeRefreshRatesWindow_NoRefreshRatesFound_Title" xml:space="preserve">
     <value>Yenileme Hızı bulunamadı</value>
@@ -1326,7 +1326,7 @@ GPU hiç yanıt vermiyorsa, lütfen dizüstü bilgisayarınızı yeniden başlat
     <value>Aktif değil</value>
   </data>
   <data name="IncompatibleDevice_Message" xml:space="preserve">
-    <value>Bu cihaz, Lenovo Legion Toolkit ile uyumlu değildir.</value>
+    <value>Bu cihaz, Pono Toolkit ile uyumlu değildir.</value>
   </data>
   <data name="Information" xml:space="preserve">
     <value>Bilgi</value>
@@ -1487,7 +1487,7 @@ Devre dışı bırakmak için Evet'i, yok saymak için Hayır'ı tıklayın.</va
     <value>Makro</value>
   </data>
   <data name="MacroPage_Enable_Subtitle" xml:space="preserve">
-    <value>Otomatik makroların çalışması için Lenovo Legion Toolkit çalışıyor olmalıdır.</value>
+    <value>Otomatik makroların çalışması için Pono Toolkit çalışıyor olmalıdır.</value>
   </data>
   <data name="MacroPage_Enable_Title" xml:space="preserve">
     <value>Etkinleştir</value>
@@ -3173,7 +3173,7 @@ Devam etmeyi seçerseniz, kayıt etme otomatik olarak etkinleştirilecektir.</va
     <value>Cihaz Tipi</value>
   </data>
   <data name="UnsupportedWindow_Message" xml:space="preserve">
-    <value>Lenovo Legion Toolkit, cihazınızla test edilmemiştir.</value>
+    <value>Pono Toolkit, cihazınızla test edilmemiştir.</value>
   </data>
   <data name="UnsupportedWindow_Model" xml:space="preserve">
     <value>Model</value>

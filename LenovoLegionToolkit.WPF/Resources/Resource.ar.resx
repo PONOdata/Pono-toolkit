@@ -121,7 +121,7 @@
     <value>Application Folders</value>
   </data>
   <data name="AboutPage_AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="AboutPage_Build" xml:space="preserve">
     <value>نسخة</value>
@@ -239,7 +239,7 @@
     <value>تطبيق وإغلاق</value>
   </data>
   <data name="AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="ArgumentWindow_Category_Debugging" xml:space="preserve">
     <value>Debugging</value>
@@ -646,7 +646,7 @@ Supported formats are: {1}.</value>
     <value>إغلاق</value>
   </data>
   <data name="CloseAutomationStepControl_Message" xml:space="preserve">
-    <value>Close the Lenovo Legion Toolkit</value>
+    <value>Close the Pono Toolkit</value>
   </data>
   <data name="CloseAutomationStepControl_Title" xml:space="preserve">
     <value>Close</value>
@@ -915,7 +915,7 @@ Switching modes may require restart.</value>
     <value>تبرع لِ</value>
   </data>
   <data name="DonatePage_Message" xml:space="preserve">
-    <value>العمل على Lenovo Legion Toolkit يحتاج الكثير من الوقت و المجهود. لو اعجبك البرنامج يمكن انت تدعمه من خلال التبرع بمبلغ من اختيارك.
+    <value>العمل على Pono Toolkit يحتاج الكثير من الوقت و المجهود. لو اعجبك البرنامج يمكن انت تدعمه من خلال التبرع بمبلغ من اختيارك.
 
 اضغط على رمز الباي بال فى الأسفل او امسح كود ال QR للتبرع بالباي بال. 
 
@@ -1484,7 +1484,7 @@ Click Yes to disable and No to ignore.</value>
     <value>Macro</value>
   </data>
   <data name="MacroPage_Enable_Subtitle" xml:space="preserve">
-    <value>Lenovo Legion Toolkit must be running for macros to work.</value>
+    <value>Pono Toolkit must be running for macros to work.</value>
   </data>
   <data name="MacroPage_Enable_Title" xml:space="preserve">
     <value>Enable</value>

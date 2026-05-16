@@ -121,7 +121,7 @@
     <value>Aplikāciju Folderi</value>
   </data>
   <data name="AboutPage_AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="AboutPage_Build" xml:space="preserve">
     <value>Izlaidums</value>
@@ -239,7 +239,7 @@
     <value>Apstiprināt un Aizvērt</value>
   </data>
   <data name="AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="ArgumentWindow_Category_Debugging" xml:space="preserve">
     <value>Debugging</value>
@@ -323,7 +323,7 @@
     <value>Iespējot</value>
   </data>
   <data name="AutomationPage_ActionsEnable_Message" xml:space="preserve">
-    <value>Lai automātiskās darbības darbotos, ir jābūt ieslēgtam Lenovo Legion Toolkit.</value>
+    <value>Lai automātiskās darbības darbotos, ir jābūt ieslēgtam Pono Toolkit.</value>
   </data>
   <data name="AutomationPage_Actions_Empty" xml:space="preserve">
     <value>Nav definētas Darbības. Lai izveidotu jaunu Darbību, noklikšķiniet uz "Pievienot jaunu".</value>
@@ -647,7 +647,7 @@ Supported formats are: {1}.</value>
     <value>Aizvērt</value>
   </data>
   <data name="CloseAutomationStepControl_Message" xml:space="preserve">
-    <value>Close the Lenovo Legion Toolkit</value>
+    <value>Close the Pono Toolkit</value>
   </data>
   <data name="CloseAutomationStepControl_Title" xml:space="preserve">
     <value>Close</value>
@@ -918,7 +918,7 @@ BRĪDINĀJUMS. Ja iebūvētais ekrāns ir izslēgts, šī darbība nedarbosies p
     <value>Ziedot ar</value>
   </data>
   <data name="DonatePage_Message" xml:space="preserve">
-    <value>Lenovo Legion Toolkit izstrāde un uzturēšana prasa daudz laika. Ja jums patīk izmantot šo programmatūru, varat atbalstīt tās nākotni, ziedojot noteiktu summu.
+    <value>Pono Toolkit izstrāde un uzturēšana prasa daudz laika. Ja jums patīk izmantot šo programmatūru, varat atbalstīt tās nākotni, ziedojot noteiktu summu.
 
 Noklikšķiniet uz zemāk redzamā PayPal logotipa vai skenējiet QR kodu, lai ziedotu ar PayPal.
 
@@ -984,7 +984,7 @@ BRĪDINĀJUMS. Ja iebūvētais ekrāns ir izslēgts, šī darbība nedarbosies p
     <value>Noņemiet atzīmi no atsvaidzināšanas ātruma, ko nevēlaties izmantot, izmantojot fn + R saīsni.</value>
   </data>
   <data name="ExcludeRefreshRatesWindow_NoRefreshRatesFound_Message" xml:space="preserve">
-    <value>Pārliecinieties, vai ir ieslēgts klēpjdatora ekrāns. Lenovo Legion Toolkit nevar ielādēt atsvaidzināšanas ātrumu ekrānam, kas nav ieslēgts.</value>
+    <value>Pārliecinieties, vai ir ieslēgts klēpjdatora ekrāns. Pono Toolkit nevar ielādēt atsvaidzināšanas ātrumu ekrānam, kas nav ieslēgts.</value>
   </data>
   <data name="ExcludeRefreshRatesWindow_NoRefreshRatesFound_Title" xml:space="preserve">
     <value>Atsvaidzināšanas Ātrumi netika atrasti</value>
@@ -1326,7 +1326,7 @@ If dGPU does not respond at all, please restart your laptop.</value>
     <value>Neaktīvs</value>
   </data>
   <data name="IncompatibleDevice_Message" xml:space="preserve">
-    <value>Šī ierīce nesader ar Lenovo Legion Toolkit.</value>
+    <value>Šī ierīce nesader ar Pono Toolkit.</value>
   </data>
   <data name="Information" xml:space="preserve">
     <value>Information</value>
@@ -1487,7 +1487,7 @@ Click Yes to disable and No to ignore.</value>
     <value>Macro</value>
   </data>
   <data name="MacroPage_Enable_Subtitle" xml:space="preserve">
-    <value>Lenovo Legion Toolkit must be running for macros to work.</value>
+    <value>Pono Toolkit must be running for macros to work.</value>
   </data>
   <data name="MacroPage_Enable_Title" xml:space="preserve">
     <value>Enable</value>
@@ -2665,7 +2665,7 @@ Pēc šīs opcijas maiņas ieteicams restartēt datoru.</value>
   </data>
   <data name="SettingsPage_DisableLenovoHotkeys_Message" xml:space="preserve">
     <value>Atspējojiet Lenovo Hotkeys un to pakalpojumus, neatinstalējot tos.
-Ja šī programma ir atspējota, Lenovo Legion Toolkit apstrādās Fn saīsnes.
+Ja šī programma ir atspējota, Pono Toolkit apstrādās Fn saīsnes.
 Pēc šīs opcijas maiņas ieteicams restartēt datoru.</value>
   </data>
   <data name="SettingsPage_DisableLenovoHotkeys_Title" xml:space="preserve">
@@ -3174,7 +3174,7 @@ Ja izvēlaties turpināt, reģistrēšana tiks iespējota automātiski.</value>
     <value>Iekārtas Tips</value>
   </data>
   <data name="UnsupportedWindow_Message" xml:space="preserve">
-    <value>Lenovo Legion Toolkit nav pārbaudīts ar jūsu ierīci.</value>
+    <value>Pono Toolkit nav pārbaudīts ar jūsu ierīci.</value>
   </data>
   <data name="UnsupportedWindow_Model" xml:space="preserve">
     <value>Modelis</value>

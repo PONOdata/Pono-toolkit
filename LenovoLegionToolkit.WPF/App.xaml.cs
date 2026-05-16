@@ -109,7 +109,7 @@ public partial class App
             {
                 if (Log.Instance.IsTraceEnabled)
                 {
-                    Log.Instance.Trace($"Lenovo Legion Toolkit Version {Assembly.GetEntryAssembly()?.GetName().Version}");
+                    Log.Instance.Trace($"Pono Toolkit Version {Assembly.GetEntryAssembly()?.GetName().Version}");
                 }
 
                 Compatibility.PrintControllerVersionAsync().ConfigureAwait(false);
@@ -353,7 +353,7 @@ public partial class App
         {
             try
             {
-                MessageBox.Show(errorMsg, "Lenovo Legion Toolkit - Startup Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(errorMsg, "Pono Toolkit - Startup Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch { /* Ignore */ }
         }

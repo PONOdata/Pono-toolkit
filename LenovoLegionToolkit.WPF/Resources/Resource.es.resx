@@ -121,7 +121,7 @@
     <value>Carpetas de aplicaciones</value>
   </data>
   <data name="AboutPage_AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="AboutPage_Build" xml:space="preserve">
     <value>Revisión</value>
@@ -239,7 +239,7 @@
     <value>Aplicar y cerrar</value>
   </data>
   <data name="AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="ArgumentWindow_Category_Debugging" xml:space="preserve">
     <value>Depuración de errores</value>
@@ -323,7 +323,7 @@
     <value>Activar</value>
   </data>
   <data name="AutomationPage_ActionsEnable_Message" xml:space="preserve">
-    <value>Lenovo Legion Toolkit deberá estar ejecutándose para que funcionen las acciones automáticas.</value>
+    <value>Pono Toolkit deberá estar ejecutándose para que funcionen las acciones automáticas.</value>
   </data>
   <data name="AutomationPage_Actions_Empty" xml:space="preserve">
     <value>Ninguna acción definida. Haga clic en "Añadir nueva" para crear una nueva acción.</value>
@@ -646,7 +646,7 @@ Esta hora puede no ser correcta si el portátil se ha cargado mientras estaba su
     <value>Cerrar</value>
   </data>
   <data name="CloseAutomationStepControl_Message" xml:space="preserve">
-    <value>Cerrar Lenovo Legion Toolkit</value>
+    <value>Cerrar Pono Toolkit</value>
   </data>
   <data name="CloseAutomationStepControl_Title" xml:space="preserve">
     <value>Cerrar</value>
@@ -917,7 +917,7 @@ AVISO: Esta acción no se ejecutará correctamente, si la pantalla interna está
     <value>Donar con</value>
   </data>
   <data name="DonatePage_Message" xml:space="preserve">
-    <value>El desarrollo y mantenimiento de Lenovo Legion Toolkit lleva mucho tiempo. Si le gusta este programa, puede apoyar su futuro, donando la cantidad que desee.
+    <value>El desarrollo y mantenimiento de Pono Toolkit lleva mucho tiempo. Si le gusta este programa, puede apoyar su futuro, donando la cantidad que desee.
 
 Haga clic en el logo o escanee el código QR para donar con PayPal.
 
@@ -983,7 +983,7 @@ AVISO: Esta acción no se ejecutará correctamente, si la pantalla interna está
     <value>Desmarcar las tasas de actualización que no desea utilizar al usar las teclas Fn+R.</value>
   </data>
   <data name="ExcludeRefreshRatesWindow_NoRefreshRatesFound_Message" xml:space="preserve">
-    <value>Asegúrese de que la pantalla del portátil está encendida. Lenovo Legion Toolkit no puede cargar las tasas de refresco de una pantalla que no está encendida.</value>
+    <value>Asegúrese de que la pantalla del portátil está encendida. Pono Toolkit no puede cargar las tasas de refresco de una pantalla que no está encendida.</value>
   </data>
   <data name="ExcludeRefreshRatesWindow_NoRefreshRatesFound_Title" xml:space="preserve">
     <value>No se han encontrado tasas de refresco</value>
@@ -1327,7 +1327,7 @@ Si la dGPU no responde del todo, reinicie su portátil.</value>
     <value>Inactiva</value>
   </data>
   <data name="IncompatibleDevice_Message" xml:space="preserve">
-    <value>Este dispositivo no es compatible con Lenovo Legion Toolkit.</value>
+    <value>Este dispositivo no es compatible con Pono Toolkit.</value>
   </data>
   <data name="Information" xml:space="preserve">
     <value>Información</value>
@@ -1488,7 +1488,7 @@ Haga clic en Sí para deshabilitarla y en No para ignorarla.</value>
     <value>Macro</value>
   </data>
   <data name="MacroPage_Enable_Subtitle" xml:space="preserve">
-    <value>Lenovo Legion Toolkit deberá estar ejecutándose para que funcionen las macros.</value>
+    <value>Pono Toolkit deberá estar ejecutándose para que funcionen las macros.</value>
   </data>
   <data name="MacroPage_Enable_Title" xml:space="preserve">
     <value>Activar</value>
@@ -3176,7 +3176,7 @@ El registro de sucesos se activará automáticamente, si decide continuar.</valu
     <value>Tipo</value>
   </data>
   <data name="UnsupportedWindow_Message" xml:space="preserve">
-    <value>Lenovo Legion Toolkit no ha sido testeado en su dispositivo.</value>
+    <value>Pono Toolkit no ha sido testeado en su dispositivo.</value>
   </data>
   <data name="UnsupportedWindow_Model" xml:space="preserve">
     <value>Modelo</value>

@@ -121,7 +121,7 @@
     <value>Applicatiemappen</value>
   </data>
   <data name="AboutPage_AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="AboutPage_Build" xml:space="preserve">
     <value>Versie</value>
@@ -239,7 +239,7 @@
     <value>Opslaan &amp; sluiten</value>
   </data>
   <data name="AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="ArgumentWindow_Category_Debugging" xml:space="preserve">
     <value>Debugging</value>
@@ -323,7 +323,7 @@
     <value>Inschakelen</value>
   </data>
   <data name="AutomationPage_ActionsEnable_Message" xml:space="preserve">
-    <value>Lenovo Legion Toolkit moet actief zijn om automatische acties te laten werken.</value>
+    <value>Pono Toolkit moet actief zijn om automatische acties te laten werken.</value>
   </data>
   <data name="AutomationPage_Actions_Empty" xml:space="preserve">
     <value>Geen acties gedefinieerd. Klik op "Nieuwe toevoegen" om een nieuwe actie te maken.</value>
@@ -647,7 +647,7 @@ Ondersteunde formaten zijn: {1}.</value>
     <value>Sluiten</value>
   </data>
   <data name="CloseAutomationStepControl_Message" xml:space="preserve">
-    <value>Sluit Lenovo Legion Toolkit</value>
+    <value>Sluit Pono Toolkit</value>
   </data>
   <data name="CloseAutomationStepControl_Title" xml:space="preserve">
     <value>Sluiten</value>
@@ -918,7 +918,7 @@ WAARSCHUWING: Deze actie wordt niet correct uitgevoerd als het interne display i
     <value>Doneren met</value>
   </data>
   <data name="DonatePage_Message" xml:space="preserve">
-    <value>De ontwikkeling en het onderhoud van Lenovo Legion Toolkit kost veel tijd. Als u deze software graag gebruikt, kunt u de toekomst ervan steunen door een bedrag naar keuze te doneren.
+    <value>De ontwikkeling en het onderhoud van Pono Toolkit kost veel tijd. Als u deze software graag gebruikt, kunt u de toekomst ervan steunen door een bedrag naar keuze te doneren.
 
 Klik op het PayPal-logo hieronder of scan de QR-code om te doneren met PayPal.
 
@@ -984,7 +984,7 @@ WAARSCHUWING: Deze actie wordt niet correct uitgevoerd als het interne beeldsche
     <value>Vink vernieuwingsfrequenties uit die u niet wilt gebruiken wanneer de snelkoppeling Fn+R wordt gebruikt.</value>
   </data>
   <data name="ExcludeRefreshRatesWindow_NoRefreshRatesFound_Message" xml:space="preserve">
-    <value>Zorg ervoor dat het beeldscherm van de laptop is ingeschakeld. Lenovo Legion Toolkit kan geen verversingsfrequenties laden voor een beeldscherm dat niet is ingeschakeld.</value>
+    <value>Zorg ervoor dat het beeldscherm van de laptop is ingeschakeld. Pono Toolkit kan geen verversingsfrequenties laden voor een beeldscherm dat niet is ingeschakeld.</value>
   </data>
   <data name="ExcludeRefreshRatesWindow_NoRefreshRatesFound_Title" xml:space="preserve">
     <value>Geen verversingsnelheiden gevonden</value>
@@ -1325,7 +1325,7 @@ WAARSCHUWING: Deze actie wordt niet correct uitgevoerd als het interne display i
     <value>inactief</value>
   </data>
   <data name="IncompatibleDevice_Message" xml:space="preserve">
-    <value>Dit apparaat is niet compatibel met Lenovo Legion Toolkit.</value>
+    <value>Dit apparaat is niet compatibel met Pono Toolkit.</value>
   </data>
   <data name="Information" xml:space="preserve">
     <value>Informatie</value>
@@ -1486,7 +1486,7 @@ Klik Ja om het uit te schakelen en nee om het te negeren.</value>
     <value>Macro</value>
   </data>
   <data name="MacroPage_Enable_Subtitle" xml:space="preserve">
-    <value>Lenovo Legion Toolkit moet actief zijn om macro's uit te voeren.</value>
+    <value>Pono Toolkit moet actief zijn om macro's uit te voeren.</value>
   </data>
   <data name="MacroPage_Enable_Title" xml:space="preserve">
     <value>Schakel in</value>
@@ -3173,7 +3173,7 @@ Logboekregistratie wordt automatisch ingeschakeld als u ervoor kiest om door te 
     <value>Machine Type</value>
   </data>
   <data name="UnsupportedWindow_Message" xml:space="preserve">
-    <value>Lenovo Legion Toolkit is niet getest met uw apparaat.</value>
+    <value>Pono Toolkit is niet getest met uw apparaat.</value>
   </data>
   <data name="UnsupportedWindow_Model" xml:space="preserve">
     <value>Model</value>

@@ -121,7 +121,7 @@
     <value>Folderele aplicației</value>
   </data>
   <data name="AboutPage_AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="AboutPage_Build" xml:space="preserve">
     <value>Compilare</value>
@@ -239,7 +239,7 @@
     <value>Aplicare &amp; închidere</value>
   </data>
   <data name="AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="ArgumentWindow_Category_Debugging" xml:space="preserve">
     <value>Debugging</value>
@@ -323,7 +323,7 @@
     <value>Activare</value>
   </data>
   <data name="AutomationPage_ActionsEnable_Message" xml:space="preserve">
-    <value>Lenovo Legion Toolkit trebuie să ruleze pentru ca acțiunile automate să funcționeze.</value>
+    <value>Pono Toolkit trebuie să ruleze pentru ca acțiunile automate să funcționeze.</value>
   </data>
   <data name="AutomationPage_Actions_Empty" xml:space="preserve">
     <value>Nicio Acțiune definită. Apăsați pe "Adăugați nou" pentru a crea o nouă Acțiune.</value>
@@ -647,7 +647,7 @@ Supported formats are: {1}.</value>
     <value>Închidere</value>
   </data>
   <data name="CloseAutomationStepControl_Message" xml:space="preserve">
-    <value>Close the Lenovo Legion Toolkit</value>
+    <value>Close the Pono Toolkit</value>
   </data>
   <data name="CloseAutomationStepControl_Title" xml:space="preserve">
     <value>Close</value>
@@ -918,7 +918,7 @@ ATENȚIE: Această acțiune nu va rula corect dacă afișajul intern este oprit.
     <value>Donați cu</value>
   </data>
   <data name="DonatePage_Message" xml:space="preserve">
-    <value>Dezvoltarea și întreținerea Lenovo Legion Toolkit necesită mult timp. Dacă vă place acest software, îi puteți sprijini viitorul donând o sumă la alegere.
+    <value>Dezvoltarea și întreținerea Pono Toolkit necesită mult timp. Dacă vă place acest software, îi puteți sprijini viitorul donând o sumă la alegere.
 
 Faceți clic pe sigla PayPal de mai jos sau scanați codul QR pentru a dona cu PayPal.
 
@@ -984,7 +984,7 @@ ATENȚIE: Această acțiune nu va rula corect dacă afișajul încorporat este o
     <value>Debifați ratele de reîmprospătare pe care nu doriți să le utilizați pentru comanda rapidă Fn+R.</value>
   </data>
   <data name="ExcludeRefreshRatesWindow_NoRefreshRatesFound_Message" xml:space="preserve">
-    <value>Asigurați-vă că afișajul laptopului este pornit. Lenovo Legion Toolkit nu poate încărca rate de reîmprospătare pentru un afișaj care nu este pornit.</value>
+    <value>Asigurați-vă că afișajul laptopului este pornit. Pono Toolkit nu poate încărca rate de reîmprospătare pentru un afișaj care nu este pornit.</value>
   </data>
   <data name="ExcludeRefreshRatesWindow_NoRefreshRatesFound_Title" xml:space="preserve">
     <value>Nicio rată de reîmprospătare găsită</value>
@@ -1326,7 +1326,7 @@ If dGPU does not respond at all, please restart your laptop.</value>
     <value>Inactiv</value>
   </data>
   <data name="IncompatibleDevice_Message" xml:space="preserve">
-    <value>Acest dispozitiv nu este compatibil cu Lenovo Legion Toolkit.</value>
+    <value>Acest dispozitiv nu este compatibil cu Pono Toolkit.</value>
   </data>
   <data name="Information" xml:space="preserve">
     <value>Information</value>
@@ -1487,7 +1487,7 @@ Click Yes to disable and No to ignore.</value>
     <value>Macro</value>
   </data>
   <data name="MacroPage_Enable_Subtitle" xml:space="preserve">
-    <value>Lenovo Legion Toolkit must be running for macros to work.</value>
+    <value>Pono Toolkit must be running for macros to work.</value>
   </data>
   <data name="MacroPage_Enable_Title" xml:space="preserve">
     <value>Enable</value>
@@ -3174,7 +3174,7 @@ Salvarea logurilor va fi activată automat dacă alegeți să continuați.</valu
     <value>Tip sistem</value>
   </data>
   <data name="UnsupportedWindow_Message" xml:space="preserve">
-    <value>Lenovo Legion Toolkit nu a fost testat cu dispozitivul dvs.</value>
+    <value>Pono Toolkit nu a fost testat cu dispozitivul dvs.</value>
   </data>
   <data name="UnsupportedWindow_Model" xml:space="preserve">
     <value>Model</value>

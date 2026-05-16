@@ -121,7 +121,7 @@
     <value>Baǵdarlama papkaları</value>
   </data>
   <data name="AboutPage_AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="AboutPage_Build" xml:space="preserve">
     <value>Qurıw</value>
@@ -239,7 +239,7 @@
     <value>Qollanıw hám jabıw</value>
   </data>
   <data name="AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="ArgumentWindow_Category_Debugging" xml:space="preserve">
     <value>Debugging</value>
@@ -323,7 +323,7 @@
     <value>Iske túsiriw</value>
   </data>
   <data name="AutomationPage_ActionsEnable_Message" xml:space="preserve">
-    <value>Avtomatikalıq háreketlerdiń orınlanıwı ushın Lenovo Legion Toolkit iske túsirilgen bolıwı kerek.</value>
+    <value>Avtomatikalıq háreketlerdiń orınlanıwı ushın Pono Toolkit iske túsirilgen bolıwı kerek.</value>
   </data>
   <data name="AutomationPage_Actions_Empty" xml:space="preserve">
     <value>Háreketler anıqlanbaǵan. Jańa háreket jaratıw ushın "Jańadan qosıw" túymesin basıń.</value>
@@ -647,7 +647,7 @@ Qollap - quwatlanatuǵın formatlar: {1}.</value>
     <value>Jabıw</value>
   </data>
   <data name="CloseAutomationStepControl_Message" xml:space="preserve">
-    <value>Close the Lenovo Legion Toolkit</value>
+    <value>Close the Pono Toolkit</value>
   </data>
   <data name="CloseAutomationStepControl_Title" xml:space="preserve">
     <value>Close</value>
@@ -917,7 +917,7 @@ ESLETPE: Eger ishki displey óshirilgen bolsa, bul háreket durıs islemeydi.</v
     <value>Járdeminde qollap-quwatlaw</value>
   </data>
   <data name="DonatePage_Message" xml:space="preserve">
-    <value>Lenovo Legion Toolkitti rawajlandırıw hám turaqlı islewin támiyinlew ushın kóp waqıt ketedi. Eger sizge bul baǵdarlamanı qollanıw unasa, siz qálegen summańız benen onıń keleshegin qollap-quwatlawıńız múmkin.
+    <value>Pono Toolkitti rawajlandırıw hám turaqlı islewin támiyinlew ushın kóp waqıt ketedi. Eger sizge bul baǵdarlamanı qollanıw unasa, siz qálegen summańız benen onıń keleshegin qollap-quwatlawıńız múmkin.
 
 PayPal arqalı qollap-quwatlaw ushın PayPal logotibine basıń yamasa tómendegi QR-kodtı tekseriń.
 
@@ -1325,7 +1325,7 @@ DIQQAT: Eger ishki displey óshirilgen bolsa, bul háreket durıs orınlanbaydı
     <value>Aktiv emes</value>
   </data>
   <data name="IncompatibleDevice_Message" xml:space="preserve">
-    <value>Bul qurılma Lenovo Legion Toolkit penen mas kelmeydi.</value>
+    <value>Bul qurılma Pono Toolkit penen mas kelmeydi.</value>
   </data>
   <data name="Information" xml:space="preserve">
     <value>Information</value>
@@ -1486,7 +1486,7 @@ Click Yes to disable and No to ignore.</value>
     <value>Macro</value>
   </data>
   <data name="MacroPage_Enable_Subtitle" xml:space="preserve">
-    <value>Lenovo Legion Toolkit must be running for macros to work.</value>
+    <value>Pono Toolkit must be running for macros to work.</value>
   </data>
   <data name="MacroPage_Enable_Title" xml:space="preserve">
     <value>Enable</value>
@@ -3172,7 +3172,7 @@ Eger siz dawam etiwdi tańlasańız, jurnaldı júrgiziw avtomatikalıq qosılad
     <value>Qurılma modeliniń túri</value>
   </data>
   <data name="UnsupportedWindow_Message" xml:space="preserve">
-    <value>Lenovo Legion Toolkit siziń qurılmańızda tekserilmedi.</value>
+    <value>Pono Toolkit siziń qurılmańızda tekserilmedi.</value>
   </data>
   <data name="UnsupportedWindow_Model" xml:space="preserve">
     <value>Model</value>

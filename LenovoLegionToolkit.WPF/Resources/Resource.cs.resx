@@ -121,7 +121,7 @@
     <value>Složka aplikací</value>
   </data>
   <data name="AboutPage_AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="AboutPage_Build" xml:space="preserve">
     <value>Sestavení</value>
@@ -239,7 +239,7 @@
     <value>Použít a zavřít</value>
   </data>
   <data name="AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="ArgumentWindow_Category_Debugging" xml:space="preserve">
     <value>Debugging</value>
@@ -323,7 +323,7 @@
     <value>Povolit</value>
   </data>
   <data name="AutomationPage_ActionsEnable_Message" xml:space="preserve">
-    <value>Lenovo Legion Toolkit musí být zapnut, aby fungovaly automatické akce.</value>
+    <value>Pono Toolkit musí být zapnut, aby fungovaly automatické akce.</value>
   </data>
   <data name="AutomationPage_Actions_Empty" xml:space="preserve">
     <value>Nejsou definovány žádné akce. Kliknutím na „Přidat novou“ vytvoříte novou akci.</value>
@@ -647,7 +647,7 @@ Podporované formáty jsou: {1}.</value>
     <value>Zavřít</value>
   </data>
   <data name="CloseAutomationStepControl_Message" xml:space="preserve">
-    <value>Close the Lenovo Legion Toolkit</value>
+    <value>Close the Pono Toolkit</value>
   </data>
   <data name="CloseAutomationStepControl_Title" xml:space="preserve">
     <value>Close</value>
@@ -918,7 +918,7 @@ VAROVÁNÍ: Tato akce neproběhne správně, pokud je displej notebooku vypnutý
     <value>Přispět pomocí</value>
   </data>
   <data name="DonatePage_Message" xml:space="preserve">
-    <value>Vývoj a údržba Lenovo Legion Toolkit zabere spoustu času. Pokud rád používáš tento software, můžeš podpořit jeho budoucnost darováním částky dle vlastního výběru.
+    <value>Vývoj a údržba Pono Toolkit zabere spoustu času. Pokud rád používáš tento software, můžeš podpořit jeho budoucnost darováním částky dle vlastního výběru.
 
 Klikněte na logo PayPal níže nebo naskenujte QR kód a přispějte přes PayPal.
 
@@ -984,7 +984,7 @@ VAROVÁNÍ: Tato akce neproběhne správně, pokud je interní displej vypnutý.
     <value>Zaškrtni obnovovací frekvence, které chceš používat při použití zkratky Fn+R.</value>
   </data>
   <data name="ExcludeRefreshRatesWindow_NoRefreshRatesFound_Message" xml:space="preserve">
-    <value>Ujisti se, že je zapnutý displej notebooku. Lenovo Legion Toolkit nemůže načíst obnovovací frekvence pro displej, který není zapnutý.</value>
+    <value>Ujisti se, že je zapnutý displej notebooku. Pono Toolkit nemůže načíst obnovovací frekvence pro displej, který není zapnutý.</value>
   </data>
   <data name="ExcludeRefreshRatesWindow_NoRefreshRatesFound_Title" xml:space="preserve">
     <value>Nebyly nalezeny žádné obnovovací frekvence</value>
@@ -1326,7 +1326,7 @@ Pokud dGPU vůbec nereaguje, prosím restartujte svůj notebook.</value>
     <value>Neaktivní</value>
   </data>
   <data name="IncompatibleDevice_Message" xml:space="preserve">
-    <value>Toto zařízení není kompatibilní s Lenovo Legion Toolkit.</value>
+    <value>Toto zařízení není kompatibilní s Pono Toolkit.</value>
   </data>
   <data name="Information" xml:space="preserve">
     <value>Informace</value>
@@ -1487,7 +1487,7 @@ Click Yes to disable and No to ignore.</value>
     <value>Makro</value>
   </data>
   <data name="MacroPage_Enable_Subtitle" xml:space="preserve">
-    <value>Lenovo Legion Toolkit musí běžet, aby makra fungovala.</value>
+    <value>Pono Toolkit musí běžet, aby makra fungovala.</value>
   </data>
   <data name="MacroPage_Enable_Title" xml:space="preserve">
     <value>Povolit</value>
@@ -3174,7 +3174,7 @@ Pokud se rozhodneš pokračovat, protokolování bude automaticky povoleno.</val
     <value>Typ zařízení</value>
   </data>
   <data name="UnsupportedWindow_Message" xml:space="preserve">
-    <value>Lenovo Legion Toolkit nebyl testován na vašem zařízení.</value>
+    <value>Pono Toolkit nebyl testován na vašem zařízení.</value>
   </data>
   <data name="UnsupportedWindow_Model" xml:space="preserve">
     <value>Model</value>

@@ -121,7 +121,7 @@
     <value>Папки, използвани от приложението</value>
   </data>
   <data name="AboutPage_AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="AboutPage_Build" xml:space="preserve">
     <value>Издание</value>
@@ -239,7 +239,7 @@
     <value>Приложи и затвори</value>
   </data>
   <data name="AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="ArgumentWindow_Category_Debugging" xml:space="preserve">
     <value>Debugging</value>
@@ -323,7 +323,7 @@
     <value>Активирай</value>
   </data>
   <data name="AutomationPage_ActionsEnable_Message" xml:space="preserve">
-    <value>Lenovo Legion Toolkit трябва да работи, за да може автоматичните действия да бъдат изпълнени.</value>
+    <value>Pono Toolkit трябва да работи, за да може автоматичните действия да бъдат изпълнени.</value>
   </data>
   <data name="AutomationPage_Actions_Empty" xml:space="preserve">
     <value>Нямате дефинирани Действия. Натиснете "Добави ново", за да създадете ново Действие.</value>
@@ -646,7 +646,7 @@
     <value>Затвори</value>
   </data>
   <data name="CloseAutomationStepControl_Message" xml:space="preserve">
-    <value>Close the Lenovo Legion Toolkit</value>
+    <value>Close the Pono Toolkit</value>
   </data>
   <data name="CloseAutomationStepControl_Title" xml:space="preserve">
     <value>Close</value>
@@ -917,7 +917,7 @@
     <value>Дарете с</value>
   </data>
   <data name="DonatePage_Message" xml:space="preserve">
-    <value>Разработката и поддръжката на Lenovo Legion Toolkit изисква много време. Ако харесвате този софтуер може да подкрепите бъдещото му развитие като дарите сума по ваша лична преценка.
+    <value>Разработката и поддръжката на Pono Toolkit изисква много време. Ако харесвате този софтуер може да подкрепите бъдещото му развитие като дарите сума по ваша лична преценка.
 
 Натиснете логото на PayPal по-долу или сканирайте QR-кода, за да дарите с PayPal.
 
@@ -983,7 +983,7 @@
     <value>Премахнете отметките на честотите на обновяване, които не бихте искали да използвате при смяна на честотата с клавишната комбинация Fn+R.</value>
   </data>
   <data name="ExcludeRefreshRatesWindow_NoRefreshRatesFound_Message" xml:space="preserve">
-    <value>Уверете се, че вграденият дисплей е включен. Lenovo Legion Toolkit не може да зареди честотата на опресняване на дисплей, който не е включен.</value>
+    <value>Уверете се, че вграденият дисплей е включен. Pono Toolkit не може да зареди честотата на опресняване на дисплей, който не е включен.</value>
   </data>
   <data name="ExcludeRefreshRatesWindow_NoRefreshRatesFound_Title" xml:space="preserve">
     <value>Не бяха открити честоти на опресняване</value>
@@ -1325,7 +1325,7 @@ Do not proceed unless you possess the necessary technical expertise.</value>
     <value>Неактивен</value>
   </data>
   <data name="IncompatibleDevice_Message" xml:space="preserve">
-    <value>Това устройтво не е съвместимо с Lenovo Legion Toolkit.</value>
+    <value>Това устройтво не е съвместимо с Pono Toolkit.</value>
   </data>
   <data name="Information" xml:space="preserve">
     <value>Информация</value>
@@ -1486,7 +1486,7 @@ Click Yes to disable and No to ignore.</value>
     <value>Macro</value>
   </data>
   <data name="MacroPage_Enable_Subtitle" xml:space="preserve">
-    <value>Lenovo Legion Toolkit must be running for macros to work.</value>
+    <value>Pono Toolkit must be running for macros to work.</value>
   </data>
   <data name="MacroPage_Enable_Title" xml:space="preserve">
     <value>Enable</value>
@@ -3171,7 +3171,7 @@ It won't affect other full screen windows, but you will not be able to click on 
     <value>Вид на машината</value>
   </data>
   <data name="UnsupportedWindow_Message" xml:space="preserve">
-    <value>Lenovo Legion Toolkit все още не е тестван на вашето устройство.</value>
+    <value>Pono Toolkit все още не е тестван на вашето устройство.</value>
   </data>
   <data name="UnsupportedWindow_Model" xml:space="preserve">
     <value>Модел</value>

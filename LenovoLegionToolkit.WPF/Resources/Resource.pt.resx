@@ -121,7 +121,7 @@
     <value>Pastas da Aplicação</value>
   </data>
   <data name="AboutPage_AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="AboutPage_Build" xml:space="preserve">
     <value>Build</value>
@@ -239,7 +239,7 @@
     <value>Aplicar e fechar</value>
   </data>
   <data name="AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="ArgumentWindow_Category_Debugging" xml:space="preserve">
     <value>Debugging</value>
@@ -323,7 +323,7 @@
     <value>Ativar</value>
   </data>
   <data name="AutomationPage_ActionsEnable_Message" xml:space="preserve">
-    <value>O Lenovo Legion Toolkit tem que estar a rodar para as ações automáticas funcionarem.</value>
+    <value>O Pono Toolkit tem que estar a rodar para as ações automáticas funcionarem.</value>
   </data>
   <data name="AutomationPage_Actions_Empty" xml:space="preserve">
     <value>Nenhuma Ação definida. Clica em "Adicionar nova" para criar uma nova ação.</value>
@@ -648,7 +648,7 @@ Formatos suportados são: {1}.</value>
     <value>Fechar</value>
   </data>
   <data name="CloseAutomationStepControl_Message" xml:space="preserve">
-    <value>Close the Lenovo Legion Toolkit</value>
+    <value>Close the Pono Toolkit</value>
   </data>
   <data name="CloseAutomationStepControl_Title" xml:space="preserve">
     <value>Close</value>
@@ -920,7 +920,7 @@ ATENÇÃO: Está ação não irá funcionar corretamente se o ecrã interno esti
     <value>Doar através de</value>
   </data>
   <data name="DonatePage_Message" xml:space="preserve">
-    <value>O desenvolvimento e manutenção do Lenovo Legion Toolkit demora bastante tempo. Se gostas deste software podes suportar o seu futuro ao doar uma quantia da tua escolha.
+    <value>O desenvolvimento e manutenção do Pono Toolkit demora bastante tempo. Se gostas deste software podes suportar o seu futuro ao doar uma quantia da tua escolha.
 
 Clica no logo do PayPal abaixo ou faz scan do QR code para doar através do PayPal.
 
@@ -986,7 +986,7 @@ ATENÇÃO: Esta ação não irá executar corretamente se o ecrã interno estive
     <value>Desmarca as taxas de atualização que não quiseres usar quando o atalho Fn+R é usado.</value>
   </data>
   <data name="ExcludeRefreshRatesWindow_NoRefreshRatesFound_Message" xml:space="preserve">
-    <value>Certifica-te de que o ecrã do portátil está ligado. O Lenovo Legion Toolkit não consegue carregar taxas de atualização de um ecrã que não está ligado.</value>
+    <value>Certifica-te de que o ecrã do portátil está ligado. O Pono Toolkit não consegue carregar taxas de atualização de um ecrã que não está ligado.</value>
   </data>
   <data name="ExcludeRefreshRatesWindow_NoRefreshRatesFound_Title" xml:space="preserve">
     <value>Não foram encontradas taxas de atualização</value>
@@ -1328,7 +1328,7 @@ Se dGPU não estiver a responder, reinicie o seu laptop.</value>
     <value>Inativa</value>
   </data>
   <data name="IncompatibleDevice_Message" xml:space="preserve">
-    <value>Este dispositivo não é compatível com o Lenovo Legion Toolkit.</value>
+    <value>Este dispositivo não é compatível com o Pono Toolkit.</value>
   </data>
   <data name="Information" xml:space="preserve">
     <value>Informação</value>
@@ -1489,7 +1489,7 @@ Click Yes to disable and No to ignore.</value>
     <value>Macro</value>
   </data>
   <data name="MacroPage_Enable_Subtitle" xml:space="preserve">
-    <value>Lenovo Legion Toolkit must be running for macros to work.</value>
+    <value>Pono Toolkit must be running for macros to work.</value>
   </data>
   <data name="MacroPage_Enable_Title" xml:space="preserve">
     <value>Ativar</value>
@@ -3173,7 +3173,7 @@ Logs serão guardados automaticamente, se escolheres continuar.</value>
     <value>Tipo de Dispositivo</value>
   </data>
   <data name="UnsupportedWindow_Message" xml:space="preserve">
-    <value>O Lenovo Legion Toolkit não foi testado no teu dispositivo.</value>
+    <value>O Pono Toolkit não foi testado no teu dispositivo.</value>
   </data>
   <data name="UnsupportedWindow_Model" xml:space="preserve">
     <value>Modelo</value>

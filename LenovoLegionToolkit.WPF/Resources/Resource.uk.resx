@@ -121,7 +121,7 @@
     <value>Теки застосунку</value>
   </data>
   <data name="AboutPage_AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="AboutPage_Build" xml:space="preserve">
     <value>Збірка</value>
@@ -239,7 +239,7 @@
     <value>Застосувати та закрити</value>
   </data>
   <data name="AppName" xml:space="preserve">
-    <value>Lenovo Legion Toolkit</value>
+    <value>Pono Toolkit</value>
   </data>
   <data name="ArgumentWindow_Category_Debugging" xml:space="preserve">
     <value>Налагодження</value>
@@ -323,7 +323,7 @@
     <value>Увімкнути</value>
   </data>
   <data name="AutomationPage_ActionsEnable_Message" xml:space="preserve">
-    <value>Lenovo Legion Toolkit повинен бути запущений, щоб автоматичні дії працювали.</value>
+    <value>Pono Toolkit повинен бути запущений, щоб автоматичні дії працювали.</value>
   </data>
   <data name="AutomationPage_Actions_Empty" xml:space="preserve">
     <value>Дії не визначено. Натисніть "Додати" щоб створити нову дію.</value>
@@ -646,7 +646,7 @@
     <value>Закрити</value>
   </data>
   <data name="CloseAutomationStepControl_Message" xml:space="preserve">
-    <value>Закрити Lenovo Legion Toolkit</value>
+    <value>Закрити Pono Toolkit</value>
   </data>
   <data name="CloseAutomationStepControl_Title" xml:space="preserve">
     <value>Закрити</value>
@@ -915,7 +915,7 @@
     <value>Пожертвувати за допомогою</value>
   </data>
   <data name="DonatePage_Message" xml:space="preserve">
-    <value>Розробка та обслуговування Lenovo Legion Toolkit займає багато часу. Якщо вам подобається використовувати цю програму ви можете підтримати її майбутнє пожертвою будь-якої бажаної суми.
+    <value>Розробка та обслуговування Pono Toolkit займає багато часу. Якщо вам подобається використовувати цю програму ви можете підтримати її майбутнє пожертвою будь-якої бажаної суми.
 
 Натисніть на лого PayPal нижче чи скануйте QR код, щоб пожертвувати через PayPal.
 
@@ -981,7 +981,7 @@
     <value>Зніміть позначку з частот оновлення, які ви не хочете використовувати при натисканні Fn+R.</value>
   </data>
   <data name="ExcludeRefreshRatesWindow_NoRefreshRatesFound_Message" xml:space="preserve">
-    <value>Переконайтеся, що дисплей ноутбука увімкнено. Lenovo Legion Toolkit не може завантажити частоту оновлення дисплея, якщо він вимкнений.</value>
+    <value>Переконайтеся, що дисплей ноутбука увімкнено. Pono Toolkit не може завантажити частоту оновлення дисплея, якщо він вимкнений.</value>
   </data>
   <data name="ExcludeRefreshRatesWindow_NoRefreshRatesFound_Title" xml:space="preserve">
     <value>Частоту оновлення не визначено</value>
@@ -1323,7 +1323,7 @@
     <value>Неактивно</value>
   </data>
   <data name="IncompatibleDevice_Message" xml:space="preserve">
-    <value>Цей пристрій не сумісний з Lenovo Legion Toolkit.</value>
+    <value>Цей пристрій не сумісний з Pono Toolkit.</value>
   </data>
   <data name="Information" xml:space="preserve">
     <value>Інформація</value>
@@ -1484,7 +1484,7 @@
     <value>Макрос</value>
   </data>
   <data name="MacroPage_Enable_Subtitle" xml:space="preserve">
-    <value>Lenovo Legion Toolkit повинен бути запущений, щоб макроси працювали.</value>
+    <value>Pono Toolkit повинен бути запущений, щоб макроси працювали.</value>
   </data>
   <data name="MacroPage_Enable_Title" xml:space="preserve">
     <value>Увімкнути</value>
