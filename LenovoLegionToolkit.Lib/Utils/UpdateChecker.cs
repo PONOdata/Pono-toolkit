@@ -72,7 +72,7 @@ public class UpdateChecker
                     var productInformation = new ProductHeaderValue("PonoToolkit-UpdateChecker");
                     var connection = new Connection(productInformation, adapter);
                     var githubClient = new GitHubClient(connection);
-                    var releases = await githubClient.Repository.Release.GetAll("PONOdata", "Pono-toolkit", new ApiOptions { PageSize = 5 }).ConfigureAwait(false);
+                    var releases = await githubClient.Repository.Release.GetAll("Brofalo", "LenovoLegionToolkit", new ApiOptions { PageSize = 5 }).ConfigureAwait(false);
 
                     var thisReleaseVersion = Assembly.GetEntryAssembly()?.GetName().Version ?? new Version(0, 0, 0, 0);
                     var thisBuildDate = Assembly.GetEntryAssembly()?.GetBuildDateTime() ?? new DateTime(2000, 1, 1);
@@ -87,7 +87,6 @@ public class UpdateChecker
                     var updates = releases
                         .Where(r => !r.Draft)
                         .Where(r => IsMatchingChannel(r, updateChannel))
-                        .Where(r => (r.PublishedAt ?? r.CreatedAt).UtcDateTime >= thisBuildDate)
                         .Select(r => new { Release = r, Version = TryParseReleaseVersion(r.TagName) })
                         .Where(r => r.Version is not null && r.Version > thisReleaseVersion)
                         .OrderByDescending(r => r.Version)
@@ -521,7 +520,7 @@ public class UpdateChecker
         {
             ProjectName = "PonoToolkit",
             ProjectExeName = "PonoToolkitSetup.exe",
-            ProjectAuthor = "PONOdata",
+            ProjectAuthor = "Brofalo",
             ProjectCurrentVersion = thisReleaseVersion?.ToString() ?? "0.0.0.0",
             ProjectCurrentExePath = "NULL",
             ProjectNewExePath = $"{SERVER_URL}/{folderName}/PonoToolkitSetup.exe"
