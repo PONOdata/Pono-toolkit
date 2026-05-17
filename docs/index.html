@@ -3,146 +3,193 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Pono Toolkit - AIO Windows utility, Lenovo-first</title>
-  <meta name="description" content="Pono Toolkit is a Windows desktop utility for Lenovo Legion and other Windows 11 hardware. Cross-vendor Dynamic Lighting, Fn+F8 airplane mode toggle, smart-key automation sync. Fork of Lenovo Legion Toolkit. GPL-3.0.">
+  <title>Pono Toolkit — Windows utility, balanced.</title>
+  <meta name="description" content="Pono Toolkit is a Windows desktop utility for Lenovo Legion and other Windows 11 hardware. Signed installer, cross-vendor Dynamic Lighting, Fn+F8 airplane toggle, smart-key automation sync. Fork of Lenovo Legion Toolkit. GPL-3.0.">
+  <meta name="theme-color" content="#0b1c33">
   <meta property="og:title" content="Pono Toolkit">
-  <meta property="og:description" content="Cross-vendor Windows utility, Lenovo-first, AIO-ambitious. Fork of Lenovo Legion Toolkit.">
+  <meta property="og:description" content="Cross-vendor Windows utility, Lenovo-first. A balanced fork of Lenovo Legion Toolkit.">
   <meta property="og:url" content="https://ponotoolkit.com">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://github.com">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="hero">
-    <div class="container">
-      <div class="brand">
-        <span class="logo-mark"></span>
+    <div class="container nav-row">
+      <a class="brand" href="#top">
+        <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M3 27 L13 9 L19 19 L23 13 L29 27 Z" fill="currentColor" opacity="0.95"/>
+          <circle cx="24" cy="6" r="2.5" fill="currentColor" opacity="0.8"/>
+        </svg>
         <span class="brand-text">Pono Toolkit</span>
-      </div>
-      <nav>
+      </a>
+      <nav class="nav-links">
         <a href="#features">Features</a>
         <a href="#download">Download</a>
         <a href="#install">Install</a>
-        <a href="https://github.com/PONOdata/Pono-toolkit" target="_blank" rel="noopener">GitHub</a>
+        <a href="#upstream">Upstream</a>
+        <a href="https://github.com/Brofalo/LenovoLegionToolkit" target="_blank" rel="noopener">GitHub</a>
       </nav>
     </div>
+
     <div class="container hero-content">
-      <h1>One Windows utility,<br>vendor-agnostic.</h1>
-      <p class="tagline">Pono Toolkit is an AIO Windows desktop utility for power users. Lenovo Legion is the primary supported platform; the cross-vendor utilities (Dynamic Lighting, airplane toggle, automation) work on any Windows 11 device.</p>
-      <p class="tagline-meta">Fork of Lenovo Legion Toolkit. GPL-3.0. Independent.</p>
-      <p class="motto">"If it fits, it ships."</p>
+      <p class="kicker">PONO TOOLKIT — v0.3.8 STABLE</p>
+      <h1>One Windows utility,<br><span class="accent-text">balanced.</span></h1>
+      <p class="tagline">A power-user toolkit for Lenovo Legion laptops with cross-vendor Dynamic Lighting, an instant Fn+F8 airplane toggle, and smart-key automation that does not lie about its state. Signed, source-available, and honest about what it borrows.</p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="#download">Download v0.2.0</a>
-        <a class="btn btn-ghost" href="https://github.com/PONOdata/Pono-toolkit" target="_blank" rel="noopener">View source</a>
+        <a class="btn btn-primary" href="https://github.com/Brofalo/LenovoLegionToolkit/releases/latest/download/PonoToolkitSetup-v0.3.8.exe">
+          <span class="btn-title">Download installer</span>
+          <span class="btn-sub">v0.3.8 — signed, 15 MB</span>
+        </a>
+        <a class="btn btn-ghost" href="https://github.com/Brofalo/LenovoLegionToolkit" target="_blank" rel="noopener">
+          <span class="btn-title">View source</span>
+          <span class="btn-sub">github.com/Brofalo</span>
+        </a>
       </div>
+      <p class="hero-meta">Azure Trusted Signing · GPL-3.0 · A fork of <a href="https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit" target="_blank" rel="noopener">Lenovo Legion Toolkit</a></p>
     </div>
   </header>
 
-  <section id="features" class="features">
+  <section id="features" class="section">
     <div class="container">
-      <h2>What is in here that is not upstream</h2>
+      <p class="kicker">WHAT IS ADDED OVER UPSTREAM</p>
+      <h2>Features that earn their place.</h2>
+      <p class="section-lede">Pono Toolkit is a fork, not a rewrite. Most of the surface is upstream LLT. The differences below are the ones that move user-visible quality forward.</p>
       <div class="grid">
-        <div class="card">
+        <article class="card">
+          <div class="card-num">01</div>
           <h3>Auto-detect Dynamic Lighting</h3>
-          <p>No debug flag. The Dynamic Lighting page surfaces automatically when a <code>LampArray</code>-conformant device is present.</p>
-        </div>
-        <div class="card">
-          <h3>System indicator effects</h3>
-          <p>BatteryLow (red pulse below threshold), Charging (gradient sweep on AC), CapsLock indicator. Wall-clock sample throttle keeps cadence steady regardless of animation speed.</p>
-        </div>
-        <div class="card">
-          <h3>Borg auto-adapt</h3>
-          <p>Zero-config adaptive effect for any LampArray device. Status and Branding lamps stay white; everything else runs a spatial rainbow whose period scales with lamp count. Resistance is futile.</p>
-        </div>
-        <div class="card">
+          <p>The page surfaces automatically when a <code>LampArray</code>-conformant device is present. No debug flag, no hidden setting.</p>
+        </article>
+        <article class="card">
+          <div class="card-num">02</div>
           <h3>Fn+F8 instant airplane mode</h3>
-          <p>Flips the Windows airplane state directly via registry + Radio Management Service bounce. Notification confirms the new state. Falls back to opening the settings page if the registry write fails.</p>
-        </div>
-        <div class="card">
-          <h3>Smart key cycle sync</h3>
-          <p>When an automation pipeline runs because of an event (game starts, etc.), the smart key cycle index advances past that quick action. The next press produces the next action instead of repeating.</p>
-        </div>
-        <div class="card">
+          <p>Flips the Windows airplane state directly via registry and a Radio Management Service bounce. Notification confirms. Falls back to opening Settings if the registry write is refused.</p>
+        </article>
+        <article class="card">
+          <div class="card-num">03</div>
+          <h3>Smart-key cycle sync</h3>
+          <p>When an automation pipeline fires because of an event (game launch, etc.), the smart-key cycle index advances past that quick action so the next press produces the next action, not a stale repeat.</p>
+        </article>
+        <article class="card">
+          <div class="card-num">04</div>
+          <h3>System indicator effects</h3>
+          <p>BatteryLow as a red pulse below threshold, Charging as a gradient sweep on AC, CapsLock as an indicator. Wall-clock sample throttle keeps cadence steady regardless of animation speed.</p>
+        </article>
+        <article class="card">
+          <div class="card-num">05</div>
           <h3>Hot-path optimizations</h3>
-          <p>Render loop runs at 30 Hz with cached capability probes, reused color/index buffers, and once-per-frame transition math. Lower CPU, smoother effects.</p>
-        </div>
-        <div class="card">
-          <h3>Latent crash fixes</h3>
-          <p>Notification pipeline safe-defaults adding a new notification type is non-fatal. PowerModeExtreme arms restored across allow/symbol/text switches.</p>
-        </div>
-        <div class="card">
-          <h3>Three-tier signing pipeline</h3>
-          <p>Build CI routes through PFX (canonical), Azure Trusted Signing (forks), or compile-check fallback (no secrets). Always meaningful CI signal.</p>
-        </div>
+          <p>Render loop at 30 Hz with cached capability probes, reused color and index buffers, and once-per-frame transition math. Lower CPU, smoother effects.</p>
+        </article>
+        <article class="card">
+          <div class="card-num">06</div>
+          <h3>Isolated AppData</h3>
+          <p>Settings, logs, and integrations live under <code>%LOCALAPPDATA%\PonoToolkit\</code>. Existing Lenovo Legion Toolkit installs are untouched and can run side by side.</p>
+        </article>
       </div>
     </div>
   </section>
 
-  <section id="download" class="download">
+  <section id="download" class="section section-tinted">
     <div class="container">
-      <h2>Download</h2>
+      <p class="kicker">DOWNLOAD</p>
+      <h2>One file. Signed. Ships from <a class="inline-link" href="https://github.com/Brofalo/LenovoLegionToolkit" target="_blank" rel="noopener">Brofalo</a>.</h2>
       <div class="dl-row">
-        <a class="btn btn-primary btn-lg" href="https://github.com/PONOdata/Pono-toolkit/releases/latest/download/PonoToolkit-v0.2.0-portable-x64.zip">
-          <span class="btn-title">Portable (x64)</span>
-          <span class="btn-sub">v0.2.0 - 21 MB - extract and run</span>
+        <a class="btn btn-primary btn-lg" href="https://github.com/Brofalo/LenovoLegionToolkit/releases/latest/download/PonoToolkitSetup-v0.3.8.exe">
+          <span class="btn-title">PonoToolkitSetup-v0.3.8.exe</span>
+          <span class="btn-sub">Latest Stable — Azure Trusted Signing — 15 MB</span>
         </a>
-        <a class="btn btn-ghost btn-lg" href="https://github.com/PONOdata/Pono-toolkit/releases">
+        <a class="btn btn-ghost btn-lg" href="https://github.com/Brofalo/LenovoLegionToolkit/releases">
           <span class="btn-title">All releases</span>
-          <span class="btn-sub">Release notes, history</span>
+          <span class="btn-sub">Notes, hashes, history</span>
         </a>
       </div>
-      <p class="note">Signed installer (.exe) coming in v0.3.0 once Azure Trusted Signing CI is wired into PONOdata. Until then the portable build is unsigned; SmartScreen may prompt on first run.</p>
+      <dl class="meta-list">
+        <div><dt>SHA-256</dt><dd><code>349ffa96a3166792cca242812454167eab94a687b11796e4f1738cee19f4c4d2</code></dd></div>
+        <div><dt>Signer</dt><dd>Pono Data Solutions via Azure Trusted Signing</dd></div>
+        <div><dt>Requires</dt><dd>Windows 11 (64-bit), administrator on install and launch</dd></div>
+      </dl>
     </div>
   </section>
 
-  <section id="install" class="install">
+  <section id="install" class="section">
     <div class="container">
-      <h2>Install</h2>
-      <ol>
-        <li>Download the portable zip from the link above.</li>
-        <li>Extract to a folder of your choice (e.g. <code>%LOCALAPPDATA%\PonoToolkit</code>).</li>
-        <li>Run <code>Pono Toolkit.exe</code> as Administrator.</li>
+      <p class="kicker">INSTALL</p>
+      <h2>Run the installer.</h2>
+      <ol class="steps">
+        <li><strong>Download</strong> <code>PonoToolkitSetup-v0.3.8.exe</code> from the Download section above.</li>
+        <li><strong>Run as Administrator.</strong> Inno Setup completes silently in seconds and writes to <code>C:\Program Files\PonoToolkit\</code>.</li>
+        <li><strong>Launch</strong> from the Start menu. First run shows the upstream-shoutout dialog and a language picker; choose your locale and you are done.</li>
       </ol>
-      <p class="note">Pono Toolkit can coexist on the same machine as Lenovo Legion Toolkit. Different AppId, mutex, and settings folder (<code>%localappdata%\PonoToolkit</code>) keep installations independent.</p>
+      <p class="note">Coexistence is intentional. Pono Toolkit installs to its own Program Files directory, uses a distinct AppId and mutex, and stores settings under <code>%LOCALAPPDATA%\PonoToolkit\</code>. Existing Lenovo Legion Toolkit installs continue to work on the same machine without interference. If you have prior Pono Toolkit settings under the legacy LLT-shared path, they migrate forward on first launch.</p>
     </div>
   </section>
 
-  <section id="upstream" class="upstream">
+  <section id="upstream" class="section section-tinted">
     <div class="container">
-      <h2>Standing on shoulders</h2>
-      <p>Pono Toolkit would not exist without <strong>Lenovo Legion Toolkit</strong>. Bartosz Cichecki started the project; Kaguya and Dr. Skinner have been carrying it forward. Years of WMI reverse engineering, hardware compatibility work, ACPI exploration, and feature design done by them is the foundation everything in this fork rests on.</p>
-      <p>If you find Pono Toolkit useful, please support upstream:</p>
-      <a class="btn btn-donate" href="https://www.paypal.com/donate/?hosted_button_id=22AZE2NBP3HTL" target="_blank" rel="noopener">Donate to upstream LLT (PayPal)</a>
-      <p class="note">Donations through this link go to upstream LLT-Team, not to Pono Data Solutions. The economic foundation of this fork belongs upstream.</p>
+      <p class="kicker">STANDING ON SHOULDERS</p>
+      <h2>Pono Toolkit is a fork.</h2>
+      <div class="upstream-grid">
+        <div>
+          <p>Lenovo Legion Toolkit is the foundation. <strong>Bartosz Cichecki</strong> started the project; <strong>Kaguya</strong> and <strong>Dr. Skinner</strong> have carried it forward. Years of WMI reverse engineering, ACPI exploration, hardware compatibility work, and feature design done by them is the entirety of what every Pono Toolkit build inherits.</p>
+          <p>If Pono Toolkit is useful to you, the most direct way to support the foundation it stands on is to donate to upstream.</p>
+          <a class="btn btn-donate" href="https://www.paypal.com/donate/?hosted_button_id=22AZE2NBP3HTL" target="_blank" rel="noopener">
+            <span class="btn-title">Donate to upstream LLT (PayPal)</span>
+            <span class="btn-sub">hosted_button_id 22AZE2NBP3HTL</span>
+          </a>
+          <p class="note">Donations through this link route to LLT-Team, not to Pono Data Solutions. The economic foundation of this fork belongs to upstream.</p>
+        </div>
+        <aside class="upstream-aside">
+          <p class="kicker-soft">LLT ON GITHUB</p>
+          <ul class="link-list">
+            <li><a href="https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit" target="_blank" rel="noopener">Repo</a></li>
+            <li><a href="https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit/releases" target="_blank" rel="noopener">Releases</a></li>
+            <li><a href="https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit/issues" target="_blank" rel="noopener">Issues</a></li>
+            <li><a href="https://github.com/sponsors/Metanome" target="_blank" rel="noopener">Sponsor Dr. Skinner</a></li>
+          </ul>
+        </aside>
+      </div>
     </div>
   </section>
 
   <footer>
     <div class="container">
       <div class="footer-grid">
-        <div>
-          <strong>Pono Toolkit</strong>
-          <p>AIO Windows utility. Lenovo-first, cross-vendor-ambitious.</p>
+        <div class="footer-brand">
+          <a class="brand" href="#top">
+            <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true">
+              <path d="M3 27 L13 9 L19 19 L23 13 L29 27 Z" fill="currentColor" opacity="0.95"/>
+              <circle cx="24" cy="6" r="2.5" fill="currentColor" opacity="0.8"/>
+            </svg>
+            <span class="brand-text">Pono Toolkit</span>
+          </a>
+          <p>A balanced fork of Lenovo Legion Toolkit. Windows-first, cross-vendor, source-available, signed.</p>
         </div>
         <div>
           <strong>Source</strong>
-          <ul>
-            <li><a href="https://github.com/PONOdata/Pono-toolkit" target="_blank" rel="noopener">GitHub repo</a></li>
-            <li><a href="https://github.com/PONOdata/Pono-toolkit/releases" target="_blank" rel="noopener">Releases</a></li>
-            <li><a href="https://github.com/PONOdata/Pono-toolkit/issues" target="_blank" rel="noopener">Issues</a></li>
+          <ul class="link-list">
+            <li><a href="https://github.com/Brofalo/LenovoLegionToolkit" target="_blank" rel="noopener">Repository</a></li>
+            <li><a href="https://github.com/Brofalo/LenovoLegionToolkit/releases" target="_blank" rel="noopener">Releases</a></li>
+            <li><a href="https://github.com/Brofalo/LenovoLegionToolkit/issues" target="_blank" rel="noopener">Issues</a></li>
           </ul>
         </div>
         <div>
           <strong>Upstream</strong>
-          <ul>
+          <ul class="link-list">
             <li><a href="https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit" target="_blank" rel="noopener">LLT on GitHub</a></li>
             <li><a href="https://www.paypal.com/donate/?hosted_button_id=22AZE2NBP3HTL" target="_blank" rel="noopener">Donate to LLT</a></li>
           </ul>
         </div>
         <div>
-          <strong>License</strong>
-          <p>GPL-3.0, inherited from upstream LLT.</p>
+          <strong>Legal</strong>
+          <ul class="link-list">
+            <li>GPL-3.0</li>
+            <li>Inherited from upstream LLT</li>
+            <li>Not affiliated with Lenovo</li>
+          </ul>
         </div>
       </div>
-      <p class="copyright">&copy; 2026 Pono Data Solutions. Pono Toolkit is independent and not officially affiliated with Lenovo or the LLT-Team.</p>
+      <p class="copyright">&copy; 2026 Pono Data Solutions. Pono Toolkit is independent and not officially affiliated with Lenovo or the Lenovo Legion Toolkit Team. <em>Pono</em> is Hawaiian for righteous, balanced, in alignment.</p>
     </div>
   </footer>
 </body>
