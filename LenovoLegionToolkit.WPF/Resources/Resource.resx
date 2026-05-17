@@ -926,12 +926,12 @@ WARNING: This action will not run correctly, if internal display is off.</value>
     <value>Display brightness</value>
   </data>
   <data name="DonatePage_DonateWith" xml:space="preserve">
-    <value>Donate with</value>
+    <value>Donate to upstream LLT with</value>
   </data>
   <data name="DonatePage_Message" xml:space="preserve">
-    <value>Development and maintenance of Pono Toolkit takes a lot of time. If you like using this software you can support its future by donating an amount of your choice.
+    <value>Pono Toolkit is a fork of Lenovo Legion Toolkit by Bartosz Cichecki and Kaguya. The PayPal button below and the QR code both route to the upstream LLT-Team donation address (hosted_button_id 22AZE2NBP3HTL), not to Pono Data Solutions. Supporting the foundation Pono Toolkit stands on is the most direct way to keep this work going.
 
-Click the PayPal logo below or scan the QR code to donate with PayPal.
+Click the PayPal logo or scan the QR code to donate to upstream LLT with PayPal.
 
 Thanks in advance!</value>
   </data>
