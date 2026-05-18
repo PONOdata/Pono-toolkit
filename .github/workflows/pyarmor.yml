@@ -6,6 +6,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: pyarmor-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   # Gate: only run if the org/repo secret is configured. Without the secret
   # the workflow can't register the PyArmor license, so it should skip
@@ -13,6 +17,9 @@ jobs:
   # HARDEST QA rollout surfaced this as the only failing check on PR #1.
   check-secret:
     runs-on: ubuntu-latest
+    timeout-minutes: 2
+    # Least-privilege: this job only computes an output; no token scopes needed.
+    permissions: {}
     outputs:
       has_license: ${{ steps.check.outputs.has_license }}
     steps:
@@ -32,6 +39,7 @@ jobs:
     needs: check-secret
     if: needs.check-secret.outputs.has_license == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
