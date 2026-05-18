@@ -25,4 +25,3 @@ updates:
     groups:
       bridges-imessage-windows-pip-minor-patch:
         update-types: ["minor", "patch"]
-

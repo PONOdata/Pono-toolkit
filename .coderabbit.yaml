@@ -53,7 +53,7 @@ reviews:
         Shell script. POSIX-compatible unless shebang is explicitly bash. Flag
         unquoted variable expansions, missing set -euo pipefail in bash scripts,
         curl/wget without --fail or -fsSL, and any rm -rf with variable paths.
-    - path: ".github/workflows/*.yml"
+    - path: ".github/workflows/*.{yml,yaml}"
       instructions: |
         GitHub Actions workflow. Verify minimal permissions: block, pinned action
         versions (SHA preferred, tag minimum), timeout-minutes on every job,
