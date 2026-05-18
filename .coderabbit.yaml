@@ -53,14 +53,18 @@ reviews:
         Shell script. POSIX-compatible unless shebang is explicitly bash. Flag
         unquoted variable expansions, missing set -euo pipefail in bash scripts,
         curl/wget without --fail or -fsSL, and any rm -rf with variable paths.
-    - path: ".github/workflows/*.{yml,yaml}"
-      instructions: |
+    - path: ".github/workflows/*.yml"
+      instructions: &workflow_review_instructions |
         GitHub Actions workflow. Verify minimal permissions: block, pinned action
         versions (SHA preferred, tag minimum), timeout-minutes on every job,
         concurrency group to prevent runaway parallel runs. Flag any usage of
         ${{ github.event.pull_request.* }} without is_owner check (script-
         injection vector). Flag actions/checkout without persist-credentials:
         false unless write access is required.
+    - path: ".github/workflows/*.yaml"
+      # CodeRabbit globbing does not support brace expansion; duplicate the
+      # entry so .yaml workflow files get the same review instructions as .yml.
+      instructions: *workflow_review_instructions
     - path: "**/Dockerfile*"
       instructions: |
         Dockerfile. Verify pinned base image (digest preferred, tag minimum).
