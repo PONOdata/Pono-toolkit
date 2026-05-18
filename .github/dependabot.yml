@@ -1,0 +1,28 @@
+# Dependabot for PONOdata/Pono-toolkit
+# HARDEST QA fleet rollout 2026-05-18
+# Anchor: CLAUDE.md "CI / Bot / Workflow Hygiene" HARD requirement (2026-05-17)
+
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    rebase-strategy: "auto"
+    groups:
+      root-github-actions-minor-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "pip"
+    directory: "/bridges-imessage/windows"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    rebase-strategy: "auto"
+    groups:
+      bridges-imessage-windows-pip-minor-patch:
+        update-types: ["minor", "patch"]
+
