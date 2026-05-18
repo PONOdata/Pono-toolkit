@@ -17,7 +17,6 @@ reviews:
     drafts: false
     base_branches:
       - main
-      - master
 
   path_filters:
     - "!**/__pycache__/**"
