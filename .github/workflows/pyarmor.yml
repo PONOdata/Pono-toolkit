@@ -6,9 +6,40 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: pyarmor-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  obfuscate:
+  # Gate: only run if the org/repo secret is configured. Without the secret
+  # the workflow can't register the PyArmor license, so it should skip
+  # gracefully instead of red-lighting every PR. Banked 2026-05-18 after
+  # HARDEST QA rollout surfaced this as the only failing check on PR #1.
+  check-secret:
     runs-on: ubuntu-latest
+    timeout-minutes: 2
+    # Least-privilege: this job only computes an output; no token scopes needed.
+    permissions: {}
+    outputs:
+      has_license: ${{ steps.check.outputs.has_license }}
+    steps:
+      - name: Check PYARMOR_CI_LICENSE presence
+        id: check
+        env:
+          PYARMOR_CI_LICENSE: ${{ secrets.PYARMOR_CI_LICENSE }}
+        run: |
+          if [ -z "$PYARMOR_CI_LICENSE" ]; then
+            echo "::warning::PYARMOR_CI_LICENSE secret not set - obfuscate job will be skipped"
+            echo "has_license=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_license=true" >> $GITHUB_OUTPUT
+          fi
+
+  obfuscate:
+    needs: check-secret
+    if: needs.check-secret.outputs.has_license == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
@@ -25,10 +56,6 @@ jobs:
         env:
           PYARMOR_CI_LICENSE: ${{ secrets.PYARMOR_CI_LICENSE }}
         run: |
-          if [ -z "$PYARMOR_CI_LICENSE" ]; then
-            echo "::error::PYARMOR_CI_LICENSE secret not set (expected base64-encoded pyarmor-vax-008184 zip)"
-            exit 1
-          fi
           printf '%s' "$PYARMOR_CI_LICENSE" | base64 -d > /tmp/license.zip
           pyarmor reg /tmp/license.zip
           rm /tmp/license.zip
