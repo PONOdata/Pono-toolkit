@@ -2,6 +2,12 @@ name: Release
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  # actions/setup-dotnet@v5 always tries to install the requested SDK even
+  # when it's already present system-wide. On Node-One the runner identity
+  # NETWORK SERVICE lacks write to C:\Program Files\dotnet (Class 220:
+  # install scope matters). Redirect the install to a user-writeable tool
+  # cache. RUNNER_TOOL_CACHE is the canonical location and is GHA-aware.
+  DOTNET_INSTALL_DIR: ${{ runner.tool_cache }}\dotnet
 
 on:
   workflow_dispatch:
