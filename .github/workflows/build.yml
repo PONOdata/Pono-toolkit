@@ -21,11 +21,19 @@ permissions:
 jobs:
   build:
 
-    runs-on: windows-2022
+    # Node-One self-hosted runner (org-level `node-one-org`, registered
+    # 2026-05-18 on PONOdata). Was windows-2022 GH-hosted; converted to
+    # eliminate the 2x Windows multiplier billing. VS 2022 Build Tools +
+    # Windows SDK + pwsh 7 + dotnet 8 are pre-installed; actions/setup-dotnet
+    # auto-fetches 9.0.x to RUNNER_TOOL_CACHE on first run.
+    runs-on: [self-hosted, Windows, X64, pono-build]
+    timeout-minutes: 90
 
     steps:
     - name: Checkout
       uses: actions/checkout@v5
+      with:
+        persist-credentials: false
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
       with:
