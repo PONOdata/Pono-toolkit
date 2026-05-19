@@ -6,9 +6,9 @@ env:
 on:
   workflow_dispatch:
   push:
-    branches: [ master, dev ]
+    branches: [ main, master, dev ]
   pull_request:
-    branches: [ master, dev ]
+    branches: [ main, master, dev ]
 
 permissions:
   id-token: write
