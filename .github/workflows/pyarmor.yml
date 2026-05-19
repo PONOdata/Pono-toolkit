@@ -16,7 +16,10 @@ jobs:
   # gracefully instead of red-lighting every PR. Banked 2026-05-18 after
   # HARDEST QA rollout surfaced this as the only failing check on PR #1.
   check-secret:
-    runs-on: ubuntu-latest
+    # pono-prime self-hosted Linux ARM64 runner. Tested 2026-05-18: pyarmor
+    # `--platform linux.x86_64` cross-compiles correctly on ARM64 host
+    # (produced runtime `file` output: ELF 64-bit LSB shared object, x86-64).
+    runs-on: [self-hosted, Linux, ARM64, pono-build]
     timeout-minutes: 2
     # Least-privilege: this job only computes an output; no token scopes needed.
     permissions: {}
@@ -38,7 +41,11 @@ jobs:
   obfuscate:
     needs: check-secret
     if: needs.check-secret.outputs.has_license == 'true'
-    runs-on: ubuntu-latest
+    # pono-prime self-hosted Linux ARM64 runner. pyarmor's --platform flag
+    # sets the TARGET architecture, not the host, so the produced runtime.so
+    # is x86_64 even when generated on aarch64. Verified pre-conversion +
+    # the Verify step below file-greps the runtime to catch any regression.
+    runs-on: [self-hosted, Linux, ARM64, pono-build]
     timeout-minutes: 15
     permissions:
       contents: read
@@ -91,7 +98,7 @@ jobs:
           ls -la dist/
           find dist -name "pyarmor_runtime.so" -o -name "pyarmor_runtime.pyd"
 
-      - name: Verify .so present, no .pyd
+      - name: Verify .so present, x86-64 arch, no .pyd
         run: |
           so_count=$(find dist -name "pyarmor_runtime.so" | wc -l)
           pyd_count=$(find dist -name "pyarmor_runtime.pyd" | wc -l)
@@ -103,7 +110,18 @@ jobs:
             echo "::error::Windows .pyd produced; CI runner platform misconfigured"
             exit 1
           fi
-          echo "OK: $so_count .so runtime(s), 0 .pyd"
+          # Now we are running on ARM64 self-hosted, but `--platform linux.x86_64`
+          # must produce x86_64 runtime for downstream consumers. Confirm via file(1).
+          # Tested 2026-05-18: pyarmor trial produced "ELF 64-bit LSB shared object, x86-64" on aarch64 host.
+          for so in $(find dist -name "pyarmor_runtime.so"); do
+            arch=$(file -b "$so")
+            echo "  $so -> $arch"
+            if ! echo "$arch" | grep -qE "ELF 64-bit.*x86-64"; then
+              echo "::error::Runtime $so is NOT x86-64; pyarmor cross-platform target may have failed on this host"
+              exit 1
+            fi
+          done
+          echo "OK: $so_count x86-64 .so runtime(s), 0 .pyd"
 
       - name: Upload dist artifact
         uses: actions/upload-artifact@v4
