@@ -179,9 +179,11 @@ public partial class LampArrayRGBKeyboardPage : UiPage
         CompositionTarget.Rendering -= OnEffectTick;
 
         if (_controller != null)
+        {
             _controller.ControlledChanged -= Controller_ControlledChanged;
+            _controller.SaveSettings(_settings);
+        }
 
-        _controller.SaveSettings(_settings);
         StopScreenCapture();
     }
 
