@@ -1354,6 +1354,12 @@ If dGPU does not respond at all, please restart your laptop.</value>
   <data name="InstantBootControl_Title" xml:space="preserve">
     <value>Instant Boot</value>
   </data>
+  <data name="FanMaxSpeedControl_Title" xml:space="preserve">
+    <value>Fan Max Speed</value>
+  </data>
+  <data name="FanMaxSpeedControl_Message" xml:space="preserve">
+    <value>Run the fans at maximum speed for maximum cooling.</value>
+  </data>
   <data name="ITSModeAutomationStepControl_Message" xml:space="preserve">
     <value>Change IdeaPad Power Mode</value>
   </data>

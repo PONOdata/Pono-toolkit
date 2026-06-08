@@ -105,6 +105,7 @@ public readonly struct DashboardGroup(DashboardGroupType type, string? customNam
                 DashboardItem.BatteryNightChargeMode,
                 DashboardItem.AlwaysOnUsb,
                 DashboardItem.InstantBoot,
+                DashboardItem.FanMaxSpeed,
                 DashboardItem.FlipToStart),
             new(DashboardGroupType.Graphics, null,
                 DashboardItem.HybridMode,

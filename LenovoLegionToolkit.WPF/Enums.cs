@@ -19,6 +19,7 @@ public enum DashboardItem
     BatteryNightChargeMode,
     AlwaysOnUsb,
     InstantBoot,
+    FanMaxSpeed,
     HybridMode,
     DiscreteGpu,
     OverclockDiscreteGpu,

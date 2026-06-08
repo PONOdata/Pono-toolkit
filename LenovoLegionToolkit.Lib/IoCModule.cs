@@ -53,6 +53,7 @@ public class IoCModule : Module
         builder.Register<BatteryFeature>();
         builder.Register<BatteryNightChargeFeature>();
         builder.Register<DpiScaleFeature>();
+        builder.Register<FanFullSpeedFeature>();
         builder.Register<FlipToStartFeature>();
         builder.Register<FlipToStartCapabilityFeature>(true);
         builder.Register<FlipToStartUEFIFeature>(true);

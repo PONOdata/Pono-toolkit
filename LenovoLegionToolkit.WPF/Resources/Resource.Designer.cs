@@ -2927,6 +2927,24 @@ namespace LenovoLegionToolkit.WPF.Resources {
                 return ResourceManager.GetString("FlipToStartControl_Title", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Fan Max Speed.
+        /// </summary>
+        public static string FanMaxSpeedControl_Title {
+            get {
+                return ResourceManager.GetString("FanMaxSpeedControl_Title", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Run the fans at maximum speed for maximum cooling.
+        /// </summary>
+        public static string FanMaxSpeedControl_Message {
+            get {
+                return ResourceManager.GetString("FanMaxSpeedControl_Message", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   查找类似 Use secondary functions of F1-F12 keys without holding Fn key. 的本地化字符串。
