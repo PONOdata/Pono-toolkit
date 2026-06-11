@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>changes &middot; Pono Toolkit</title>
+<meta name="description" content="What Pono Toolkit changes over upstream Lenovo Legion Toolkit, listed plainly.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230d0b09'/%3E%3Cpath d='M3 27 L13 9 L19 19 L23 13 L29 27 Z' fill='%23e2a13c'/%3E%3Ccircle cx='24' cy='6' r='2.5' fill='%23e2a13c'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<header>
+  <div class="wrap mast">
+    <a class="brand-link" href="index.html">
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+        <path d="M3 27 L13 9 L19 19 L23 13 L29 27 Z" fill="currentColor"/>
+        <circle cx="24" cy="6" r="2.5" fill="currentColor" opacity="0.8"/>
+      </svg>
+      <span class="mono co">Pono Toolkit</span>
+    </a>
+    <nav class="mono" aria-label="site">
+      <a href="changes.html" aria-current="page">changes</a>
+      <a href="upstream.html">upstream</a>
+      <a href="https://github.com/Brofalo/LenovoLegionToolkit" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <h1>What differs from upstream.</h1>
+    <p>A fork, not a rewrite. Most of the surface is upstream Lenovo Legion
+    Toolkit; these are our changes.</p>
+
+    <div class="rows">
+      <div class="row">
+        <span class="k mono">lighting</span>
+        <span class="v">The Dynamic Lighting page appears automatically when
+        a <code>LampArray</code> device is present. No debug flag or hidden
+        setting.</span>
+      </div>
+      <div class="row">
+        <span class="k mono">airplane</span>
+        <span class="v">Fn+F8 flips the Windows airplane state directly
+        (registry write plus a Radio Management Service restart), with a
+        confirming notification. If the write is refused it opens Settings
+        instead.</span>
+      </div>
+      <div class="row">
+        <span class="k mono">smart key</span>
+        <span class="v">When an automation fires on an event, the smart-key
+        cycle index advances past that action, so the next press runs the
+        next action instead of repeating.</span>
+      </div>
+      <div class="row">
+        <span class="k mono">indicators</span>
+        <span class="v">Battery-low shows as a red pulse under a threshold,
+        charging as a sweep on AC, Caps Lock as an indicator. Sampling is
+        wall-clock throttled so the cadence stays steady.</span>
+      </div>
+      <div class="row">
+        <span class="k mono">cpu cost</span>
+        <span class="v">The lighting render loop runs at 30 Hz with cached
+        capability probes, reused buffers, and once-per-frame transition
+        math.</span>
+      </div>
+      <div class="row">
+        <span class="k mono">appdata</span>
+        <span class="v">Settings, logs, and integrations live under
+        <code>%LOCALAPPDATA%\PonoToolkit\</code>; an existing LLT install is
+        untouched and runs alongside.</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="mono line">GPL-3.0 &middot; not affiliated with Lenovo or the LLT team &middot; <a href="https://pono-os.com">Pono Data Solutions</a></span>
+  </div>
+</footer>
+</body>
+</html>
