@@ -1,18 +1,22 @@
-# Dependabot for PONOdata/Pono-toolkit
-# HARDEST QA fleet rollout 2026-05-18
-# Anchor: CLAUDE.md "CI / Bot / Workflow Hygiene" HARD requirement (2026-05-17)
+# Dependabot for PONOdata/.template-staging/Pono-toolkit
+# Fleet QA config, normalized 2026-06-12.
+# Anchor: CLAUDE.md "CI / Bot / Workflow Hygiene" HARD requirement (2026-05-17).
+# Weekly Monday version updates; security updates fire daily regardless.
+# minor and patch grouped per ecosystem and directory to cut PR volume.
 
 version: 2
 updates:
-  - package-ecosystem: "github-actions"
+  - package-ecosystem: "nuget"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 10
     rebase-strategy: "auto"
+    commit-message:
+      prefix: "deps"
     groups:
-      root-github-actions-minor-patch:
+      nuget-root-minor-patch:
         update-types: ["minor", "patch"]
 
   - package-ecosystem: "pip"
@@ -22,6 +26,21 @@ updates:
       day: "monday"
     open-pull-requests-limit: 5
     rebase-strategy: "auto"
+    commit-message:
+      prefix: "deps"
     groups:
-      bridges-imessage-windows-pip-minor-patch:
+      pip-bridges-imessage-windows-minor-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    rebase-strategy: "auto"
+    commit-message:
+      prefix: "deps"
+    groups:
+      github-actions-root-minor-patch:
         update-types: ["minor", "patch"]
