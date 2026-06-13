@@ -1,0 +1,12 @@
+# Vendored upstream: Lenovo Legion Toolkit fork. Pono does not own or modify
+# this code, so the gate does not audit it. Enforcement applies to Pono
+# additions (bridges-imessage/, setup/, scripts).
+LenovoLegionToolkit.CLI/
+LenovoLegionToolkit.CLI.Lib/
+LenovoLegionToolkit.LampArray/
+LenovoLegionToolkit.Lib/
+LenovoLegionToolkit.Lib.Automation/
+LenovoLegionToolkit.Lib.Macro/
+LenovoLegionToolkit.Probe/
+LenovoLegionToolkit.SpectrumTester/
+LenovoLegionToolkit.WPF/
