@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>What it does . Pono Toolkit</title>
+  <meta name="description" content="What Pono Toolkit adds over upstream Lenovo Legion Toolkit: Dynamic Lighting auto-detect, an Fn+F8 airplane toggle, smart-key automation sync, system indicator effects, and isolated settings.">
+  <meta name="theme-color" content="#0d0b09">
+  <link rel="preconnect" href="https://github.com">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="plate">
+    <div class="wrap plate-row">
+      <a class="brand" href="index.html">
+        <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M3 27 L13 9 L19 19 L23 13 L29 27 Z" fill="currentColor"/>
+          <circle cx="24" cy="6" r="2.5" fill="currentColor"/>
+        </svg>
+        <span class="name">Pono Toolkit</span>
+      </a>
+      <nav class="pages" aria-label="Primary">
+        <a href="index.html">Overview</a>
+        <a href="download.html">Download</a>
+        <a href="install.html">Install</a>
+        <a href="whats-different.html" aria-current="page">What it does</a>
+        <a href="upstream.html">Upstream</a>
+        <a href="https://github.com/Brofalo/LenovoLegionToolkit" rel="noopener">Source</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <div class="titleblock">
+        <p class="kicker">Added over upstream</p>
+        <h1>What it does.</h1>
+        <p class="lede">Pono Toolkit is a fork, not a rewrite. Most of the surface is upstream Lenovo Legion Toolkit. The items below are the differences this fork adds.</p>
+      </div>
+
+      <section>
+        <div class="log">
+          <div class="row">
+            <div class="idx">01</div>
+            <div class="body">
+              <h3>Auto-detect Dynamic Lighting</h3>
+              <p>The lighting page surfaces when a <code>LampArray</code>-conformant device is present. No debug flag, no hidden setting.</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="idx">02</div>
+            <div class="body">
+              <h3>Fn+F8 airplane toggle</h3>
+              <p>Flips the Windows airplane state directly through the registry and a Radio Management Service bounce, then confirms with a notification. If the registry write is refused, it opens Settings instead.</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="idx">03</div>
+            <div class="body">
+              <h3>Smart-key cycle sync</h3>
+              <p>When an automation pipeline fires from an event (a game launch, for example), the smart-key cycle index advances past that quick action, so the next press produces the next action rather than a stale repeat.</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="idx">04</div>
+            <div class="body">
+              <h3>System indicator effects</h3>
+              <p>BatteryLow as a red pulse below a threshold, Charging as a gradient sweep on AC, CapsLock as an indicator. A wall-clock sample throttle keeps the cadence steady regardless of animation speed.</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="idx">05</div>
+            <div class="body">
+              <h3>Hot-path work on the render loop</h3>
+              <p>The render loop runs at 30 Hz with cached capability probes, reused color and index buffers, and once-per-frame transition math. Lower CPU, steadier effects.</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="idx">06</div>
+            <div class="body">
+              <h3>Isolated AppData</h3>
+              <p>Settings, logs, and integrations live under <code>%LOCALAPPDATA%\PonoToolkit\</code>. An existing Lenovo Legion Toolkit install is untouched and can run side by side.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Where the rest comes from</h2>
+        <div class="prose">
+          <p>Power modes, fan curves, hybrid graphics, the keyboard lighting controllers, sensors, and the automation engine are upstream Lenovo Legion Toolkit, gated on Lenovo hardware. On a non-Lenovo laptop those controls do not apply, so they do not appear. The <a href="upstream.html">upstream</a> page credits the people whose work that is.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        <div>
+          <p class="label">Pono Toolkit</p>
+          <p class="blurb">A source-available fork of Lenovo Legion Toolkit. Windows-first, signed on release.</p>
+        </div>
+        <div>
+          <p class="label">Source</p>
+          <ul class="links">
+            <li><a href="https://github.com/Brofalo/LenovoLegionToolkit" rel="noopener">Repository</a></li>
+            <li><a href="https://github.com/Brofalo/LenovoLegionToolkit/releases" rel="noopener">Releases</a></li>
+            <li><a href="https://github.com/Brofalo/LenovoLegionToolkit/issues" rel="noopener">Issues</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="label">Legal</p>
+          <ul class="legal-list">
+            <li>GPL-3.0</li>
+            <li>Inherited from upstream LLT</li>
+            <li>Not affiliated with Lenovo</li>
+          </ul>
+        </div>
+      </div>
+      <p class="colophon">&copy; 2026 Pono Data Solutions. Pono Toolkit is independent and not officially affiliated with Lenovo or the Lenovo Legion Toolkit Team. <span class="motto">Pono</span> is Hawaiian for righteous, balanced, in alignment.</p>
+    </div>
+  </footer>
+</body>
+</html>
