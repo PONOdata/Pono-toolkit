@@ -5,6 +5,9 @@
     <TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
     <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <!-- Lets non-Windows hosts (GitHub automatic dependency submission runs
+         on ubuntu) restore the Windows-targeting projects; no-op on Windows. -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <Platforms>x64</Platforms>
     <Copyright>© 2026 Bartosz Cichecki, Kaguya, and Dr. Skinner</Copyright>
     <Nullable>enable</Nullable>
