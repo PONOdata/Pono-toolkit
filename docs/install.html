@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Install . Pono Toolkit</title>
+  <meta name="description" content="How to install and run Pono Toolkit on Windows 11. Runs as administrator, installs to its own directory, and coexists with Lenovo Legion Toolkit.">
+  <meta name="theme-color" content="#0d0b09">
+  <link rel="preconnect" href="https://github.com">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="plate">
+    <div class="wrap plate-row">
+      <a class="brand" href="index.html">
+        <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M3 27 L13 9 L19 19 L23 13 L29 27 Z" fill="currentColor"/>
+          <circle cx="24" cy="6" r="2.5" fill="currentColor"/>
+        </svg>
+        <span class="name">Pono Toolkit</span>
+      </a>
+      <nav class="pages" aria-label="Primary">
+        <a href="index.html">Overview</a>
+        <a href="download.html">Download</a>
+        <a href="install.html" aria-current="page">Install</a>
+        <a href="whats-different.html">What it does</a>
+        <a href="upstream.html">Upstream</a>
+        <a href="https://github.com/Brofalo/LenovoLegionToolkit" rel="noopener">Source</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <div class="titleblock">
+        <p class="kicker">Install</p>
+        <h1>Run the installer.</h1>
+        <p class="lede">Three steps. The installer is signed and runs as administrator. It installs to its own directory and leaves any existing Lenovo Legion Toolkit install alone.</p>
+      </div>
+
+      <section>
+        <ol class="steps">
+          <li><strong>Download</strong> <code>PonoToolkitSetup-v0.3.8.exe</code> from the <a href="download.html">download</a> page, and verify its checksum.</li>
+          <li><strong>Run as administrator.</strong> Inno Setup completes in seconds and writes to <code>C:\Program Files\PonoToolkit\</code>.</li>
+          <li><strong>Launch</strong> from the Start menu. First run shows the upstream credit and a language picker. Choose your locale and you are done.</li>
+        </ol>
+        <p class="note">Coexistence is intentional. Pono Toolkit installs to its own Program Files directory, uses a distinct AppId and mutex, and stores settings under <code>%LOCALAPPDATA%\PonoToolkit\</code>. An existing Lenovo Legion Toolkit install keeps working on the same machine. If you have prior Pono Toolkit settings under the legacy shared path, they migrate forward on first launch.</p>
+      </section>
+
+      <section>
+        <h2>Why administrator</h2>
+        <div class="prose">
+          <p>Pono Toolkit reads and writes system-level hardware settings, so Windows requires administrator rights on install and on launch. If you would rather not grant that, do not install it.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        <div>
+          <p class="label">Pono Toolkit</p>
+          <p class="blurb">A source-available fork of Lenovo Legion Toolkit. Windows-first, signed on release.</p>
+        </div>
+        <div>
+          <p class="label">Source</p>
+          <ul class="links">
+            <li><a href="https://github.com/Brofalo/LenovoLegionToolkit" rel="noopener">Repository</a></li>
+            <li><a href="https://github.com/Brofalo/LenovoLegionToolkit/releases" rel="noopener">Releases</a></li>
+            <li><a href="https://github.com/Brofalo/LenovoLegionToolkit/issues" rel="noopener">Issues</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="label">Legal</p>
+          <ul class="legal-list">
+            <li>GPL-3.0</li>
+            <li>Inherited from upstream LLT</li>
+            <li>Not affiliated with Lenovo</li>
+          </ul>
+        </div>
+      </div>
+      <p class="colophon">&copy; 2026 Pono Data Solutions. Pono Toolkit is independent and not officially affiliated with Lenovo or the Lenovo Legion Toolkit Team. <span class="motto">Pono</span> is Hawaiian for righteous, balanced, in alignment.</p>
+    </div>
+  </footer>
+</body>
+</html>
