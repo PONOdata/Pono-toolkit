@@ -31,11 +31,11 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v5
+      uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd  # v5
       with:
         persist-credentials: false
     - name: Setup .NET
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1  # v5
       with:
         dotnet-version: 9.0.x
         cache: true
@@ -57,8 +57,16 @@ jobs:
         AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
         AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         AZURE_SIGNING_ENDPOINT: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
+        EVENT_NAME: ${{ github.event_name }}
       run: |
-        if ($env:LLT_CERT_PFX) {
+        if ($env:EVENT_NAME -eq 'pull_request') {
+          # A PR build is not shipped, and the Azure Trusted Signing federated
+          # credential is release-scoped, so a PR signing attempt authenticates
+          # then 403s at the sign request. Compile-check only on PRs; real
+          # signing happens on push to main and on tags.
+          "path=none" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          Write-Host "Signing path: none (pull_request builds compile-check only)"
+        } elseif ($env:LLT_CERT_PFX) {
           "path=pfx" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
           Write-Host "Signing path: PFX"
         } elseif ($env:AZURE_CLIENT_ID -and $env:AZURE_TENANT_ID -and $env:AZURE_SIGNING_ENDPOINT) {
@@ -106,14 +114,14 @@ jobs:
       run: .\make_action.bat raw
     - name: Azure login (federated identity)
       if: steps.signing.outputs.path == 'azure'
-      uses: azure/login@v2
+      uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5  # v2
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     - name: Re-sign installer with Azure Trusted Signing
       if: steps.signing.outputs.path == 'azure'
-      uses: azure/trusted-signing-action@v0.5.1
+      uses: azure/trusted-signing-action@0d74250c661747df006298d0fb49944c10f16e03  # v0.5.1
       with:
         endpoint: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
         trusted-signing-account-name: ${{ secrets.AZURE_SIGNING_ACCOUNT_NAME }}
@@ -141,7 +149,7 @@ jobs:
       shell: powershell
     - name: Upload artifact
       if: steps.signing.outputs.path != 'none'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
       with:
         name: installer
         path: build_installer\PonoToolkitSetup.exe
