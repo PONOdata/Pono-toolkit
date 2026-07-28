@@ -14,30 +14,33 @@ jobs:
     uses: ./.github/workflows/reusable-ci.yml
     with:
       runner_labels: '["ubuntu-latest"]'
-      # All four were blank, and the vendored copy above used to treat a blank
-      # command as a pass. It no longer does, so each gate is now either armed
-      # or named here with a reason.
+      # lint is now ARMED. It was previously declared in unconfigured_ok with
+      # the 10 PSScriptAnalyzer findings listed in full, one of them an Error,
+      # all in the certificate and installer-signing path. Those are fixed:
+      # the password parameters are [SecureString], the assignment to the
+      # automatic variable $pwd is gone, Get-WmiObject is Get-CimInstance, and
+      # the three unapproved-verb functions in rgb_drive.ps1 were renamed
+      # (Await-Async -> Wait-AsyncOperation, Make-Color -> New-LampColor,
+      # Flash-Color -> Show-LampColor). The analyzer now reports 0 findings.
       #
-      # lint: NOT "no linter exists". PSScriptAnalyzer applies to the 49
-      # scripts here and currently reports 10 findings, one of them an Error:
-      #   PSAvoidUsingConvertToSecureStringWithPlainText  generate_certificate.ps1:30
-      #   PSAvoidUsingPlainTextForPassword                build_identity_package.ps1:15
-      #   PSAvoidUsingPlainTextForPassword                generate_certificate.ps1:6
-      #   PSAvoidUsingPlainTextForPassword                sign_installer.ps1:8
-      #   PSAvoidAssignmentToAutomaticVariable            generate_certificate.ps1:30
-      #   PSAvoidUsingWMICmdlet                           thermal-diag.ps1:40
-      #   PSAvoidUsingWMICmdlet                           thermal_diag.ps1:40
-      #   PSUseApprovedVerbs                              rgb_drive.ps1:10,24,83
-      # Those are in the certificate and installer-signing path, so the fix is
-      # moving those parameters to SecureString and re-proving the signing
-      # flow, not a drive-by edit. Excluding the rules to force a green would
-      # be the exact dishonesty this whole change removes, so the gap is
-      # declared here instead, in full, and arming lint is the follow-up.
+      # The signing flow was re-proven before this was armed, because this repo
+      # signs real artifacts: certificate generation, MSIX packaging via
+      # MakeAppx, SignTool signing of the MSIX and the EXE, and
+      # Set-AuthenticodeSignature on the installer were all run end to end in
+      # make.bat order against a throwaway self-signed certificate, and the
+      # results were diffed against the same chain run on the pre-change
+      # scripts. Identical on every observable outcome.
       #
-      # typecheck: PowerShell has no typechecker.
-      # test: no test suite exists in this repo.
-      # build: build.yml compiles the .NET toolkit on the Windows build node,
-      # with WPF, so it cannot run on the ubuntu pool this gate uses.
-      unconfigured_ok: "lint,typecheck,test,build"
+      # lint.ps1 keeps the same rule exclusions pono-os and windows-pono use,
+      # so `pwsh -NoProfile -File .github/scripts/lint.ps1` by hand and the
+      # gate report the same thing.
+      #
+      # The other three stay declared, for the same reasons as before:
+      #   typecheck: PowerShell has no typechecker.
+      #   test: no test suite exists in this repo.
+      #   build: build.yml compiles the .NET toolkit on the Windows build node,
+      #   with WPF, so it cannot run on the ubuntu pool this gate uses.
+      lint_cmd: "pwsh -NoProfile -File .github/scripts/lint.ps1"
+      unconfigured_ok: "typecheck,test,build"
       run_semgrep: true
       run_dependency_review: true
