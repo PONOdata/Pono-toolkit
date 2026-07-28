@@ -37,7 +37,7 @@ Write-Host "=== LAST BOOT TIME ==="
 Write-Host ""
 Write-Host "=== CURRENT THERMAL ZONE TEMPS (WMI, deci-Kelvin; requires admin) ==="
 try {
-  $zones = Get-WmiObject -Namespace 'root/wmi' -Class MSAcpi_ThermalZoneTemperature -ErrorAction Stop
+  $zones = Get-CimInstance -Namespace 'root/wmi' -ClassName MSAcpi_ThermalZoneTemperature -ErrorAction Stop
   foreach ($z in $zones) {
     $c = [math]::Round(($z.CurrentTemperature / 10) - 273.15, 1)
     Write-Host ("  {0}: {1} C (raw {2})" -f $z.InstanceName, $c, $z.CurrentTemperature)

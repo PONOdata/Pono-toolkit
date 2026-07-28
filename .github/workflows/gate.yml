@@ -7,8 +7,40 @@ permissions:
   contents: read
 jobs:
   gate:
+    # Local, not PONOdata/gatekeeper: this repo is public and gatekeeper is
+    # private, and a public repo cannot call a private repo's reusable
+    # workflow. The local copy is the workaround, not drift. It has to be kept
+    # in step with gatekeeper by hand, because no tag reaches it.
     uses: ./.github/workflows/reusable-ci.yml
     with:
+      runner_labels: '["ubuntu-latest"]'
+      # lint is now ARMED. It was previously declared in unconfigured_ok with
+      # the 10 PSScriptAnalyzer findings listed in full, one of them an Error,
+      # all in the certificate and installer-signing path. Those are fixed:
+      # the password parameters are [SecureString], the assignment to the
+      # automatic variable $pwd is gone, Get-WmiObject is Get-CimInstance, and
+      # the three unapproved-verb functions in rgb_drive.ps1 were renamed
+      # (Await-Async -> Wait-AsyncOperation, Make-Color -> New-LampColor,
+      # Flash-Color -> Show-LampColor). The analyzer now reports 0 findings.
+      #
+      # The signing flow was re-proven before this was armed, because this repo
+      # signs real artifacts: certificate generation, MSIX packaging via
+      # MakeAppx, SignTool signing of the MSIX and the EXE, and
+      # Set-AuthenticodeSignature on the installer were all run end to end in
+      # make.bat order against a throwaway self-signed certificate, and the
+      # results were diffed against the same chain run on the pre-change
+      # scripts. Identical on every observable outcome.
+      #
+      # lint.ps1 keeps the same rule exclusions pono-os and windows-pono use,
+      # so `pwsh -NoProfile -File .github/scripts/lint.ps1` by hand and the
+      # gate report the same thing.
+      #
+      # The other three stay declared, for the same reasons as before:
+      #   typecheck: PowerShell has no typechecker.
+      #   test: no test suite exists in this repo.
+      #   build: build.yml compiles the .NET toolkit on the Windows build node,
+      #   with WPF, so it cannot run on the ubuntu pool this gate uses.
+      lint_cmd: "pwsh -NoProfile -File .github/scripts/lint.ps1"
+      unconfigured_ok: "typecheck,test,build"
       run_semgrep: true
       run_dependency_review: true
-      runner_labels: '["ubuntu-latest"]'

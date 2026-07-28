@@ -1,6 +1,12 @@
 # Dependabot for PONOdata/Pono-toolkit
 # HARDEST QA fleet rollout 2026-05-18
 # Anchor: CLAUDE.md "CI / Bot / Workflow Hygiene" HARD requirement (2026-05-17)
+#
+# cooldown holds a newly published version for 7 days before Dependabot proposes
+# it, so a package that is malicious or simply broken on release day does not get
+# a PR opened against this repo on release day. Required by the semgrep rule
+# package_managers.dependabot.dependabot-missing-cooldown, which blocks on a
+# full-tree scan.
 
 version: 2
 updates:
@@ -9,6 +15,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
+    cooldown:
+      default-days: 7
     open-pull-requests-limit: 10
     rebase-strategy: "auto"
     groups:
@@ -20,6 +28,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
+    cooldown:
+      default-days: 7
     open-pull-requests-limit: 5
     rebase-strategy: "auto"
     groups:
