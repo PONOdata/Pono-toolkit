@@ -7,8 +7,37 @@ permissions:
   contents: read
 jobs:
   gate:
+    # Local, not PONOdata/gatekeeper: this repo is public and gatekeeper is
+    # private, and a public repo cannot call a private repo's reusable
+    # workflow. The local copy is the workaround, not drift. It has to be kept
+    # in step with gatekeeper by hand, because no tag reaches it.
     uses: ./.github/workflows/reusable-ci.yml
     with:
+      runner_labels: '["ubuntu-latest"]'
+      # All four were blank, and the vendored copy above used to treat a blank
+      # command as a pass. It no longer does, so each gate is now either armed
+      # or named here with a reason.
+      #
+      # lint: NOT "no linter exists". PSScriptAnalyzer applies to the 49
+      # scripts here and currently reports 10 findings, one of them an Error:
+      #   PSAvoidUsingConvertToSecureStringWithPlainText  generate_certificate.ps1:30
+      #   PSAvoidUsingPlainTextForPassword                build_identity_package.ps1:15
+      #   PSAvoidUsingPlainTextForPassword                generate_certificate.ps1:6
+      #   PSAvoidUsingPlainTextForPassword                sign_installer.ps1:8
+      #   PSAvoidAssignmentToAutomaticVariable            generate_certificate.ps1:30
+      #   PSAvoidUsingWMICmdlet                           thermal-diag.ps1:40
+      #   PSAvoidUsingWMICmdlet                           thermal_diag.ps1:40
+      #   PSUseApprovedVerbs                              rgb_drive.ps1:10,24,83
+      # Those are in the certificate and installer-signing path, so the fix is
+      # moving those parameters to SecureString and re-proving the signing
+      # flow, not a drive-by edit. Excluding the rules to force a green would
+      # be the exact dishonesty this whole change removes, so the gap is
+      # declared here instead, in full, and arming lint is the follow-up.
+      #
+      # typecheck: PowerShell has no typechecker.
+      # test: no test suite exists in this repo.
+      # build: build.yml compiles the .NET toolkit on the Windows build node,
+      # with WPF, so it cannot run on the ubuntu pool this gate uses.
+      unconfigured_ok: "lint,typecheck,test,build"
       run_semgrep: true
       run_dependency_review: true
-      runner_labels: '["ubuntu-latest"]'
