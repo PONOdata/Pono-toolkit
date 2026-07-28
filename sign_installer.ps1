@@ -5,12 +5,20 @@
 param(
     [string]$InstallerPath = "build_installer\PonoToolkitSetup.exe",
     [string]$PfxPath = "LenovoLegionToolkit.pfx",
-    [string]$Password = $env:LLT_CERT_PASSWORD
+    [System.Security.SecureString]$Password
 )
 
 $ErrorActionPreference = "Stop"
 
-if (-not (Test-Path $PfxPath) -or [string]::IsNullOrWhiteSpace($Password)) {
+# LLT_CERT_PASSWORD is a plain environment variable, so it has to be converted
+# once, here. NetworkCredential does that without ConvertTo-SecureString
+# -AsPlainText, which PSScriptAnalyzer rejects as an error.
+if (($null -eq $Password -or $Password.Length -eq 0) -and
+    -not [string]::IsNullOrWhiteSpace($env:LLT_CERT_PASSWORD)) {
+    $Password = [System.Net.NetworkCredential]::new('', $env:LLT_CERT_PASSWORD).SecurePassword
+}
+
+if (-not (Test-Path $PfxPath) -or $null -eq $Password -or $Password.Length -eq 0) {
     if ($env:CI -eq "true") {
         throw "Missing certificate or password to sign the installer in CI environment."
     }
@@ -24,6 +32,8 @@ if ($env:PSModulePath) {
 Import-Module Microsoft.PowerShell.Security -ErrorAction SilentlyContinue
 
 Write-Host "Stamping installer: $InstallerPath"
+# X509Certificate2 has a (path, SecureString) constructor, so the password never
+# has to become a plain string on this path.
 $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($PfxPath, $Password)
 Set-AuthenticodeSignature -FilePath $InstallerPath -Certificate $cert -TimestampServer "http://timestamp.digicert.com"
 

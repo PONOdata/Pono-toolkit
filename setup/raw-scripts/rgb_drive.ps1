@@ -7,7 +7,7 @@ $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Runtime.WindowsRuntime -ErrorAction SilentlyContinue
 
 # Helper: await a WinRT IAsyncOperation<T> from PowerShell 5.1 synchronously.
-function Await-Async {
+function Wait-AsyncOperation {
     param([Parameter(Mandatory)] $AsyncOp, [Parameter(Mandatory)] [type] $ResultType)
     $asTaskMethod = [System.WindowsRuntimeSystemExtensions].GetMethods() |
         Where-Object {
@@ -21,7 +21,7 @@ function Await-Async {
     return $task.Result
 }
 
-function Make-Color {
+function New-LampColor {
     param([byte]$R, [byte]$G, [byte]$B)
     [Windows.UI.Color, Windows, ContentType=WindowsRuntime]::FromArgb(255, $R, $G, $B)
 }
@@ -41,7 +41,7 @@ $selector = [Windows.Devices.Lights.LampArray, Windows, ContentType=WindowsRunti
 Write-Host "  selector: $selector"
 
 $findOp = [Windows.Devices.Enumeration.DeviceInformation, Windows, ContentType=WindowsRuntime]::FindAllAsync($selector)
-$devices = Await-Async -AsyncOp $findOp -ResultType ([Windows.Devices.Enumeration.DeviceInformationCollection, Windows, ContentType=WindowsRuntime])
+$devices = Wait-AsyncOperation -AsyncOp $findOp -ResultType ([Windows.Devices.Enumeration.DeviceInformationCollection, Windows, ContentType=WindowsRuntime])
 
 if (-not $devices -or $devices.Count -eq 0) {
     Write-Host "  NO LAMPARRAY DEVICES FOUND."
@@ -60,7 +60,7 @@ $first = $devices[0]
 Write-Host "  opening: $($first.Name)"
 
 $openOp = [Windows.Devices.Lights.LampArray, Windows, ContentType=WindowsRuntime]::FromIdAsync($first.Id)
-$lampArray = Await-Async -AsyncOp $openOp -ResultType ([Windows.Devices.Lights.LampArray, Windows, ContentType=WindowsRuntime])
+$lampArray = Wait-AsyncOperation -AsyncOp $openOp -ResultType ([Windows.Devices.Lights.LampArray, Windows, ContentType=WindowsRuntime])
 
 Write-Host ("  LampCount: {0}" -f $lampArray.LampCount)
 Write-Host ("  LampArrayKind: {0}" -f $lampArray.LampArrayKind)
@@ -80,20 +80,20 @@ try {
     Write-Host "  RequestMessageChannel threw: $_"
 }
 
-function Flash-Color {
+function Show-LampColor {
     param([string]$label, [byte]$r, [byte]$g, [byte]$b, [int]$holdMs)
     Write-Host "  -> $label (r=$r g=$g b=$b)"
-    $c = Make-Color -R $r -G $g -B $b
+    $c = New-LampColor -R $r -G $g -B $b
     $lampArray.SetColor($c)
     Start-Sleep -Milliseconds $holdMs
 }
 
 Write-Host ""
 Write-Host "=== DRIVING COLORS ==="
-Flash-Color -label "RED"    -r 255 -g 0   -b 0   -holdMs 2000
-Flash-Color -label "GREEN"  -r 0   -g 255 -b 0   -holdMs 2000
-Flash-Color -label "BLUE"   -r 0   -g 0   -b 255 -holdMs 2000
-Flash-Color -label "AMBER"  -r 255 -g 150 -b 0   -holdMs 500
+Show-LampColor -label "RED"    -r 255 -g 0   -b 0   -holdMs 2000
+Show-LampColor -label "GREEN"  -r 0   -g 255 -b 0   -holdMs 2000
+Show-LampColor -label "BLUE"   -r 0   -g 0   -b 255 -holdMs 2000
+Show-LampColor -label "AMBER"  -r 255 -g 150 -b 0   -holdMs 500
 
 Write-Host ""
 Write-Host "=== DONE. Keyboard should now be steady AMBER. ==="

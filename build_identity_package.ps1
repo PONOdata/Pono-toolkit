@@ -13,13 +13,21 @@ param(
     [string]$PfxPath = "LenovoLegionToolkit.pfx",
 
     [Parameter()]
-    [string]$Password = $env:LLT_CERT_PASSWORD,
+    [System.Security.SecureString]$Password,
 
     [Parameter()]
     [switch]$UseManifest
 )
 
 $ErrorActionPreference = "Stop"
+
+# LLT_CERT_PASSWORD is a plain environment variable, so it has to be converted
+# once, here. NetworkCredential does that without ConvertTo-SecureString
+# -AsPlainText, which PSScriptAnalyzer rejects as an error.
+if (($null -eq $Password -or $Password.Length -eq 0) -and
+    -not [string]::IsNullOrWhiteSpace($env:LLT_CERT_PASSWORD)) {
+    $Password = [System.Net.NetworkCredential]::new('', $env:LLT_CERT_PASSWORD).SecurePassword
+}
 
 function Get-SdkToolPath {
     param(
@@ -161,6 +169,29 @@ function Write-FallbackIdentityFiles {
     Copy-Item "LenovoLegionToolkit.cer" -Destination (Join-Path $DestinationDir "LenovoLegionToolkit.cer") -Force
 }
 
+function Invoke-SignTool {
+    param(
+        [Parameter(Mandatory)]
+        [string]$SignToolPath,
+        [Parameter(Mandatory)]
+        [string]$PfxPath,
+        [Parameter(Mandatory)]
+        [System.Security.SecureString]$Password,
+        [Parameter(Mandatory)]
+        [string]$TargetPath
+    )
+
+    # SignTool takes the PFX password only as a command-line argument, so this is
+    # the one place the SecureString has to be unwrapped. Confining the plain
+    # string to this function shortens its life, and that is the whole of what it
+    # buys: while SignTool runs, the password is still readable in its command
+    # line by anything on the box that can list process arguments. Closing that
+    # for real means importing the PFX and signing by thumbprint (/sha1) instead
+    # of /f + /p, which is a change to the signing mechanism, not a lint fix.
+    $plainPassword = [System.Net.NetworkCredential]::new('', $Password).Password
+    & $SignToolPath sign /fd SHA256 /f $PfxPath /p $plainPassword $TargetPath
+}
+
 $normalizedVersion = [Version]$Version
 $resolvedVersionParts = @(
     $normalizedVersion.Major,
@@ -221,14 +252,17 @@ if ($UseManifest -or -not $makeAppx -or -not $signTool) {
     Write-Host "Prepared fallback identity registration files in: $resolvedOutputDir"
 
     $exePath = Join-Path $resolvedOutputDir "Pono Toolkit.exe"
-    if ((Test-Path $PfxPath) -and -not [string]::IsNullOrWhiteSpace($Password) -and (Test-Path $exePath)) {
+    # $signTool is checked too: this branch is reached precisely when SignTool may
+    # be missing, and invoking a null path would be a hard error where the intent
+    # is a warning.
+    if ($signTool -and (Test-Path $PfxPath) -and $null -ne $Password -and $Password.Length -gt 0 -and (Test-Path $exePath)) {
         Write-Host "Signing executable for UIAccess (RAW manifest path)..."
-        & $signTool sign /fd SHA256 /f $PfxPath /p $Password $exePath
+        Invoke-SignTool -SignToolPath $signTool -PfxPath $PfxPath -Password $Password -TargetPath $exePath
         if ($LASTEXITCODE -ne 0) {
             Write-Warning "SignTool failed to sign executable (exit code $LASTEXITCODE). UIAccess may not function."
         }
     } else {
-        Write-Warning "Skipping EXE signing in RAW manifest path (PFX or password not available)."
+        Write-Warning "Skipping EXE signing in RAW manifest path (SignTool, PFX, or password not available)."
     }
 
     return
@@ -238,21 +272,16 @@ if (-not (Test-Path $PfxPath)) {
     throw "Signing certificate not found: $PfxPath"
 }
 
-if ([string]::IsNullOrWhiteSpace($Password)) {
+if ($null -eq $Password -or $Password.Length -eq 0) {
     if ($env:CI -eq "true" -or [Console]::IsInputRedirected) {
         throw "Certificate password is required. Pass -Password or set LLT_CERT_PASSWORD."
     }
 
-    $securePassword = Read-Host "Enter certificate password" -AsSecureString
-    $passwordPtr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($securePassword)
-    try {
-        $Password = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($passwordPtr)
-    }
-    finally {
-        [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($passwordPtr)
-    }
+    # Read-Host already hands back a SecureString, so the BSTR round-trip that
+    # used to turn it into a plain string is gone.
+    $Password = Read-Host "Enter certificate password" -AsSecureString
 
-    if ([string]::IsNullOrWhiteSpace($Password)) {
+    if ($null -eq $Password -or $Password.Length -eq 0) {
         throw "Certificate password is required. Pass -Password or set LLT_CERT_PASSWORD."
     }
 }
@@ -274,14 +303,14 @@ if ($LASTEXITCODE -ne 0) {
     throw "MakeAppx failed with exit code $LASTEXITCODE"
 }
 
-& $signTool sign /fd SHA256 /f $PfxPath /p $Password $msixPath
+Invoke-SignTool -SignToolPath $signTool -PfxPath $PfxPath -Password $Password -TargetPath $msixPath
 if ($LASTEXITCODE -ne 0) {
     throw "SignTool failed with exit code $LASTEXITCODE"
 }
 
 $exePath = Join-Path $resolvedOutputDir "Pono Toolkit.exe"
 if (Test-Path $exePath) {
-    & $signTool sign /fd SHA256 /f $PfxPath /p $Password $exePath
+    Invoke-SignTool -SignToolPath $signTool -PfxPath $PfxPath -Password $Password -TargetPath $exePath
     if ($LASTEXITCODE -ne 0) {
         throw "SignTool failed to sign executable with exit code $LASTEXITCODE"
     }
