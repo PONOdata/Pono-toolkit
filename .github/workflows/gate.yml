@@ -43,4 +43,8 @@ jobs:
       lint_cmd: "pwsh -NoProfile -File .github/scripts/lint.ps1"
       unconfigured_ok: "typecheck,test,build"
       run_semgrep: true
+      # Stated rather than inherited. gate/tell_check is a required context
+      # here, and it had been reporting success while running nothing: the
+      # vendored copy defaulted run_tell_check to false and no caller set it.
+      run_tell_check: true
       run_dependency_review: true
