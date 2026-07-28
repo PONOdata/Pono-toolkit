@@ -22,16 +22,3 @@ updates:
     groups:
       root-github-actions-minor-patch:
         update-types: ["minor", "patch"]
-
-  - package-ecosystem: "pip"
-    directory: "/bridges-imessage/windows"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-    cooldown:
-      default-days: 7
-    open-pull-requests-limit: 5
-    rebase-strategy: "auto"
-    groups:
-      bridges-imessage-windows-pip-minor-patch:
-        update-types: ["minor", "patch"]
