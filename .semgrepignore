@@ -1,6 +1,6 @@
 # Vendored upstream: Lenovo Legion Toolkit fork. Pono does not own or modify
 # this code, so the gate does not audit it. Enforcement applies to Pono
-# additions (bridges-imessage/, setup/, scripts).
+# additions: the packaging and signing scripts at the root, and .github/.
 LenovoLegionToolkit.CLI/
 LenovoLegionToolkit.CLI.Lib/
 LenovoLegionToolkit.LampArray/
