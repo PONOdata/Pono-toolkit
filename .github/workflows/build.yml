@@ -92,7 +92,17 @@ jobs:
         LLT_CERT_PASSWORD: ${{ secrets.LLT_CERT_PASSWORD }}
       run: .\make_action.bat
 
-    # Azure Trusted Signing path. make_action.bat expects a PFX so it can call
+    # Signing identity, wired 2026-07-29. The signed build had been failing
+    # since 2026-07-02 with a bare 403 at the sign request, from two causes at
+    # once: no identity in the signing account's tenant held the signer role,
+    # and the endpoint, account and profile secrets pointed at a different
+    # Trusted Signing account. Both are fixed. The identity is the app
+    # registration pono-toolkit-signing-ci, with one federated credential whose
+    # subject is repo:PONOdata/Pono-toolkit:ref:refs/heads/main, holding Artifact
+    # Signing Certificate Profile Signer on the pono-data account. Scoped to
+    # that one ref on purpose: a tag release or another branch needs its own
+    # credential. There is no client secret, because federated identity has none.
+    #    # Azure Trusted Signing path. make_action.bat expects a PFX so it can call
     # SignTool internally; we satisfy that with a transient self-signed PFX whose
     # signature is then replaced by a real Azure Trusted Signing signature on the
     # output binaries. Requires the fork to configure (federated identity):
@@ -121,10 +131,10 @@ jobs:
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     - name: Re-sign installer with Azure Trusted Signing
       if: steps.signing.outputs.path == 'azure'
-      uses: azure/trusted-signing-action@0d74250c661747df006298d0fb49944c10f16e03  # v0.5.1
+      uses: Azure/artifact-signing-action@c7ab2a863ab5f9a846ddb8265964877ef296ee82  # v2.0.0
       with:
         endpoint: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
-        trusted-signing-account-name: ${{ secrets.AZURE_SIGNING_ACCOUNT_NAME }}
+        signing-account-name: ${{ secrets.AZURE_SIGNING_ACCOUNT_NAME }}
         certificate-profile-name: ${{ secrets.AZURE_SIGNING_PROFILE_NAME }}
         files-folder: build_installer
         files-folder-filter: exe
