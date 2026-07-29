@@ -3,13 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Pono Toolkit</title>
-  <meta name="description" content="Pono Toolkit is one Windows desktop utility for Lenovo Legion and other Windows 11 hardware. A signed, source-available fork of Lenovo Legion Toolkit. GPL-3.0.">
+  <title>Download . Pono Toolkit</title>
+  <meta name="description" content="Download Pono Toolkit v0.3.8 for Windows 11. Signed installer with published SHA-256, signer, and system requirements.">
   <meta name="theme-color" content="#0d0b09">
-  <meta property="og:title" content="Pono Toolkit">
-  <meta property="og:description" content="One Windows utility, balanced. A source-available fork of Lenovo Legion Toolkit.">
-  <meta property="og:url" content="https://ponotoolkit.com">
-  <meta property="og:type" content="website">
   <link rel="preconnect" href="https://github.com">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -24,8 +20,8 @@
         <span class="name">Pono Toolkit</span>
       </a>
       <nav class="pages" aria-label="Primary">
-        <a href="index.html" aria-current="page">Overview</a>
-        <a href="download.html">Download</a>
+        <a href="index.html">Overview</a>
+        <a href="download.html" aria-current="page">Download</a>
         <a href="install.html">Install</a>
         <a href="whats-different.html">What it does</a>
         <a href="upstream.html">Upstream</a>
@@ -37,34 +33,48 @@
   <main>
     <div class="wrap">
       <div class="titleblock">
-        <p class="kicker">Windows desktop utility</p>
-        <h1>One Windows utility, balanced.</h1>
-        <p class="lede">Pono Toolkit is a desktop utility for Lenovo Legion laptops and other Windows 11 hardware. It is a source-available fork of Lenovo Legion Toolkit, signed on each release, and honest about what it borrows.</p>
+        <p class="kicker">Download . v0.3.8</p>
+        <h1>One file. Signed.</h1>
+        <p class="lede">The installer ships from the Brofalo GitHub releases. Verify the checksum below against the file you download before you run it.</p>
         <div class="actions">
           <a class="btn btn-primary" href="https://github.com/Brofalo/LenovoLegionToolkit/releases/latest/download/PonoToolkitSetup-v0.3.8.exe">
-            <span class="t">Download installer</span>
-            <span class="s">v0.3.8 . signed . Windows 11</span>
+            <span class="t">PonoToolkitSetup-v0.3.8.exe</span>
+            <span class="s">latest stable . 15 MB</span>
           </a>
-          <a class="btn" href="download.html">
-            <span class="t">Version and checksum</span>
-            <span class="s">hash, signer, requirements</span>
+          <a class="btn" href="https://github.com/Brofalo/LenovoLegionToolkit/releases" rel="noopener">
+            <span class="t">All releases</span>
+            <span class="s">notes, hashes, history</span>
           </a>
         </div>
       </div>
 
       <section>
-        <h2>What it is</h2>
-        <div class="prose">
-          <p>Most of Pono Toolkit is Lenovo Legion Toolkit. It manages the system features that vendors usually scatter across separate apps: power modes, fan curves, hybrid graphics, keyboard lighting, and automation. Pono Toolkit is a fork of that project, not a rewrite.</p>
-          <p>The Pono layer on top is narrow and specific. A Dynamic Lighting page that detects a conformant lighting device, an Fn+F8 system airplane toggle, smart-key automation sync, and a signed release pipeline. The <a href="whats-different.html">what it does</a> page lists each one plainly.</p>
-        </div>
+        <h2>This release</h2>
+        <dl class="spec">
+          <div>
+            <dt>Version</dt>
+            <dd class="readout">v0.3.8 stable</dd>
+          </div>
+          <div>
+            <dt>SHA-256</dt>
+            <dd class="readout">349ffa96a3166792cca242812454167eab94a687b11796e4f1738cee19f4c4d2</dd>
+          </div>
+          <div>
+            <dt>Signer</dt>
+            <dd class="readout">Pono Data Solutions via Azure Trusted Signing</dd>
+          </div>
+          <div>
+            <dt>Requires</dt>
+            <dd class="readout">Windows 11 (64-bit), administrator on install and launch</dd>
+          </div>
+        </dl>
+        <p class="note">Pono Toolkit requires administrator rights because it reads and writes system-level hardware settings. Install it only from this site or the GitHub releases linked above.</p>
       </section>
 
       <section>
-        <h2>What it is not</h2>
+        <h2>Verify the download</h2>
         <div class="prose">
-          <p>Pono Toolkit is independent and not affiliated with Lenovo or the Lenovo Legion Toolkit Team. On a non-Lenovo laptop, the Lenovo-specific controls do not apply, so they do not appear. The cross-vendor work is real only for the lighting page today.</p>
-          <p>It is licensed GPL-3.0, inherited from upstream. The code is on <a href="https://github.com/Brofalo/LenovoLegionToolkit" rel="noopener">GitHub</a>. Donations go to upstream, not to us. The <a href="upstream.html">upstream</a> page explains why.</p>
+          <p>On Windows, open PowerShell in the folder you downloaded to and run <code>Get-FileHash PonoToolkitSetup-v0.3.8.exe</code>. The output should match the SHA-256 above. If it does not match, do not run the file.</p>
         </div>
       </section>
     </div>
