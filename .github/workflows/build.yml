@@ -92,7 +92,17 @@ jobs:
         LLT_CERT_PASSWORD: ${{ secrets.LLT_CERT_PASSWORD }}
       run: .\make_action.bat
 
-    # Azure Trusted Signing path. make_action.bat expects a PFX so it can call
+    # Signing identity, wired 2026-07-29. The signed build had been failing
+    # since 2026-07-02 with a bare 403 at the sign request, from two causes at
+    # once: no identity in the signing account's tenant held the signer role,
+    # and the endpoint, account and profile secrets pointed at a different
+    # Trusted Signing account. Both are fixed. The identity is the app
+    # registration pono-toolkit-signing-ci, with one federated credential whose
+    # subject is repo:PONOdata/Pono-toolkit:ref:refs/heads/main, holding Artifact
+    # Signing Certificate Profile Signer on the pono-data account. Scoped to
+    # that one ref on purpose: a tag release or another branch needs its own
+    # credential. There is no client secret, because federated identity has none.
+    #    # Azure Trusted Signing path. make_action.bat expects a PFX so it can call
     # SignTool internally; we satisfy that with a transient self-signed PFX whose
     # signature is then replaced by a real Azure Trusted Signing signature on the
     # output binaries. Requires the fork to configure (federated identity):
